@@ -19,9 +19,16 @@ return new class extends Migration
             $table->integer('stock');
             $table->decimal('cost', 15, 2);
             $table->decimal('price', 15, 2);
-            $table->string('image');
-            $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('unit_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('image')->nullable();
+            $table->boolean('status');
+            $table->integer('discountPercentage')->nullable();
+            $table->decimal('discountAmount', 15, 2)->nullable();
+            $table->decimal('priceAfterDiscount', 15, 2)->nullable();
+
+            $table->unsignedBigInteger('categoryId')->nullable();
+            $table->foreign('categoryId')->references('id')->on('categories')->onDelete('set null');
+            $table->unsignedBigInteger('unitId')->nullable();
+            $table->foreign('unitId')->references('id')->on('units')->onDelete('set null');
             $table->timestamps();
         });
     }

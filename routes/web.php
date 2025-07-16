@@ -30,6 +30,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/categories/{category}', [CategoryController::class, "destroy"])->name('categories.destroy');
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/add', [ProductController::class, 'create'])->name('products.create');
+    Route::get('/products/{product}/edit', [ProductController::class, "edit"])->name('products.edit');
+    Route::get('/products/{product}/edit-image', [ProductController::class, "editImage"])->name('products.edit-image');
+    Route::match(['post', 'put'], '/products/{product}/image', [ProductController::class, 'updateImage'])->name('products.update-image');
+    Route::put('/products/{product}', [ProductController::class, "update"])->name('products.update');
+    Route::delete('/products/{product}', [ProductController::class, "destroy"])->name('products.destroy');
 });
 
 require __DIR__.'/settings.php';

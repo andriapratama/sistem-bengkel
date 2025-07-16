@@ -8,13 +8,13 @@ import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
-const unitSchema = z.object({
+const categorySchema = z.object({
     name: z.string().min(1, 'Name is required'),
     slug: z.string().min(1, 'Slug is required'),
     description: z.string().optional().nullable(),
 });
 
-type UnitFormValues = z.infer<typeof unitSchema>;
+type CategoryFormValues = z.infer<typeof categorySchema>;
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -32,7 +32,7 @@ export default function Create() {
         post,
         processing,
         errors: serverErrors,
-    } = useForm<UnitFormValues>({
+    } = useForm<CategoryFormValues>({
         name: '',
         slug: '',
         description: '',
@@ -65,7 +65,7 @@ export default function Create() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const result = unitSchema.safeParse(data);
+        const result = categorySchema.safeParse(data);
 
         if (!result.success) {
             const flatErrors = result.error.flatten().fieldErrors;

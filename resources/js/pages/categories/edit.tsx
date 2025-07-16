@@ -3,33 +3,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type Category } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
-
-interface Category {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-}
 
 interface Props {
     category: Category;
 }
 
-const unitSchema = z.object({
+const categorySchema = z.object({
     name: z.string().min(1, 'Name is required'),
     slug: z.string().min(1, 'Slug is required'),
     description: z.string().optional().nullable(),
 });
 
-type UnitFormValues = z.infer<typeof unitSchema>;
+type CategoryFormValues = z.infer<typeof categorySchema>;
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Add Category',
+        title: 'Edit Category',
         href: '/categories/add',
     },
 ];
@@ -43,7 +36,7 @@ export default function Edit({ category }: Props) {
         put,
         processing,
         errors: serverErrors,
-    } = useForm<UnitFormValues>({
+    } = useForm<CategoryFormValues>({
         name: category.name,
         slug: category.slug,
         description: category.description,
@@ -76,7 +69,7 @@ export default function Edit({ category }: Props) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const result = unitSchema.safeParse(data);
+        const result = categorySchema.safeParse(data);
 
         if (!result.success) {
             const flatErrors = result.error.flatten().fieldErrors;
@@ -94,7 +87,7 @@ export default function Edit({ category }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Add Category" />
+            <Head title="Edit Category" />
             <div className="mx-auto w-[50%]">
                 <form onSubmit={handleSubmit} className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                     <div>

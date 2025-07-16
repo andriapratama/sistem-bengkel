@@ -2,16 +2,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type Unit } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
-
-interface Unit {
-    id: number;
-    name: string;
-    code: string;
-}
 
 interface Props {
     unit: Unit;
