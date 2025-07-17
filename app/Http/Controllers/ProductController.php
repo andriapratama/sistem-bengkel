@@ -23,7 +23,7 @@ class ProductController extends Controller
             return $item;
         });
 
-        return Inertia::render('products/index', [
+        return Inertia::render('admin/products/index', [
             'products' => $products,
             'success' => session('success'),
         ]);
@@ -33,7 +33,7 @@ class ProductController extends Controller
         $category = Category::all();
         $unit = Unit::all();
         
-        return Inertia::render('products/create', [
+        return Inertia::render('admin/products/create', [
             'categories' => $category,
             'units' => $unit,
         ]);
@@ -78,7 +78,7 @@ class ProductController extends Controller
 
         $product->image_url = $product->image ? Storage::url($product->image) : null;
 
-        return Inertia::render('products/edit', [
+        return Inertia::render('admin/products/edit', [
             'product' => $product,
             'categories' => $category,
             'units' => $unit,
@@ -119,7 +119,7 @@ class ProductController extends Controller
     public function editImage(Product $product){
         $product->image_url = $product->image ? Storage::url($product->image) : null;
 
-        return Inertia::render('products/edit-image', [
+        return Inertia::render('admin/products/edit-image', [
             'product' => $product,
         ]);
     }

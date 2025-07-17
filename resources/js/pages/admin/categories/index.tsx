@@ -49,7 +49,7 @@ export default function Index() {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full flex-row justify-end">
                     <Button asChild className="w-fit">
-                        <Link href="/categories/add">Add Category</Link>
+                        <Link href="/admin/categories/add">Add Category</Link>
                     </Button>
                 </div>
 

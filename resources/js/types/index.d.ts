@@ -81,5 +81,5 @@ export interface VehicleVariant {
     id: number;
     name: string;
     vehicleBrandId: number;
-    vehicleBrand?: VehicleBrand;
+    vehicle_brand?: VehicleBrand;
 }

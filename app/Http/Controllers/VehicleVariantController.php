@@ -15,7 +15,7 @@ class VehicleVariantController extends Controller
         ->orderBy('created_at', 'desc')
         ->paginate(10);
 
-        return Inertia::render('vehicle-variants/index', [
+        return Inertia::render('admin/vehicle-variants/index', [
             'vehicleVariants' => $vehicleVariants,
             'success' => session('success'),
         ]);
@@ -24,7 +24,7 @@ class VehicleVariantController extends Controller
     public function create(){
         $vehicleBrands = VehicleBrand::all();
 
-        return Inertia::render('vehicle-variants/create', [
+        return Inertia::render('admin/vehicle-variants/create', [
             'vehicleBrands' => $vehicleBrands
         ]);
     }
@@ -48,7 +48,7 @@ class VehicleVariantController extends Controller
     public function edit(VehicleVariant $vehicleVariant){
         $vehicleBrands = VehicleBrand::all();
 
-        return Inertia::render('vehicle-variants/edit', [
+        return Inertia::render('admin/vehicle-variants/edit', [
             'vehicleVariant' => $vehicleVariant,
             'vehicleBrands' => $vehicleBrands
         ]);

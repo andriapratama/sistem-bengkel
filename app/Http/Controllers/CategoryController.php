@@ -12,14 +12,14 @@ class CategoryController extends Controller
     public function index(){
         $category = Category::orderBy('created_at', 'desc')->paginate(10);
 
-        return Inertia::render('categories/index', [
+        return Inertia::render('admin/categories/index', [
             'categories' => $category,
             'success' => session('success'),
         ]);
     }
 
     public function create(){
-        return Inertia::render('categories/create', []);
+        return Inertia::render('admin/categories/create', []);
     }
 
     public function store(Request $request)
@@ -36,7 +36,7 @@ class CategoryController extends Controller
     }
 
     public function edit(Category $category){
-        return Inertia::render('categories/edit', [
+        return Inertia::render('admin/categories/edit', [
         'category' => $category
         ]);
     }

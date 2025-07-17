@@ -33,7 +33,7 @@ type ProductFormValues = z.infer<typeof productSchema>;
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Add Product',
-        href: '/products/add',
+        href: '/admin/products/add',
     },
 ];
 

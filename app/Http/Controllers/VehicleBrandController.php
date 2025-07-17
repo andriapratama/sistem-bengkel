@@ -12,14 +12,14 @@ class VehicleBrandController extends Controller
     public function index(){
         $vehicleBrands = VehicleBrand::orderBy('created_at', 'desc')->paginate(10);
 
-        return Inertia::render('vehicle-brands/index', [
+        return Inertia::render('admin/vehicle-brands/index', [
             'vehicleBrands' => $vehicleBrands,
             'success' => session('success'),
         ]);
     }
 
     public function create(){
-        return Inertia::render('vehicle-brands/create', []);
+        return Inertia::render('admin/vehicle-brands/create', []);
     }
 
     public function store(Request $request)
@@ -34,7 +34,7 @@ class VehicleBrandController extends Controller
     }
 
     public function edit(VehicleBrand $vehicleBrand){
-        return Inertia::render('vehicle-brands/edit', [
+        return Inertia::render('admin/vehicle-brands/edit', [
         'vehicleBrand' => $vehicleBrand
         ]);
     }

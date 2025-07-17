@@ -12,14 +12,14 @@ class UnitController extends Controller
     public function index(){
         $units = Unit::orderBy('created_at', 'desc')->paginate(10);
 
-        return Inertia::render('units/index', [
+        return Inertia::render('admin/units/index', [
             'units' => $units,
             'success' => session('success'),
         ]);
     }
 
     public function create(){
-        return Inertia::render('units/create', []);
+        return Inertia::render('admin/units/create', []);
     }
 
     public function store(Request $request)
@@ -35,7 +35,7 @@ class UnitController extends Controller
     }
 
     public function edit(Unit $unit){
-        return Inertia::render('units/edit', [
+        return Inertia::render('admin/units/edit', [
         'unit' => $unit
         ]);
     }

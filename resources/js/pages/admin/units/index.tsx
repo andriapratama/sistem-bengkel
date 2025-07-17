@@ -49,7 +49,7 @@ export default function Index() {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full flex-row justify-end">
                     <Button asChild className="w-fit">
-                        <Link href="/units/add">Add Unit</Link>
+                        <Link href="/admin/units/add">Add Unit</Link>
                     </Button>
                 </div>
 

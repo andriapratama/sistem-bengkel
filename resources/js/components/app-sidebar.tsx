@@ -10,22 +10,22 @@ import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: '/admin/dashboard',
         icon: LayoutGrid,
     },
     {
         title: 'Products',
-        href: '/products',
+        href: '/admin/products',
         icon: Wrench,
     },
     {
         title: 'Master',
         icon: Database,
         children: [
-            { title: 'Units', href: '/units' },
-            { title: 'Categories', href: '/categories' },
-            { title: 'Vehicle Brands', href: '/vehicle-brands' },
-            { title: 'Vehicle Variant', href: '/vehicle-variants' },
+            { title: 'Units', href: '/admin/units' },
+            { title: 'Categories', href: '/admin/categories' },
+            { title: 'Vehicle Brands', href: '/admin/vehicle-brands' },
+            { title: 'Vehicle Variant', href: '/admin/vehicle-variants' },
         ],
     },
 ];
