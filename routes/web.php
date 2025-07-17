@@ -3,6 +3,8 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\VehicleBrandController;
+use App\Http\Controllers\VehicleVariantController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -37,6 +39,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::match(['post', 'put'], '/products/{product}/image', [ProductController::class, 'updateImage'])->name('products.update-image');
     Route::put('/products/{product}', [ProductController::class, "update"])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, "destroy"])->name('products.destroy');
+
+    Route::get('/vehicle-brands', [VehicleBrandController::class, 'index'])->name('vehicle-brands.index');
+    Route::post('/vehicle-brands', [VehicleBrandController::class, 'store'])->name('vehicle-brands.store');
+    Route::get('/vehicle-brands/add', [VehicleBrandController::class, 'create'])->name('vehicle-brands.create');
+    Route::get('/vehicle-brands/{vehicleBrand}/edit', [VehicleBrandController::class, "edit"])->name('vehicle-brands.edit');
+    Route::put('/vehicle-brands/{vehicleBrand}', [VehicleBrandController::class, "update"])->name('vehicle-brands.update');
+    Route::delete('/vehicle-brands/{vehicleBrand}', [VehicleBrandController::class, "destroy"])->name('vehicle-brands.destroy');
+   
+    Route::get('/vehicle-variants', [VehicleVariantController::class, 'index'])->name('vehicle-variants.index');
+    Route::post('/vehicle-variants', [VehicleVariantController::class, 'store'])->name('vehicle-variants.store');
+    Route::get('/vehicle-variants/add', [VehicleVariantController::class, 'create'])->name('vehicle-variants.create');
+    Route::get('/vehicle-variants/{vehicleVariant}/edit', [VehicleVariantController::class, "edit"])->name('vehicle-variants.edit');
+    Route::put('/vehicle-variants/{vehicleVariant}', [VehicleVariantController::class, "update"])->name('vehicle-variants.update');
+    Route::delete('/vehicle-variants/{vehicleVariant}', [VehicleVariantController::class, "destroy"])->name('vehicle-variants.destroy');
 });
 
 require __DIR__.'/settings.php';

@@ -24,6 +24,8 @@ const mainNavItems: NavItem[] = [
         children: [
             { title: 'Units', href: '/units' },
             { title: 'Categories', href: '/categories' },
+            { title: 'Vehicle Brands', href: '/vehicle-brands' },
+            { title: 'Vehicle Variant', href: '/vehicle-variants' },
         ],
     },
 ];

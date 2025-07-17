@@ -64,10 +64,22 @@ export interface Product {
     cost: number;
     price: number;
     image?: string;
-    unitId: number;
-    unit: Unit;
-    categoryId: number;
-    category: Category;
+    unitId?: number;
+    unit?: Unit;
+    categoryId?: number;
+    category?: Category;
     created_at: Date;
     updated_at: Date;
+}
+
+export interface VehicleBrand {
+    id: number;
+    name: string;
+}
+
+export interface VehicleVariant {
+    id: number;
+    name: string;
+    vehicleBrandId: number;
+    vehicleBrand?: VehicleBrand;
 }
