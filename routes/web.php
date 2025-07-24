@@ -5,6 +5,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\VehicleBrandController;
 use App\Http\Controllers\VehicleVariantController;
+use App\Http\Controllers\Admin\AdminLoginController;
+use App\Http\Controllers\Admin\AdminRegisterController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -46,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/vehicle-brands/{vehicleBrand}/edit', [VehicleBrandController::class, "edit"])->name('vehicle-brands.edit');
     Route::put('/vehicle-brands/{vehicleBrand}', [VehicleBrandController::class, "update"])->name('vehicle-brands.update');
     Route::delete('/vehicle-brands/{vehicleBrand}', [VehicleBrandController::class, "destroy"])->name('vehicle-brands.destroy');
-   
+
     Route::get('/admin/vehicle-variants', [VehicleVariantController::class, 'index'])->name('vehicle-variants.index');
     Route::post('/vehicle-variants', [VehicleVariantController::class, 'store'])->name('vehicle-variants.store');
     Route::get('/admin/vehicle-variants/add', [VehicleVariantController::class, 'create'])->name('vehicle-variants.create');
@@ -55,6 +57,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/vehicle-variants/{vehicleVariant}', [VehicleVariantController::class, "destroy"])->name('vehicle-variants.destroy');
 });
 
+// ADMIN ROUTES
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AdminLoginController::class, 'login']);
+    Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
+
+    Route::get('register', [AdminRegisterController::class, 'create'])->name('register');
+    Route::post('register', [AdminRegisterController::class, 'store']);
+});
+
 require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+// require __DIR__.'/auth.php';
 require __DIR__.'/user.php';

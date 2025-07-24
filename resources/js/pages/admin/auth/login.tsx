@@ -1,4 +1,3 @@
-import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
@@ -9,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
+import { Head, useForm } from '@inertiajs/react';
 
 type LoginForm = {
     email: string;
@@ -30,7 +30,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('login'), {
+        post(route('admin.login'), {
             onFinish: () => reset('password'),
         });
     };
@@ -98,7 +98,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                 <div className="text-center text-sm text-muted-foreground">
                     Don't have an account?{' '}
-                    <TextLink href={route('register')} tabIndex={5}>
+                    <TextLink href={route('admin.register')} tabIndex={5}>
                         Sign up
                     </TextLink>
                 </div>
