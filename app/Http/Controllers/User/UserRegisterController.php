@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
-
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,11 +13,11 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AdminRegisterController extends Controller
+class UserRegisterController extends Controller
 {
-    public function create(): Response
+     public function create(): Response
     {
-        return Inertia::render('admin/auth/register');
+        return Inertia::render('user/pages/auth/register');
     }
 
     /**
@@ -30,11 +29,11 @@ class AdminRegisterController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.Admin::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $admin = Admin::create([
+        $admin = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -44,6 +43,6 @@ class AdminRegisterController extends Controller
 
         Auth::login($admin);
 
-        return redirect()->intended(route('admin.dashboard', absolute: false));
+        return redirect()->intended(route('/', absolute: false));
     }
 }
