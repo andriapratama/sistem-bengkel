@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\ContactController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\UserLoginController;
@@ -17,6 +18,8 @@ Route::get('contact', [ContactController::class, 'index'])->name('contact.index'
 
 Route::get('products', [UserProductController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}', [UserProductController::class, 'detail'])->name('product.detail');
+
+Route::get('carts', [CartController::class, 'index'])->name('carts.index');
 
 
 

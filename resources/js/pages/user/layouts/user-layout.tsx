@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { ShoppingCart } from 'lucide-react';
 import { type ReactNode } from 'react';
 
@@ -12,6 +12,8 @@ interface UserLayoutProps {
 }
 
 export default ({ children }: UserLayoutProps) => {
+    const { url } = usePage();
+
     const menus: Menu[] = [
         {
             title: 'Home',
@@ -32,7 +34,7 @@ export default ({ children }: UserLayoutProps) => {
     ];
 
     return (
-        <main className="min-screen flex w-full flex-col">
+        <main className="min-screen font-poppins flex w-full flex-col">
             <header className="flex h-20 w-full flex-row justify-center border-b border-solid border-neutral-600">
                 <div className="mx-10 flex w-full max-w-[1200px] flex-row items-center justify-between">
                     <Link href="/" className="text-2xl font-bold text-white">
@@ -41,11 +43,16 @@ export default ({ children }: UserLayoutProps) => {
 
                     <div className="flex items-center gap-10">
                         {menus.map((menu) => {
+                            const routeActive = url.split('/')[1];
+                            const href = menu.href.split('/')[1];
+                            const active: boolean = routeActive === href;
                             return (
                                 <Link
                                     key={menu.title}
                                     href={menu.href}
-                                    className="cursor-pointer border-b border-solid border-white text-base font-normal text-white"
+                                    className={`cursor-pointer border-b border-solid text-base font-normal text-white ${
+                                        active ? 'border-black dark:border-white' : 'border-transparent'
+                                    }`}
                                 >
                                     {menu.title}
                                 </Link>
@@ -54,9 +61,9 @@ export default ({ children }: UserLayoutProps) => {
                     </div>
 
                     <div className="flex items-center gap-5">
-                        <button type="button">
+                        <Link href="/carts">
                             <ShoppingCart />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </header>

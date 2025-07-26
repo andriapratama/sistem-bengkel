@@ -64,6 +64,9 @@ export interface Product {
     cost: number;
     price: number;
     image?: string;
+    quantity?: number;
+    subtotal?: number;
+    checked?: boolean;
     unitId?: number;
     unit?: Unit;
     categoryId?: number;
