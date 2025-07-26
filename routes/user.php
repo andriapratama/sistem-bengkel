@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\User\BillingDetailController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\ContactController;
 use App\Http\Controllers\User\HomeController;
+use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\UserLoginController;
 use App\Http\Controllers\User\UserProductController;
 use App\Http\Controllers\User\UserRegisterController;
@@ -20,6 +22,11 @@ Route::get('products', [UserProductController::class, 'index'])->name('products.
 Route::get('/products/{slug}', [UserProductController::class, 'detail'])->name('product.detail');
 
 Route::get('carts', [CartController::class, 'index'])->name('carts.index');
+
+Route::get('billing-detail', [BillingDetailController::class, 'index'])->name('billing-detail.index');
+
+Route::get('payment', [PaymentController::class, 'index'])->name('payment.index');
+Route::get('payment/success', [PaymentController::class, 'success'])->name('payment.success');
 
 
 

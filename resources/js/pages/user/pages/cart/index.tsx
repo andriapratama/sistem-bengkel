@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { type Product } from '@/types';
+import { Link } from '@inertiajs/react';
 import { Minus, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import UserLayout from '../../layouts/user-layout';
@@ -178,9 +179,11 @@ export default function Index() {
                         </div>
 
                         <div className="mt-2 flex w-full items-center justify-center">
-                            <Button type="button" className="w-[200px]">
-                                Process to Checkout
-                            </Button>
+                            <Link href="/billing-detail" className="text-2xl font-bold text-white">
+                                <Button type="button" className="w-[200px]">
+                                    Process to Checkout
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
