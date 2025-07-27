@@ -64,7 +64,7 @@ export default function Edit() {
         }
 
         setErrors({});
-        put(route('vehicle-variants.update', vehicleVariant.id));
+        put(route('admin.vehicle-variants.update', vehicleVariant.id));
     };
 
     return (

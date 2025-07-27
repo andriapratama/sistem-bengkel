@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\VehicleBrand;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
-class VehicleBrandController extends Controller
+
+class AdminVehicleBrandController extends Controller
 {
     public function index(){
         $vehicleBrands = VehicleBrand::orderBy('created_at', 'desc')->paginate(10);
@@ -30,7 +32,7 @@ class VehicleBrandController extends Controller
 
         VehicleBrand::create($validated);
 
-        return redirect()->route('vehicle-brands.index')->with('success', 'Vehicle brand created successfully.');
+        return redirect()->route('admin.vehicle-brands.index')->with('success', 'Vehicle brand created successfully.');
     }
 
     public function edit(VehicleBrand $vehicleBrand){
@@ -50,7 +52,7 @@ class VehicleBrandController extends Controller
 
         $vehicleBrand->update($validated);
 
-        return redirect()->route('vehicle-brands.index')->with([
+        return redirect()->route('admin.vehicle-brands.index')->with([
             'success' => 'Vehicle brand updated successfully.',
             'updated_brand' => $vehicleBrand,
         ]);
@@ -60,7 +62,7 @@ class VehicleBrandController extends Controller
     {
         $vehicleBrand->delete();
 
-        return redirect()->route('vehicle-brands.index')->with([
+        return redirect()->route('admin.vehicle-brands.index')->with([
             'success' => 'Vehicle brand deleted successfully.',
         ]);
     }

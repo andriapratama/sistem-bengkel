@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Unit;
@@ -10,10 +11,9 @@ use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 
-
-class ProductController extends Controller
+class AdminProductController extends Controller
 {
-   public function index(){
+    public function index(){
         $products = Product::with(['category', 'unit'])
         ->orderBy('created_at', 'desc')
         ->paginate(10);
@@ -69,7 +69,7 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('products.index')->with('success', 'Product created successfully.');
+        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
 
     public function edit(Product $product){
@@ -110,7 +110,7 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('products.index')->with([
+        return redirect()->route('admin.products.index')->with([
             'success' => 'Product updated successfully.',
             'updated_product' => $product,
         ]);
@@ -134,7 +134,7 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('products.index')->with([
+        return redirect()->route('admin.products.index')->with([
             'success' => 'Image product updated successfully.',
             'updated_product' => $product,
         ]);
@@ -144,7 +144,7 @@ class ProductController extends Controller
     {
         $product->delete();
 
-        return redirect()->route('products.index')->with([
+        return redirect()->route('admin.products.index')->with([
             'success' => 'Product deleted successfully.',
         ]);
     }

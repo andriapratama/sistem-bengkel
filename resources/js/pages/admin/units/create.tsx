@@ -58,7 +58,7 @@ export default function Create() {
         }
 
         setErrors({});
-        post(route('units.store'));
+        post(route('admin.units.store'));
     };
 
     return (

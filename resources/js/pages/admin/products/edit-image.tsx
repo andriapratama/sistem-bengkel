@@ -78,11 +78,7 @@ export default function EditImage() {
         formData.append('image', data.image);
         formData.append('_method', 'PUT');
 
-        for (const pair of formData.entries()) {
-            console.log(pair[0], pair[1]);
-        }
-
-        post(`/products/${product.id}/image`, {
+        post(`/admin/products/${product.id}/image`, {
             data: formData,
             forceFormData: true,
         });

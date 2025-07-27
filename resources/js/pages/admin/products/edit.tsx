@@ -113,7 +113,7 @@ export default function Edit() {
         }
 
         setErrors({});
-        put(route('products.update', product.id));
+        put(route('admin.products.update', product.id));
     };
 
     return (

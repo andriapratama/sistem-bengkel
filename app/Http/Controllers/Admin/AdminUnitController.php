@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 
-class UnitController extends Controller
+class AdminUnitController extends Controller
 {
     public function index(){
         $units = Unit::orderBy('created_at', 'desc')->paginate(10);
@@ -31,7 +32,7 @@ class UnitController extends Controller
 
         Unit::create($validated);
 
-        return redirect()->route('units.index')->with('success', 'Unit created successfully.');
+        return redirect()->route('admin.units.index')->with('success', 'Unit created successfully.');
     }
 
     public function edit(Unit $unit){
@@ -56,7 +57,7 @@ class UnitController extends Controller
 
         $unit->update($validated);
 
-        return redirect()->route('units.index')->with([
+        return redirect()->route('admin.units.index')->with([
             'success' => 'Unit updated successfully.',
             'updated_unit' => $unit,
         ]);
@@ -66,7 +67,7 @@ class UnitController extends Controller
     {
         $unit->delete();
 
-        return redirect()->route('units.index')->with([
+        return redirect()->route('admin.units.index')->with([
             'success' => 'Unit deleted successfully.',
         ]);
     }

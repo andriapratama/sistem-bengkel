@@ -57,7 +57,7 @@ export default function Edit({ vehicleBrand }: Props) {
         }
 
         setErrors({});
-        put(route('vehicle-brands.update', vehicleBrand.id));
+        put(route('admin.vehicle-brands.update', vehicleBrand.id));
     };
 
     return (

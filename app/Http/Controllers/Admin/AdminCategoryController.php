@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 
-class CategoryController extends Controller
+class AdminCategoryController extends Controller
 {
     public function index(){
         $category = Category::orderBy('created_at', 'desc')->paginate(10);
@@ -32,7 +33,7 @@ class CategoryController extends Controller
 
         Category::create($validated);
 
-        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
     }
 
     public function edit(Category $category){
@@ -55,7 +56,7 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
-        return redirect()->route('categories.index')->with([
+        return redirect()->route('admin.categories.index')->with([
             'success' => 'Category updated successfully.',
             'updated_category' => $category,
         ]);
@@ -65,7 +66,7 @@ class CategoryController extends Controller
     {
         $category->delete();
 
-        return redirect()->route('categories.index')->with([
+        return redirect()->route('admin.categories.index')->with([
             'success' => 'Category deleted successfully.',
         ]);
     }

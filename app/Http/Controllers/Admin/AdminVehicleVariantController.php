@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\VehicleBrand;
 use App\Models\VehicleVariant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
-class VehicleVariantController extends Controller
+class AdminVehicleVariantController extends Controller
 {
-    public function index(){
+     public function index(){
          $vehicleVariants = VehicleVariant::with(['vehicleBrand'])
         ->orderBy('created_at', 'desc')
         ->paginate(10);
@@ -42,7 +43,7 @@ class VehicleVariantController extends Controller
 
         VehicleVariant::create($validated);
 
-        return redirect()->route('vehicle-variants.index')->with('success', 'Vehicle variant created successfully.');
+        return redirect()->route('admin.vehicle-variants.index')->with('success', 'Vehicle variant created successfully.');
     }
 
     public function edit(VehicleVariant $vehicleVariant){
@@ -66,7 +67,7 @@ class VehicleVariantController extends Controller
 
         $vehicleVariant->update($validated);
 
-        return redirect()->route('vehicle-variants.index')->with([
+        return redirect()->route('admin.vehicle-variants.index')->with([
             'success' => 'Vehicle variant updated successfully.',
             'updated_variant' => $vehicleVariant,
         ]);
@@ -76,7 +77,7 @@ class VehicleVariantController extends Controller
     {
         $vehicleVariant->delete();
 
-        return redirect()->route('vehicle-variants.index')->with([
+        return redirect()->route('admin.vehicle-variants.index')->with([
             'success' => 'Vehicle variant deleted successfully.',
         ]);
     }

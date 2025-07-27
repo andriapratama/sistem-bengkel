@@ -39,7 +39,7 @@ export default function Index() {
 
     const handleDelete = (id: number, name: string) => {
         if (confirm(`Do you want to delete a unit - ${id}. ${name}`)) {
-            destroy(route('units.destroy', id));
+            destroy(route('admin.units.destroy', id));
         }
     };
 
@@ -97,7 +97,7 @@ export default function Index() {
                                                         Detail
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="cursor-pointer" asChild>
-                                                        <Link href={route('units.edit', unit.id)}>Edit</Link>
+                                                        <Link href={route('admin.units.edit', unit.id)}>Edit</Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="cursor-pointer" onClick={() => handleDelete(unit.id, unit.name)}>
                                                         Delete

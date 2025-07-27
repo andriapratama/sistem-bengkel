@@ -82,7 +82,7 @@ export default function Edit({ category }: Props) {
         }
 
         setErrors({});
-        put(route('categories.update', category.id));
+        put(route('admin.categories.update', category.id));
     };
 
     return (

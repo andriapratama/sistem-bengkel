@@ -62,7 +62,7 @@ export default function Edit({ unit }: Props) {
         }
 
         setErrors({});
-        put(route('units.update', unit.id));
+        put(route('admin.units.update', unit.id));
     };
 
     return (

@@ -78,7 +78,7 @@ export default function Create() {
         }
 
         setErrors({});
-        post(route('categories.store'));
+        post(route('admin.categories.store'));
     };
 
     return (

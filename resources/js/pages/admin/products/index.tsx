@@ -39,7 +39,7 @@ export default function Index() {
 
     const handleDelete = (id: number, name: string) => {
         if (confirm(`Do you want to delete a product - ${id}. ${name}`)) {
-            destroy(route('products.destroy', id));
+            destroy(route('admin.products.destroy', id));
         }
     };
 
@@ -112,10 +112,10 @@ export default function Index() {
                                                         Detail
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="cursor-pointer" asChild>
-                                                        <Link href={route('products.edit', product.id)}>Edit</Link>
+                                                        <Link href={route('admin.products.edit', product.id)}>Edit</Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="cursor-pointer" asChild>
-                                                        <Link href={route('products.edit-image', product.id)}>Edit Image</Link>
+                                                        <Link href={route('admin.products.edit-image', product.id)}>Edit Image</Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         className="cursor-pointer"
@@ -133,7 +133,7 @@ export default function Index() {
                     </div>
                 )}
 
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div id="pagination" className="mt-4 flex flex-wrap gap-2">
                     {products.links.map((link, i) => (
                         <Link
                             key={i}

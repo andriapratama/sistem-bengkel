@@ -64,7 +64,7 @@ export default function Create() {
         }
 
         setErrors({});
-        post(route('vehicle-variants.store'));
+        post(route('admin.vehicle-variants.store'));
     };
 
     return (

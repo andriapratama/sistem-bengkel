@@ -39,7 +39,7 @@ export default function Index() {
 
     const handleDelete = (id: number, name: string) => {
         if (confirm(`Do you want to delete a vechicle variant - ${id}. ${name}`)) {
-            destroy(route('vehicle-variants.destroy', id));
+            destroy(route('admin.vehicle-variants.destroy', id));
         }
     };
 
@@ -94,7 +94,7 @@ export default function Index() {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem className="cursor-pointer" asChild>
-                                                        <Link href={route('vehicle-variants.edit', variant.id)}>Edit</Link>
+                                                        <Link href={route('admin.vehicle-variants.edit', variant.id)}>Edit</Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         className="cursor-pointer"

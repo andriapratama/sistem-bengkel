@@ -141,7 +141,7 @@ export default function Create() {
             }
         });
 
-        post('/products', {
+        post('/admin/products', {
             data: formData,
             forceFormData: true,
         });
