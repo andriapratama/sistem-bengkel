@@ -3,10 +3,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Category, type Unit } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
+import { Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
@@ -14,6 +16,20 @@ interface PageProps {
     units: Array<Unit>;
     categories: Array<Category>;
 }
+
+type VariantForm = {
+    name: string;
+    stock: number;
+    cost: number;
+    price: number;
+};
+
+const variantSchema = z.object({
+    name: z.string().nullable().optional(),
+    stock: z.coerce.number().nullable().optional(),
+    cost: z.coerce.number().nullable().optional(),
+    price: z.coerce.number().nullable().optional(),
+});
 
 const productSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -24,8 +40,10 @@ const productSchema = z.object({
     price: z.coerce.number().min(1, 'Price must be ≥ 0'),
     image: z.union([z.instanceof(File), z.undefined(), z.null()]).optional(),
     status: z.boolean(),
-    categoryId: z.coerce.number().min(1, 'Category is required'),
-    unitId: z.coerce.number().min(1, 'Unit is required'),
+    hasVariant: z.boolean(),
+    category_id: z.coerce.number().min(1, 'Category is required'),
+    unit_id: z.coerce.number().min(1, 'Unit is required'),
+    variants: z.array(variantSchema).nullable().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -41,6 +59,7 @@ export default function Create() {
     const { units, categories } = usePage().props as PageProps;
     const [errors, setErrors] = useState<Partial<Record<keyof ProductFormValues, string>>>({});
     const [preview, setPreview] = useState<string | null>(null);
+    const [variants, setVariants] = useState<VariantForm[]>([]);
 
     const {
         data,
@@ -57,8 +76,10 @@ export default function Create() {
         price: '',
         image: null as FileList | null,
         status: false,
-        categoryId: '',
-        unitId: '',
+        hasVariant: false,
+        category_id: '',
+        unit_id: '',
+        variants: [],
     });
 
     useEffect(() => {
@@ -68,8 +89,8 @@ export default function Create() {
             stock: serverErrors.stock ? serverErrors.stock : undefined,
             cost: serverErrors.cost ? serverErrors.cost : undefined,
             price: serverErrors.price ? serverErrors.price : undefined,
-            categoryId: serverErrors.categoryId ? serverErrors.categoryId : undefined,
-            unitId: serverErrors.unitId ? serverErrors.unitId : undefined,
+            category_id: serverErrors.category_id ? serverErrors.category_id : undefined,
+            unit_id: serverErrors.unit_id ? serverErrors.unit_id : undefined,
         });
     }, [serverErrors]);
 
@@ -109,6 +130,46 @@ export default function Create() {
         }
     };
 
+    const onAddVariant = () => {
+        setVariants((prev) => [...prev, { name: '', stock: '', cost: '', price: '' }]);
+    };
+
+    const onChangeVariant = (field: keyof VariantForm, value: string | number, index: number) => {
+        if (field === 'name') {
+            setVariants((prevVariants) =>
+                prevVariants.map((variant, i) => {
+                    if (i === index) {
+                        return {
+                            ...variant,
+                            [field]: value,
+                        };
+                    }
+                    return variant;
+                }),
+            );
+        } else {
+            const number = value.replaceAll(/[^0-9]/g, '');
+            setVariants((prevVariants) =>
+                prevVariants.map((variant, i) => {
+                    if (i === index) {
+                        return {
+                            ...variant,
+                            [field]: number,
+                        };
+                    }
+                    return variant;
+                }),
+            );
+        }
+
+        setData('variants', variants);
+    };
+
+    const onRemoveVariant = (index: number) => {
+        setVariants((prev) => prev.filter((item, i) => i !== index));
+        setData('variants', variants);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -116,15 +177,14 @@ export default function Create() {
 
         if (!result.success) {
             const flatErrors = result.error.flatten().fieldErrors;
-
             setErrors({
                 name: flatErrors.name?.[0],
                 slug: flatErrors.slug?.[0],
                 stock: flatErrors.stock?.[0],
                 cost: flatErrors.cost?.[0],
                 price: flatErrors.price?.[0],
-                categoryId: flatErrors.categoryId?.[0],
-                unitId: flatErrors.unitId?.[0],
+                category_id: flatErrors.category_id?.[0],
+                unit_id: flatErrors.unit_id?.[0],
             });
             return;
         }
@@ -136,6 +196,8 @@ export default function Create() {
                 formData.append(key, value[0]);
             } else if (typeof value === 'boolean') {
                 formData.append(key, value ? '1' : '0');
+            } else if (key === 'variants') {
+                formData.append('variants', JSON.stringify(variants));
             } else if (value !== null && value !== undefined && value !== '') {
                 formData.append(key, String(value));
             }
@@ -150,8 +212,13 @@ export default function Create() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Add Product" />
-            <div className="mx-auto w-[50%]">
-                <form onSubmit={handleSubmit} className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <form onSubmit={handleSubmit} className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl">
+                <div className="mx-auto flex w-[60%] flex-col gap-4 p-4">
+                    <div className="flex w-full justify-end">
+                        <Button type="submit" disabled={processing} className="w-fit">
+                            {processing ? 'Saving...' : 'Save'}
+                        </Button>
+                    </div>
                     <div>
                         <Label htmlFor="name">Name</Label>
                         <Input
@@ -190,65 +257,64 @@ export default function Create() {
                         {errors.stock && <p className="text-sm text-red-500">{errors.stock}</p>}
                     </div>
 
-                    <div>
-                        <Label htmlFor="cost">Cost</Label>
-                        <Input
-                            id="cost"
-                            value={data.cost ?? ''}
-                            onChange={(e) => onChangeNumber('cost', e.target.value)}
-                            className={errors.cost ? 'border-red-500' : ''}
-                        />
-                        {errors.cost && <p className="text-sm text-red-500">{errors.cost}</p>}
+                    <div className="grid w-full grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="cost">Cost</Label>
+                            <Input
+                                id="cost"
+                                value={data.cost ?? ''}
+                                onChange={(e) => onChangeNumber('cost', e.target.value)}
+                                className={errors.cost ? 'border-red-500' : ''}
+                            />
+                            {errors.cost && <p className="text-sm text-red-500">{errors.cost}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="price">Price</Label>
+                            <Input
+                                id="price"
+                                value={data.price ?? ''}
+                                onChange={(e) => onChangeNumber('price', e.target.value)}
+                                className={errors.price ? 'border-red-500' : ''}
+                            />
+                            {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
+                        </div>
                     </div>
 
-                    <div>
-                        <Label htmlFor="price">Price</Label>
-                        <Input
-                            id="price"
-                            value={data.price ?? ''}
-                            onChange={(e) => onChangeNumber('price', e.target.value)}
-                            className={errors.price ? 'border-red-500' : ''}
-                        />
-                        {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
-                    </div>
+                    <div className="grid w-full grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="category">Category</Label>
+                            <Select onValueChange={(e) => setData('category_id', e)} value={String(data.category_id ?? '')}>
+                                <SelectTrigger className={`w-full ${errors.category_id ? 'border-red-500' : ''}`}>
+                                    <SelectValue placeholder="Select category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map((category) => (
+                                        <SelectItem key={category.id} value={String(category.id)}>
+                                            {category.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.category_id && <p className="text-sm text-red-500">{errors.category_id}</p>}
+                        </div>
 
-                    <div>
-                        <Label htmlFor="category">Category</Label>
-                        <Select onValueChange={(e) => setData('categoryId', e)} value={String(data.categoryId ?? '')}>
-                            <SelectTrigger className={`w-full ${errors.categoryId ? 'border-red-500' : ''}`}>
-                                <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {categories.map((category) => (
-                                    <SelectItem key={category.id} value={String(category.id)}>
-                                        {category.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.categoryId && <p className="text-sm text-red-500">{errors.categoryId}</p>}
-                    </div>
-
-                    <div>
-                        <Label htmlFor="unit">Unit</Label>
-                        <Select onValueChange={(e) => setData('unitId', e)} value={String(data.unitId ?? '')}>
-                            <SelectTrigger className={`w-full ${errors.unitId ? 'border-red-500' : ''}`}>
-                                <SelectValue placeholder="Select unit" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {units.map((unit) => (
-                                    <SelectItem key={unit.id} value={String(unit.id)}>
-                                        {unit.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.unitId && <p className="text-sm text-red-500">{errors.unitId}</p>}
-                    </div>
-
-                    <div className="flex items-center gap-5">
-                        <Label htmlFor="status">Status</Label>
-                        <Switch checked={data.status} onCheckedChange={(e) => setData('status', e)} />
+                        <div>
+                            <Label htmlFor="unit">Unit</Label>
+                            <Select onValueChange={(e) => setData('unit_id', e)} value={String(data.unit_id ?? '')}>
+                                <SelectTrigger className={`w-full ${errors.unit_id ? 'border-red-500' : ''}`}>
+                                    <SelectValue placeholder="Select unit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {units.map((unit) => (
+                                        <SelectItem key={unit.id} value={String(unit.id)}>
+                                            {unit.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.unit_id && <p className="text-sm text-red-500">{errors.unit_id}</p>}
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -263,11 +329,81 @@ export default function Create() {
                         )}
                     </div>
 
-                    <Button type="submit" disabled={processing}>
-                        {processing ? 'Saving...' : 'Save'}
-                    </Button>
-                </form>
-            </div>
+                    <div className="flex items-center gap-5">
+                        <Label htmlFor="status">Status</Label>
+                        <Switch checked={data.status} onCheckedChange={(e) => setData('status', e)} />
+                    </div>
+
+                    <div className="flex items-center gap-5">
+                        <Label htmlFor="hasVariant">Variant</Label>
+                        <Switch checked={data.hasVariant} onCheckedChange={(e) => setData('hasVariant', e)} />
+                    </div>
+                </div>
+
+                {data.hasVariant ? (
+                    <div className="mx-auto mb-10 flex w-[80%] flex-col gap-4 p-4">
+                        <Label htmlFor="variants">Variants</Label>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead className="w-[15%]">Stock</TableHead>
+                                    <TableHead className="w-[20%]">Cost</TableHead>
+                                    <TableHead className="w-[20%]">Price</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {variants.map((variant, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell>
+                                            <Input
+                                                id={`variant-name-${i}`}
+                                                type="text"
+                                                placeholder="ex: 1L - Matic "
+                                                value={variant.name}
+                                                onChange={(e) => onChangeVariant('name', e.target.value, i)}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Input
+                                                id={`variant-stock-${i}`}
+                                                type="text"
+                                                value={variant.stock}
+                                                onChange={(e) => onChangeVariant('stock', e.target.value, i)}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Input
+                                                id={`variant-cost-${i}`}
+                                                value={variant.cost}
+                                                onChange={(e) => onChangeVariant('cost', e.target.value, i)}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Input
+                                                id={`variant-price-${i}`}
+                                                value={variant.price}
+                                                onChange={(e) => onChangeVariant('price', e.target.value, i)}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button type="button" size="icon" className="size-8" onClick={() => onRemoveVariant(i)}>
+                                                <Trash />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+
+                        <div className="flex w-full justify-end">
+                            <Button type="button" onClick={() => onAddVariant()}>
+                                Add Variant
+                            </Button>
+                        </div>
+                    </div>
+                ) : null}
+            </form>
         </AppLayout>
     );
 }

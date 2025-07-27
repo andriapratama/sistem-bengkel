@@ -1,17 +1,28 @@
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { type Product } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ProductComponent } from '../../components/product';
 import UserLayout from '../../layouts/user-layout';
 
+interface PageProps {
+    products: {
+        data: Array<Product>;
+        current_page: number;
+        last_page: number;
+        next_page_url: string | null;
+        prev_page_url: string | null;
+        links: Array<{ url: string | null; label: string; active: boolean }>;
+    };
+}
+
 export default function Index() {
+    const { products } = usePage().props as PageProps;
+
     const [search, setSearch] = useState<string>('');
     const [category, setCategory] = useState<string>('');
-
-    useEffect(() => {
-        console.log(category);
-    }, [category]);
 
     return (
         <UserLayout>
@@ -60,8 +71,8 @@ export default function Index() {
 
                 <div className="flex w-full flex-col">
                     <div className="grid w-full grid-cols-4 gap-9">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((product) => {
-                            return <ProductComponent key={product}></ProductComponent>;
+                        {products.data.map((product) => {
+                            return <ProductComponent key={product.id} product={product}></ProductComponent>;
                         })}
                     </div>
                 </div>

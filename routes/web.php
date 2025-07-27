@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
 use App\Http\Controllers\Admin\AdminVehicleBrandController;
 use App\Http\Controllers\Admin\AdminVehicleVariantController;
+use App\Http\Controllers\Settings\PasswordController;
+use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -60,11 +62,25 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/vehicle-variants/{vehicleVariant}/edit', [AdminVehicleVariantController::class, "edit"])->name('vehicle-variants.edit');
         Route::put('/vehicle-variants/{vehicleVariant}', [AdminVehicleVariantController::class, "update"])->name('vehicle-variants.update');
         Route::delete('/vehicle-variants/{vehicleVariant}', [AdminVehicleVariantController::class, "destroy"])->name('vehicle-variants.destroy');
+
+        Route::redirect('settings', '/settings/profile');
+
+        Route::get('/settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        Route::get('/settings/password', [PasswordController::class, 'edit'])->name('password.edit');
+        Route::put('/settings/password', [PasswordController::class, 'update'])->name('password.update');
+
+        Route::get('/settings/appearance', function () {
+            return Inertia::render('settings/appearance');
+        })->name('appearance');
+
+        Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
     });
 
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AdminLoginController::class, 'login']);
-    Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
     Route::get('/register', [AdminRegisterController::class, 'create'])->name('register');
     Route::post('/register', [AdminRegisterController::class, 'store']);

@@ -76,12 +76,13 @@ export interface Product {
     cost: number;
     price: number;
     image?: string;
+    image_url?: string;
     quantity?: number;
     subtotal?: number;
     checked?: boolean;
-    unitId?: number;
+    unit_id?: number;
     unit?: Unit;
-    categoryId?: number;
+    category_id?: number;
     category?: Category;
     created_at: Date;
     updated_at: Date;
@@ -95,6 +96,6 @@ export interface VehicleBrand {
 export interface VehicleVariant {
     id: number;
     name: string;
-    vehicleBrandId: number;
+    vehicle_brand_id: number;
     vehicle_brand?: VehicleBrand;
 }

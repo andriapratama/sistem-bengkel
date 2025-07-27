@@ -24,11 +24,12 @@ return new class extends Migration
             $table->integer('discountPercentage')->nullable();
             $table->decimal('discountAmount', 15, 2)->nullable();
             $table->decimal('priceAfterDiscount', 15, 2)->nullable();
+            $table->boolean('hasVariant');
 
-            $table->unsignedBigInteger('categoryId')->nullable();
-            $table->foreign('categoryId')->references('id')->on('categories')->onDelete('set null');
-            $table->unsignedBigInteger('unitId')->nullable();
-            $table->foreign('unitId')->references('id')->on('units')->onDelete('set null');
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+            $table->unsignedBigInteger('unit_id')->nullable();
+            $table->foreign('unit_id')->references('id')->on('units')->onDelete('set null');
             $table->timestamps();
         });
     }

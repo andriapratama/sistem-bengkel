@@ -24,8 +24,8 @@ const productSchema = z.object({
     cost: z.coerce.number().min(1, 'Cost must be ≥ 0'),
     price: z.coerce.number().min(1, 'Price must be ≥ 0'),
     status: z.boolean(),
-    categoryId: z.coerce.number().min(1, 'Category is required'),
-    unitId: z.coerce.number().min(1, 'Unit is required'),
+    category_id: z.coerce.number().min(1, 'Category is required'),
+    unit_id: z.coerce.number().min(1, 'Unit is required'),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -54,8 +54,8 @@ export default function Edit() {
         cost: parseFloat(product.cost),
         price: parseFloat(product.price),
         status: product.status === 1 ? true : false,
-        categoryId: product.categoryId,
-        unitId: product.unitId,
+        category_id: product.category_id,
+        unit_id: product.unit_id,
     });
 
     useEffect(() => {
@@ -65,8 +65,8 @@ export default function Edit() {
             stock: serverErrors.stock ? serverErrors.stock : undefined,
             cost: serverErrors.cost ? serverErrors.cost : undefined,
             price: serverErrors.price ? serverErrors.price : undefined,
-            categoryId: serverErrors.categoryId ? serverErrors.categoryId : undefined,
-            unitId: serverErrors.unitId ? serverErrors.unitId : undefined,
+            category_id: serverErrors.category_id ? serverErrors.category_id : undefined,
+            unit_id: serverErrors.unit_id ? serverErrors.unit_id : undefined,
         });
     }, [serverErrors]);
 
@@ -106,8 +106,8 @@ export default function Edit() {
                 stock: flatErrors.stock?.[0],
                 cost: flatErrors.cost?.[0],
                 price: flatErrors.price?.[0],
-                categoryId: flatErrors.categoryId?.[0],
-                unitId: flatErrors.unitId?.[0],
+                category_id: flatErrors.category_id?.[0],
+                unit_id: flatErrors.unit_id?.[0],
             });
             return;
         }
@@ -183,8 +183,8 @@ export default function Edit() {
 
                     <div>
                         <Label htmlFor="category">Category</Label>
-                        <Select onValueChange={(e) => setData('categoryId', e)} value={String(data.categoryId ?? '')}>
-                            <SelectTrigger className={`w-full ${errors.categoryId ? 'border-red-500' : ''}`}>
+                        <Select onValueChange={(e) => setData('category_id', e)} value={String(data.category_id ?? '')}>
+                            <SelectTrigger className={`w-full ${errors.category_id ? 'border-red-500' : ''}`}>
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -195,13 +195,13 @@ export default function Edit() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.categoryId && <p className="text-sm text-red-500">{errors.categoryId}</p>}
+                        {errors.category_id && <p className="text-sm text-red-500">{errors.category_id}</p>}
                     </div>
 
                     <div>
                         <Label htmlFor="unit">Unit</Label>
-                        <Select onValueChange={(e) => setData('unitId', e)} value={String(data.unitId ?? '')}>
-                            <SelectTrigger className={`w-full ${errors.unitId ? 'border-red-500' : ''}`}>
+                        <Select onValueChange={(e) => setData('unit_id', e)} value={String(data.unit_id ?? '')}>
+                            <SelectTrigger className={`w-full ${errors.unit_id ? 'border-red-500' : ''}`}>
                                 <SelectValue placeholder="Select unit" />
                             </SelectTrigger>
                             <SelectContent>
@@ -212,7 +212,7 @@ export default function Edit() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.unitId && <p className="text-sm text-red-500">{errors.unitId}</p>}
+                        {errors.unit_id && <p className="text-sm text-red-500">{errors.unit_id}</p>}
                     </div>
 
                     <div className="flex items-center gap-5">

@@ -1,10 +1,19 @@
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
+import { type Product } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { ProductComponent } from '../../components/product';
 import UserLayout from '../../layouts/user-layout';
 
+interface PageProps {
+    products: Array<Product>;
+    bestSeller: Array<Product>;
+}
+
 export default function Index() {
+    const { products, bestSeller } = usePage().props as PageProps;
+
     return (
         <UserLayout>
             <div className="flex w-full gap-10">
@@ -47,8 +56,8 @@ export default function Index() {
                 </div>
 
                 <div className="grid w-full grid-cols-4 gap-9">
-                    {[1, 2, 3, 4].map((product) => {
-                        return <ProductComponent key={product}></ProductComponent>;
+                    {bestSeller.map((product) => {
+                        return <ProductComponent key={product.id} product={product}></ProductComponent>;
                     })}
                 </div>
             </div>
@@ -90,8 +99,8 @@ export default function Index() {
                 </div>
 
                 <div className="grid w-full grid-cols-4 gap-9">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((product) => {
-                        return <ProductComponent key={product}></ProductComponent>;
+                    {products.map((product) => {
+                        return <ProductComponent key={product.id} product={product}></ProductComponent>;
                     })}
                 </div>
 

@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class VehicleVariant extends Model
 {
-    protected $fillable = ['name', 'vehicleBrandId'];
+    protected $fillable = ['name', 'vehicle_brand_id'];
 
     public function vehicleBrand()
     {
-        return $this->belongsTo(VehicleBrand::class, 'vehicleBrandId');
+        return $this->belongsTo(VehicleBrand::class, 'vehicle_brand_id');
     }
 }

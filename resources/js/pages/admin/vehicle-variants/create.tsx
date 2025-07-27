@@ -14,7 +14,7 @@ interface PageProps {
 
 const variantSchema = z.object({
     name: z.string().min(1, 'Name is required'),
-    vehicleBrandId: z.coerce.number().min(1, 'Vehicle brand is required'),
+    vehicle_brand_id: z.coerce.number().min(1, 'Vehicle brand is required'),
 });
 
 type VariantFormValues = z.infer<typeof variantSchema>;
@@ -38,13 +38,13 @@ export default function Create() {
         errors: serverErrors,
     } = useForm<VariantFormValues>({
         name: '',
-        vehicleBrandId: '',
+        vehicle_brand_id: '',
     });
 
     useEffect(() => {
         setErrors({
             name: serverErrors.name ? serverErrors.name : undefined,
-            vehicleBrandId: serverErrors.vehicleBrandId ? serverErrors.vehicleBrandId : undefined,
+            vehicle_brand_id: serverErrors.vehicle_brand_id ? serverErrors.vehicle_brand_id : undefined,
         });
     }, [serverErrors]);
 
@@ -58,7 +58,7 @@ export default function Create() {
 
             setErrors({
                 name: flatErrors.name?.[0],
-                vehicleBrandId: flatErrors.vehicleBrandId?.[0],
+                vehicle_brand_id: flatErrors.vehicle_brand_id?.[0],
             });
             return;
         }
@@ -91,8 +91,8 @@ export default function Create() {
 
                     <div>
                         <Label htmlFor="vehicleBrand">Vehicle Brand</Label>
-                        <Select onValueChange={(e) => setData('vehicleBrandId', e)} value={String(data.vehicleBrandId ?? '')}>
-                            <SelectTrigger className={`w-full ${errors.vehicleBrandId ? 'border-red-500' : ''}`}>
+                        <Select onValueChange={(e) => setData('vehicle_brand_id', e)} value={String(data.vehicle_brand_id ?? '')}>
+                            <SelectTrigger className={`w-full ${errors.vehicle_brand_id ? 'border-red-500' : ''}`}>
                                 <SelectValue placeholder="Select vehicle brand" />
                             </SelectTrigger>
                             <SelectContent>
@@ -103,7 +103,7 @@ export default function Create() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.vehicleBrandId && <p className="text-sm text-red-500">{errors.vehicleBrandId}</p>}
+                        {errors.vehicle_brand_id && <p className="text-sm text-red-500">{errors.vehicle_brand_id}</p>}
                     </div>
 
                     <Button type="submit" disabled={processing}>

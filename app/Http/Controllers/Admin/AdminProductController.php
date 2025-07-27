@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Unit;
+use App\Models\Variant;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
@@ -42,13 +43,30 @@ class AdminProductController extends Controller
     public function store(Request $request)
     {
         $request->merge([
-            'categoryId' => (int) $request->input('categoryId'),
-            'unitId' => (int) $request->input('unitId'),
+            'category_id' => (int) $request->input('category_id'),
+            'unit_id' => (int) $request->input('unit_id'),
             'status' => filter_var($request->input('status'), FILTER_VALIDATE_BOOLEAN),
+            'hasVariant' => filter_var($request->input('hasVariant'), FILTER_VALIDATE_BOOLEAN),
             'stock' => (int) $request->input('stock'),
             'cost' => (float) $request->input('cost'),
             'price' => (float) $request->input('price'),
         ]);
+
+        $variants = $request->input('variants');
+        if ($variants && is_array($variants)) {
+            $normalizedVariants = array_map(function ($variant) {
+                return [
+                    'name' => $variant['name'] ?? '',
+                    'stock' => isset($variant['stock']) ? (int) $variant['stock'] : 0,
+                    'cost' => isset($variant['cost']) ? (float) $variant['cost'] : 0,
+                    'price' => isset($variant['price']) ? (float) $variant['price'] : 0,
+                ];
+            }, $variants);
+
+            $request->merge([
+                'variants' => $normalizedVariants,
+            ]);
+        }
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -59,15 +77,33 @@ class AdminProductController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'status' => ['required', 'boolean'],
-            'categoryId' => ['required', 'exists:categories,id'],
-            'unitId' => ['required', 'exists:units,id'],
+            'hasVariant' => ['required', 'boolean'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'unit_id' => ['required', 'exists:units,id'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.name' => ['nullable', 'string'],
+            'variants.*.stock' => ['nullable', 'numeric'],
+            'variants.*.cost' => ['nullable', 'numeric'],
+            'variants.*.price' => ['nullable', 'numeric'],
         ]);
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        if (is_array($variants)) {
+            foreach ($variants as $variant) {
+                $product->variants()->create([
+                    'product_id' => $product->id,
+                    'name' => $variant['name'] ?? null,
+                    'stock' => $variant['stock'] ?? 0,
+                    'cost' => $variant['cost'] ?? 0,
+                    'price' => $variant['price'] ?? 0,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
@@ -88,9 +124,10 @@ class AdminProductController extends Controller
     public function update(Request $request, Product $product)
     {
          $request->merge([
-            'categoryId' => (int) $request->input('categoryId'),
-            'unitId' => (int) $request->input('unitId'),
+            'category_id' => (int) $request->input('category_id'),
+            'unit_id' => (int) $request->input('unit_id'),
             'status' => filter_var($request->input('status'), FILTER_VALIDATE_BOOLEAN),
+            'hasVariant' => filter_var($request->input('hasVariant'), FILTER_VALIDATE_BOOLEAN),
             'stock' => (int) $request->input('stock'),
             'cost' => (float) $request->input('cost'),
             'price' => (float) $request->input('price'),
@@ -104,8 +141,9 @@ class AdminProductController extends Controller
             'cost' => ['required', 'numeric', 'min:0'],
             'price' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'boolean'],
-            'categoryId' => ['required', 'exists:categories,id'],
-            'unitId' => ['required', 'exists:units,id'],
+            'hasVariant' => ['required', 'boolean'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'unit_id' => ['required', 'exists:units,id'],
         ]);
 
         $product->update($validated);

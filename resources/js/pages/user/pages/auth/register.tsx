@@ -98,7 +98,7 @@ export default function Register() {
 
                     <div className="flex w-full items-center justify-center gap-1 text-sm">
                         Allready have account?
-                        <TextLink href={route('login.index')} tabIndex={5}>
+                        <TextLink href={route('login')} tabIndex={5}>
                             Login
                         </TextLink>
                     </div>

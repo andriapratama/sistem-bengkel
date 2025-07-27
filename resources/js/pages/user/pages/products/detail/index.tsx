@@ -1,10 +1,18 @@
 import { Button } from '@/components/ui/button';
+import { type Product } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { ProductComponent } from '../../../components/product';
 import UserLayout from '../../../layouts/user-layout';
 
+interface PageProps {
+    reccomendations: Array<Product>;
+}
+
 export default function Index() {
+    const { reccomendations } = usePage().props as PageProps;
+
     const [quantity, setQuantity] = useState<number>(0);
     const [variant, setVariant] = useState<string>('');
 
@@ -92,8 +100,8 @@ export default function Index() {
                 <div className="mt-32 flex w-full flex-col gap-10">
                     <h2 className="text-2xl font-bold text-white">Reccomendation Products</h2>
                     <div className="grid w-full grid-cols-5 gap-4">
-                        {[1, 2, 3, 4, 5].map((product) => {
-                            return <ProductComponent key={product}></ProductComponent>;
+                        {reccomendations.map((product) => {
+                            return <ProductComponent key={product.id} product={product}></ProductComponent>;
                         })}
                     </div>
                 </div>

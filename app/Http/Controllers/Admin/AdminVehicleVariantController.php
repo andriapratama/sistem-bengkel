@@ -33,12 +33,12 @@ class AdminVehicleVariantController extends Controller
     public function store(Request $request)
     {
         $request->merge([
-            'vehicleBrandId' => (int) $request->input('vehicleBrandId'),
+            'vehicle_brand_id' => (int) $request->input('vehicle_brand_id'),
         ]);
 
         $validated = $request->validate([
             'name' => 'required|string|unique:vehicle_variants,name',
-            'vehicleBrandId' => ['required', 'exists:vehicle_brands,id'],
+            'vehicle_brand_id' => ['required', 'exists:vehicle_brands,id'],
         ]);
 
         VehicleVariant::create($validated);
@@ -62,7 +62,7 @@ class AdminVehicleVariantController extends Controller
                 'required', 
                 'string', 
                 Rule::unique('vehicle_variants', 'name')->ignore($vehicleVariant->id),],
-            'vehicleBrandId' => ['required', 'exists:vehicle_brands,id'],
+            'vehicle_brand_id' => ['required', 'exists:vehicle_brands,id'],
         ]);
 
         $vehicleVariant->update($validated);

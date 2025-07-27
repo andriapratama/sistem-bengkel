@@ -15,20 +15,26 @@ class Product extends Model
     'price', 
     'image', 
     'status',
+    'hasVariant',
     'discountPercentage', 
     'discountAmount', 
     'priceAfterDiscount', 
-    'categoryId', 
-    'unitId'
+    'category_id', 
+    'unit_id'
     ];
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'categoryId');
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     public function unit()
     {
-        return $this->belongsTo(Unit::class, 'unitId');
+        return $this->belongsTo(Unit::class, 'unit_id');
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(Variant::class);
     }
 }

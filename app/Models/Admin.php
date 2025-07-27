@@ -9,7 +9,7 @@ class Admin extends Authenticatable
 {
     use Notifiable;
 
-    protected $guard = 'admin'; // Penting: Guard admin
+    protected $guard = 'admin';
 
     protected $fillable = ['name', 'email', 'password'];
 }

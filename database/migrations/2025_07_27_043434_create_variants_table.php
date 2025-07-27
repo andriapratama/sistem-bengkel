@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vehicle_variants', function (Blueprint $table) {
+        Schema::create('variants', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('name')->unique();
+            $table->string('name');
+            $table->integer('stock');
+            $table->decimal('cost', 15, 2);
+            $table->decimal('price', 15, 2);
 
-            $table->unsignedBigInteger('vehicle_brand_id')->nullable();
-            $table->foreign('vehicle_brand_id')->references('id')->on('vehicle_brands')->onDelete('set null');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vehicle_variants');
+        Schema::dropIfExists('variants');
     }
 };
