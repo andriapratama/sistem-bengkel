@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -23,10 +24,13 @@ class HomeController extends Controller
             return $item;
         });
 
+        $categories = Category::limit(8)->get();
 
         return Inertia::render('user/pages/home/index', [
-             'products' => $products,
-             'bestSeller' => $bestSeller,
+            'products' => $products,
+            'bestSeller' => $bestSeller,
+            'categories' => $categories,
+            'success' => session('success'),
         ]);
     }
 }

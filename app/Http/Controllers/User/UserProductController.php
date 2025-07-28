@@ -26,11 +26,8 @@ class UserProductController extends Controller
 
     public function detail($slug)
     {
-        // $product = Product::where('slug', $slug)->firstOrFail();
-
-        // return Inertia::render('Product/Show', [
-        //     'product' => $product
-        // ]);
+        $product = Product::where('slug', $slug)->firstOrFail();
+        $product->image_url = $product->image ? Storage::url($product->image) : null;
 
         $reccomendations = Product::limit(5)->orderBy('name', 'desc')->get();
         $reccomendations->transform(function ($item) {
@@ -39,6 +36,7 @@ class UserProductController extends Controller
         });
 
         return Inertia::render('user/pages/products/detail/index', [
+            'product' => $product,
             'reccomendations' => $reccomendations
         ]);
     }

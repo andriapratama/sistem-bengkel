@@ -1,37 +1,44 @@
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
-import { type Product } from '@/types';
-import { usePage } from '@inertiajs/react';
+import { type Category, type Product } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { ProductComponent } from '../../components/product';
 import UserLayout from '../../layouts/user-layout';
 
 interface PageProps {
     products: Array<Product>;
     bestSeller: Array<Product>;
+    categories: Array<Category>;
+    success?: string;
 }
 
 export default function Index() {
-    const { products, bestSeller } = usePage().props as PageProps;
+    const { products, bestSeller, categories, success } = usePage().props as PageProps;
+
+    useEffect(() => {
+        if (success) {
+            toast(success, {
+                className: '!bg-neutral-800 [&>button]:!bg-neutral-800',
+                closeButton: true,
+            });
+        }
+    }, [success]);
 
     return (
         <UserLayout>
             <div className="flex w-full gap-10">
                 <div className="flex w-[220px] flex-col border-r border-solid border-neutral-600 pt-10 pr-5">
-                    {[
-                        'Engine Parts',
-                        'Oil & Lubricants',
-                        'Brake Components',
-                        'Suspension Parts',
-                        'Electrical Parts',
-                        'Air Conditioning',
-                        'Transmission Parts',
-                        'Filters',
-                        'Tires & Wheels',
-                    ].map((category) => {
+                    {categories.map((category) => {
                         return (
-                            <TextLink key={category} className="cursor-pointer border-none px-2 py-1 text-start text-sm font-normal text-white">
-                                {category}
+                            <TextLink
+                                key={category.id}
+                                href="/products"
+                                className="cursor-pointer border-none px-2 py-1 text-start text-sm font-normal text-white"
+                            >
+                                {category.name}
                             </TextLink>
                         );
                     })}
@@ -105,12 +112,14 @@ export default function Index() {
                 </div>
 
                 <div className="flex w-full justify-center">
-                    <Button
-                        type="button"
-                        className="flex h-[50px] w-[180px] cursor-pointer items-center justify-center rounded-[8px] bg-white text-sm font-semibold text-black"
-                    >
-                        View All Products
-                    </Button>
+                    <Link href="/products">
+                        <Button
+                            type="button"
+                            className="flex h-[50px] w-[180px] cursor-pointer items-center justify-center rounded-[8px] bg-white text-sm font-semibold text-black"
+                        >
+                            View All Products
+                        </Button>
+                    </Link>
                 </div>
             </div>
         </UserLayout>

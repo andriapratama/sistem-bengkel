@@ -12,21 +12,24 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('login', [UserLoginController::class, 'index'])->name('login');
+Route::get('/login', [UserLoginController::class, 'index'])->name('login');
+Route::post('/logout', [UserLoginController::class, 'logout'])->name('logout');
 
-Route::get('register', [UserRegisterController::class, 'create'])->name('register.create');
 
-Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
+Route::get('/register', [UserRegisterController::class, 'create'])->name('register.create');
+Route::post('/register', [UserRegisterController::class, 'store'])->name('register.store');
 
-Route::get('products', [UserProductController::class, 'index'])->name('products.index');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+
+Route::get('/products', [UserProductController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}', [UserProductController::class, 'detail'])->name('product.detail');
 
-Route::get('carts', [CartController::class, 'index'])->name('carts.index');
+Route::get('/carts', [CartController::class, 'index'])->name('carts.index');
 
-Route::get('billing-detail', [BillingDetailController::class, 'index'])->name('billing-detail.index');
+Route::get('/billing-detail', [BillingDetailController::class, 'index'])->name('billing-detail.index');
 
-Route::get('payment', [PaymentController::class, 'index'])->name('payment.index');
-Route::get('payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
+Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 
 
 

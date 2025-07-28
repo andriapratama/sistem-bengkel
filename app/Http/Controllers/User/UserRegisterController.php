@@ -33,16 +33,16 @@ class UserRegisterController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $admin = User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($admin));
+        event(new Registered($user));
 
-        Auth::login($admin);
+        Auth::login($user);
 
-        return redirect()->intended(route('/', absolute: false));
+        return redirect()->route('home')->with('success', 'Account created successfully.');
     }
 }
