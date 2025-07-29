@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { type Cart } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { Minus, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import UserLayout from '../../layouts/user-layout';
@@ -40,7 +41,7 @@ export default function Index() {
 
         carts.map((cart) => {
             const subtotal = cart.quantity * cart.product.price;
-            const tmpCart = { ...cart, subtotal, checked: false };
+            const tmpCart = { ...cart, subtotal };
             newCarts.push(tmpCart);
         });
 
@@ -73,8 +74,18 @@ export default function Index() {
             .replaceAll(',00', '');
     };
 
-    const onChecked = (index: number) => {
+    const onChecked = async (index: number) => {
         setCartList((prev) => prev.map((item, i) => (i === index ? { ...item, checked: !item.checked } : item)));
+        const newCart = { ...cartList[index] };
+        newCart.checked = !newCart.checked;
+
+        try {
+            await axios.put(`/carts/${cartList[index].id}`, newCart);
+        } catch (error) {
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors);
+            }
+        }
     };
 
     return (

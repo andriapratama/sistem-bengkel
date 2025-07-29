@@ -1,11 +1,17 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import UserLayout from '../../layouts/user-layout';
 
+interface PageProps {
+    carts: Cart[];
+}
+
 export default function Index() {
+    const { carts } = usePage().props as PageProps;
+
     const [payment, setPayment] = useState<string>('');
 
     const formatPrice = (number) => {
@@ -98,22 +104,22 @@ export default function Index() {
 
                 <div className="flex w-[400px] flex-col">
                     <div className="flex w-full flex-col gap-6">
-                        {[1, 2, 3].map((item) => {
+                        {carts.map((cart) => {
                             return (
-                                <div key={item} className="flex w-full items-center justify-between">
-                                    <div className="flex items-center gap-3">
+                                <div key={cart.id} className="flex w-full items-center justify-between">
+                                    <div className="flex items-center gap-5">
                                         <div className="flex aspect-square w-[50px] items-center justify-center overflow-hidden">
                                             <img
-                                                src="/images/oli-castrol.jpg"
-                                                alt="Oli Castrol"
+                                                src={`/storage/${cart.product.image}`}
+                                                alt={cart.product.name}
                                                 className="h-full w-full object-cover object-center"
                                                 loading="lazy"
                                             />
                                         </div>
 
                                         <div className="flex flex-col gap-1 text-sm font-light text-black dark:text-white">
-                                            <p>Oli Castrol</p>
-                                            <p>Quantity: 2</p>
+                                            <p>{cart.product.name}</p>
+                                            <p>Quantity: {cart.quantity}</p>
                                         </div>
                                     </div>
 

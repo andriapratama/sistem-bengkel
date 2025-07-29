@@ -39,6 +39,7 @@ export function ProductComponent({ product, user }: ProductComponentProps) {
                 quantity: 1,
                 product_id: product.id,
                 user_id: user.id,
+                checked: false,
                 variant_id: null,
             });
             setProcessing((prev) => !prev);

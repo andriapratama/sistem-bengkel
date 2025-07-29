@@ -102,6 +102,6 @@ export interface Cart {
     id: number;
     quantity: number;
     product: Product;
+    checked: boolean;
     subtotal?: number;
-    checked?: boolean;
 }

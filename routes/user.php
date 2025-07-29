@@ -27,6 +27,7 @@ Route::get('/products/{slug}', [UserProductController::class, 'detail'])->name('
 
 Route::get('/carts', [CartController::class, 'index'])->name('carts.index');
 Route::post('/carts', [CartController::class, 'store'])->name('carts.store');
+Route::put('/carts/{cart}', [CartController::class, 'update'])->name('carts.update');
 
 Route::get('/billing-detail', [BillingDetailController::class, 'index'])->name('billing-detail.index');
 

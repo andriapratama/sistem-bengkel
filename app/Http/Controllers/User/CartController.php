@@ -10,7 +10,12 @@ use Inertia\Inertia;
 
 class CartController extends Controller
 {
-    public function index(){
+    public function index()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $user = Auth::user();
         
         $carts = Cart::with(['product'])
@@ -24,11 +29,16 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'checked' => filter_var($request->input('checked'), FILTER_VALIDATE_BOOLEAN),
+        ]);
+
         $validated = $request->validate([
             'quantity' => ['required', 'integer', 'min:0'],
             'product_id' => ['required', 'exists:products,id'],
             'variant_id' => ['nullable', 'exists:variants,id'],
             'user_id' => ['required', 'exists:users,id'],
+            'checked' => ['required', 'boolean'],
         ]);
 
         $existingCart = Cart::where('product_id', $validated['product_id'])
@@ -48,5 +58,24 @@ class CartController extends Controller
         }
 
        return response()->json(['success' => true, 'message' => 'Product added to cart']);
+    }
+
+    public function update(Request $request, Cart $cart)
+    {
+        $request->merge([
+            'checked' => filter_var($request->input('checked'), FILTER_VALIDATE_BOOLEAN),
+        ]);
+
+        $validated = $request->validate([
+            'quantity' => ['required', 'integer', 'min:0'],
+            'product_id' => ['required', 'exists:products,id'],
+            'variant_id' => ['nullable', 'exists:variants,id'],
+            'user_id' => ['required', 'exists:users,id'],
+            'checked' => ['required', 'boolean'],
+        ]);
+
+        $cart->update($validated);
+
+        return response()->json(['success' => true, 'message' => 'Cart updated']);
     }
 }
