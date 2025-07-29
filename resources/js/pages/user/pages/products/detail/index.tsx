@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { type Product } from '@/types';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
+import { showToast } from '../../../../../lib/utils/toast';
 import { ProductComponent } from '../../../components/product';
 import UserLayout from '../../../layouts/user-layout';
 
@@ -12,10 +14,13 @@ interface PageProps {
 }
 
 export default function Index() {
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
     const { product, reccomendations } = usePage().props as PageProps;
 
     const [quantity, setQuantity] = useState<number>(0);
     const [variant, setVariant] = useState<string>('');
+    const [processing, setProcessing] = useState<boolean>(false);
 
     const onCalculate = (type: 'increase' | 'decrease') => {
         if (type === 'increase') {
@@ -32,6 +37,34 @@ export default function Index() {
         })
             .format(number)
             .replaceAll(',00', '');
+    };
+
+    const onAddCart = async () => {
+        if (!auth.user) {
+            router.visit('/login');
+            return;
+        }
+
+        if (quantity < 1) {
+            showToast('Quantity must be more than 1', 'error');
+            return;
+        }
+
+        try {
+            setProcessing((prev) => !prev);
+            await axios.post(route('carts.store'), {
+                quantity: quantity,
+                product_id: product.id,
+                user_id: auth.user.id,
+            });
+            setProcessing((prev) => !prev);
+            showToast('Cart saved.');
+        } catch (error) {
+            console.log(error);
+            const errors = error?.response?.data?.errors || {};
+            const errorMessage = errors.quantity || errors.product_id || errors.user_id || 'Failed to add cart';
+            showToast(errorMessage, 'error');
+        }
     };
     return (
         <UserLayout>
@@ -95,8 +128,14 @@ export default function Index() {
                         </div>
 
                         <div className="flex flex-1 items-center gap-3">
-                            <Button type="button" variant="outline" className="w-full !border-black dark:!border-white">
-                                Add Cart
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full !border-black dark:!border-white"
+                                disabled={processing}
+                                onClick={onAddCart}
+                            >
+                                {processing ? 'Loading ...' : 'Add Cart'}
                             </Button>
                             <Button type="button" className="w-full">
                                 Buy Now
@@ -109,7 +148,7 @@ export default function Index() {
                     <h2 className="text-2xl font-bold text-white">Reccomendation Products</h2>
                     <div className="grid w-full grid-cols-5 gap-4">
                         {reccomendations.map((product) => {
-                            return <ProductComponent key={product.id} product={product}></ProductComponent>;
+                            return <ProductComponent key={product.id} product={product} user={auth.user}></ProductComponent>;
                         })}
                     </div>
                 </div>

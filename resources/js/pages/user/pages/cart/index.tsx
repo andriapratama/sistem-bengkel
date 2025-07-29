@@ -1,70 +1,54 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { type Product } from '@/types';
-import { Link } from '@inertiajs/react';
+import { type Cart } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { Minus, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import UserLayout from '../../layouts/user-layout';
 
+interface PageProps {
+    carts: Cart[];
+}
+
 export default function Index() {
-    const [resProducts, setResProducts] = useState<Product[]>([
-        {
-            id: 1,
-            name: 'Oli Castrol 1L - Matic',
-            slug: 'Oli Castrol',
-            description: 'Oli Castrol',
-            stock: 10,
-            quantity: 0,
-            cost: 100000,
-            price: 200000,
-        },
-        {
-            id: 2,
-            name: 'Oli Castrol 1L - Static',
-            slug: 'Oli Castrol',
-            description: 'Oli Castrol',
-            stock: 10,
-            quantity: 0,
-            cost: 100000,
-            price: 400000,
-        },
-    ]);
-    const [products, setProducts] = useState<Product[]>([]);
+    const { carts } = usePage().props as PageProps;
+    const [cartList, setCartList] = useState<Cart[]>([]);
     const [total, setTotal] = useState<number>(0);
     const [grandTotal, setGrandTotal] = useState<number>(0);
 
     const onCalculate = (type: 'increase' | 'decrease', index: number) => {
-        const newProducts = [...products];
+        const newCartList = [...cartList];
         let quantity = 0;
         if (type === 'increase') {
-            quantity = newProducts[index].quantity + 1;
+            quantity = newCartList[index].quantity + 1;
         } else {
-            quantity = newProducts[index].quantity <= 0 ? 0 : newProducts[index].quantity - 1;
+            quantity = newCartList[index].quantity <= 0 ? 0 : newCartList[index].quantity - 1;
         }
 
-        const subtotal = quantity * newProducts[index].price;
-        newProducts[index] = {
-            ...newProducts[index],
+        const subtotal = quantity * newCartList[index].product.price;
+        newCartList[index] = {
+            ...newCartList[index],
             quantity,
             subtotal,
         };
-        setProducts(newProducts);
+        setCartList(newCartList);
     };
 
     useEffect(() => {
-        const newProducts: Product[] = [];
+        const newCarts: Cart[] = [];
 
-        resProducts.map((product) => {
-            const tmpProduct = { ...product, subtotal: 0, checked: false };
-            newProducts.push(tmpProduct);
+        carts.map((cart) => {
+            const subtotal = cart.quantity * cart.product.price;
+            const tmpCart = { ...cart, subtotal, checked: false };
+            newCarts.push(tmpCart);
         });
 
-        setProducts(newProducts);
-    }, [resProducts]);
+        setCartList(newCarts);
+    }, [carts]);
 
     useEffect(() => {
-        const filter = products.filter((product) => product.checked);
+        const filter = cartList.filter((cart) => cart.checked);
         if (filter.length > 0) {
             const total = filter.reduce((total, item) => {
                 return total + item.subtotal;
@@ -78,7 +62,7 @@ export default function Index() {
             setTotal(0);
             setGrandTotal(0);
         }
-    }, [products]);
+    }, [cartList]);
 
     const formatPrice = (number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -90,7 +74,7 @@ export default function Index() {
     };
 
     const onChecked = (index: number) => {
-        setProducts((prev) => prev.map((item, i) => (i === index ? { ...item, checked: !item.checked } : item)));
+        setCartList((prev) => prev.map((item, i) => (i === index ? { ...item, checked: !item.checked } : item)));
     };
 
     return (
@@ -107,12 +91,12 @@ export default function Index() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {products.map((product, i) => {
+                        {cartList.map((cart, i) => {
                             return (
-                                <TableRow key={product.id}>
+                                <TableRow key={cart.id}>
                                     <TableCell>
                                         <Checkbox
-                                            checked={product.checked}
+                                            checked={cart.checked}
                                             onCheckedChange={() => onChecked(i)}
                                             className="border-black dark:border-white"
                                         />
@@ -121,17 +105,17 @@ export default function Index() {
                                         <div className="flex items-center gap-3">
                                             <div className="flex aspect-square w-[50px] items-center justify-center overflow-hidden">
                                                 <img
-                                                    src="/images/oli-castrol.jpg"
+                                                    src={`/storage/${cart.product.image}`}
                                                     alt="Oli Castrol"
                                                     className="h-full w-full object-cover object-center"
                                                     loading="lazy"
                                                 />
                                             </div>
 
-                                            <p className="text-sm font-light text-black dark:text-white">Oli Castrol</p>
+                                            <p className="text-sm font-light text-black dark:text-white">{cart.product.name}</p>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{formatPrice(product.price)}</TableCell>
+                                    <TableCell>{formatPrice(cart.product.price)}</TableCell>
                                     <TableCell>
                                         <div className="flex w-full items-center justify-center gap-1">
                                             <Button
@@ -143,7 +127,7 @@ export default function Index() {
                                                 <Minus />
                                             </Button>
                                             <div className="flex h-[35px] w-[100px] items-center justify-center rounded border border-solid border-black dark:border-white">
-                                                {product.quantity}
+                                                {cart.quantity}
                                             </div>
                                             <Button
                                                 typr="button"
@@ -155,7 +139,7 @@ export default function Index() {
                                             </Button>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{formatPrice(product.subtotal)}</TableCell>
+                                    <TableCell>{formatPrice(cart.subtotal)}</TableCell>
                                 </TableRow>
                             );
                         })}

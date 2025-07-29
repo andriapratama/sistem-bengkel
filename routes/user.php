@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/login', [UserLoginController::class, 'index'])->name('login');
+Route::post('/login', [UserLoginController::class, 'login'])->name('login');
 Route::post('/logout', [UserLoginController::class, 'logout'])->name('logout');
 
 
@@ -25,6 +26,7 @@ Route::get('/products', [UserProductController::class, 'index'])->name('products
 Route::get('/products/{slug}', [UserProductController::class, 'detail'])->name('product.detail');
 
 Route::get('/carts', [CartController::class, 'index'])->name('carts.index');
+Route::post('/carts', [CartController::class, 'store'])->name('carts.store');
 
 Route::get('/billing-detail', [BillingDetailController::class, 'index'])->name('billing-detail.index');
 

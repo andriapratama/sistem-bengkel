@@ -19,6 +19,9 @@ interface PageProps {
 }
 
 export default function Index() {
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
+
     const { products } = usePage().props as PageProps;
 
     const [search, setSearch] = useState<string>('');
@@ -72,7 +75,7 @@ export default function Index() {
                 <div className="flex w-full flex-col">
                     <div className="grid w-full grid-cols-4 gap-9">
                         {products.data.map((product) => {
-                            return <ProductComponent key={product.id} product={product}></ProductComponent>;
+                            return <ProductComponent key={product.id} product={product} user={auth.user}></ProductComponent>;
                         })}
                     </div>
                 </div>

@@ -78,8 +78,6 @@ export interface Product {
     image?: string;
     image_url?: string;
     quantity?: number;
-    subtotal?: number;
-    checked?: boolean;
     unit_id?: number;
     unit?: Unit;
     category_id?: number;
@@ -98,4 +96,12 @@ export interface VehicleVariant {
     name: string;
     vehicle_brand_id: number;
     vehicle_brand?: VehicleBrand;
+}
+
+export interface Cart {
+    id: number;
+    quantity: number;
+    product: Product;
+    subtotal?: number;
+    checked?: boolean;
 }

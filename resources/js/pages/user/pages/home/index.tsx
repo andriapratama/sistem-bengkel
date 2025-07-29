@@ -17,6 +17,8 @@ interface PageProps {
 
 export default function Index() {
     const { products, bestSeller, categories, success } = usePage().props as PageProps;
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
 
     useEffect(() => {
         if (success) {
@@ -26,7 +28,6 @@ export default function Index() {
             });
         }
     }, [success]);
-
     return (
         <UserLayout>
             <div className="flex w-full gap-10">
@@ -64,7 +65,7 @@ export default function Index() {
 
                 <div className="grid w-full grid-cols-4 gap-9">
                     {bestSeller.map((product) => {
-                        return <ProductComponent key={product.id} product={product}></ProductComponent>;
+                        return <ProductComponent key={product.id} product={product} user={auth.user}></ProductComponent>;
                     })}
                 </div>
             </div>
@@ -107,7 +108,7 @@ export default function Index() {
 
                 <div className="grid w-full grid-cols-4 gap-9">
                     {products.map((product) => {
-                        return <ProductComponent key={product.id} product={product}></ProductComponent>;
+                        return <ProductComponent key={product.id} product={product} user={auth.user}></ProductComponent>;
                     })}
                 </div>
 
