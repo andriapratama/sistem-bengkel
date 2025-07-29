@@ -117,7 +117,7 @@ export default function Index() {
                                             <div className="flex aspect-square w-[50px] items-center justify-center overflow-hidden">
                                                 <img
                                                     src={`/storage/${cart.product.image}`}
-                                                    alt="Oli Castrol"
+                                                    alt={cart.product.name}
                                                     className="h-full w-full object-cover object-center"
                                                     loading="lazy"
                                                 />
