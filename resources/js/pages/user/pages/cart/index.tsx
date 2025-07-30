@@ -1,19 +1,23 @@
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { type Cart } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { Minus, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from '@/components/ui/table';
+import { Cart } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+
 import UserLayout from '../../layouts/user-layout';
 
-interface PageProps {
+type PageProps = {
     carts: Cart[];
-}
+};
 
 export default function Index() {
-    const { carts } = usePage().props as PageProps;
+    const { carts } = usePage<PageProps>().props;
     const [cartList, setCartList] = useState<Cart[]>([]);
     const [total, setTotal] = useState<number>(0);
     const [grandTotal, setGrandTotal] = useState<number>(0);
@@ -52,7 +56,8 @@ export default function Index() {
         const filter = cartList.filter((cart) => cart.checked);
         if (filter.length > 0) {
             const total = filter.reduce((total, item) => {
-                return total + item.subtotal;
+                const subtotal = item.subtotal ?? 0;
+                return total + subtotal;
             }, 0);
 
             const grandTotal = total;
@@ -65,7 +70,7 @@ export default function Index() {
         }
     }, [cartList]);
 
-    const formatPrice = (number) => {
+    const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
@@ -82,9 +87,7 @@ export default function Index() {
         try {
             await axios.put(`/carts/${cartList[index].id}`, newCart);
         } catch (error) {
-            if (error.response?.status === 422) {
-                setErrors(error.response.data.errors);
-            }
+            console.log(error);
         }
     };
 
@@ -130,7 +133,7 @@ export default function Index() {
                                     <TableCell>
                                         <div className="flex w-full items-center justify-center gap-1">
                                             <Button
-                                                typr="button"
+                                                type="button"
                                                 className="rounded border-black dark:border-white"
                                                 onClick={() => onCalculate('decrease', i)}
                                                 variant="outline"
@@ -141,7 +144,7 @@ export default function Index() {
                                                 {cart.quantity}
                                             </div>
                                             <Button
-                                                typr="button"
+                                                type="button"
                                                 className="rounded border-black dark:border-white"
                                                 onClick={() => onCalculate('increase', i)}
                                                 variant="outline"
@@ -150,7 +153,7 @@ export default function Index() {
                                             </Button>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{formatPrice(cart.subtotal)}</TableCell>
+                                    <TableCell>{formatPrice(cart.subtotal ?? 0)}</TableCell>
                                 </TableRow>
                             );
                         })}

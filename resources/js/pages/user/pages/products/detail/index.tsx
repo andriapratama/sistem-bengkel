@@ -1,22 +1,24 @@
-import { Button } from '@/components/ui/button';
-import { type Product } from '@/types';
-import { router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Product, SharedData } from '@/types';
+import { router, usePage } from '@inertiajs/react';
+
 import { showToast } from '../../../../../lib/utils/toast';
 import { ProductComponent } from '../../../components/product';
 import UserLayout from '../../../layouts/user-layout';
 
-interface PageProps {
+type PageProps = {
     product: Product;
     reccomendations: Array<Product>;
-}
+};
 
 export default function Index() {
     const page = usePage<SharedData>();
     const { auth } = page.props;
-    const { product, reccomendations } = usePage().props as PageProps;
+    const { product, reccomendations } = usePage<PageProps>().props;
 
     const [quantity, setQuantity] = useState<number>(0);
     const [variant, setVariant] = useState<string>('');
@@ -30,7 +32,7 @@ export default function Index() {
         }
     };
 
-    const formatPrice = (number) => {
+    const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
@@ -61,9 +63,7 @@ export default function Index() {
             showToast('Cart saved.');
         } catch (error) {
             console.log(error);
-            const errors = error?.response?.data?.errors || {};
-            const errorMessage = errors.quantity || errors.product_id || errors.user_id || 'Failed to add cart';
-            showToast(errorMessage, 'error');
+            showToast('Server Error', 'error');
         }
     };
     return (
@@ -106,7 +106,7 @@ export default function Index() {
                             <div className="text-lg font-normal">Quantity:</div>
                             <div className="flex flex-1 items-center gap-1">
                                 <Button
-                                    typr="button"
+                                    type="button"
                                     className="rounded border-black dark:border-white"
                                     onClick={() => onCalculate('decrease')}
                                     variant="outline"
@@ -117,7 +117,7 @@ export default function Index() {
                                     {quantity}
                                 </div>
                                 <Button
-                                    typr="button"
+                                    type="button"
                                     className="rounded border-black dark:border-white"
                                     onClick={() => onCalculate('increase')}
                                     variant="outline"

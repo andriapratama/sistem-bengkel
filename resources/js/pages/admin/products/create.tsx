@@ -1,21 +1,27 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Textarea } from '@/components/ui/textarea';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type Category, type Unit } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
-interface PageProps {
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import {
+    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem, Category, Unit } from '@/types';
+import { Head, useForm, usePage } from '@inertiajs/react';
+
+type PageProps = {
     units: Array<Unit>;
     categories: Array<Category>;
-}
+};
 
 type VariantForm = {
     name: string;
@@ -56,7 +62,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Create() {
-    const { units, categories } = usePage().props as PageProps;
+    const { units, categories } = usePage<PageProps>().props;
     const [errors, setErrors] = useState<Partial<Record<keyof ProductFormValues, string>>>({});
     const [preview, setPreview] = useState<string | null>(null);
     const [variants, setVariants] = useState<VariantForm[]>([]);
@@ -71,14 +77,14 @@ export default function Create() {
         name: '',
         slug: '',
         description: '',
-        stock: '',
-        cost: '',
-        price: '',
-        image: null as FileList | null,
+        stock: 0,
+        cost: 0,
+        price: 0,
+        image: null,
         status: false,
         hasVariant: false,
-        category_id: '',
-        unit_id: '',
+        category_id: 0,
+        unit_id: 0,
         variants: [],
     });
 
@@ -110,7 +116,22 @@ export default function Create() {
         }
     };
 
-    const onChangeNumber = (field: string, value: string) => {
+    const onChangeNumber = (
+        field:
+            | 'name'
+            | 'stock'
+            | 'cost'
+            | 'price'
+            | 'slug'
+            | 'description'
+            | 'image'
+            | 'status'
+            | 'hasVariant'
+            | 'category_id'
+            | 'unit_id'
+            | 'variants',
+        value: string,
+    ) => {
         const number = value.replaceAll(/[^0-9]/g, '');
         setData(field, number);
         if (errors[field]) {
@@ -131,36 +152,20 @@ export default function Create() {
     };
 
     const onAddVariant = () => {
-        setVariants((prev) => [...prev, { name: '', stock: '', cost: '', price: '' }]);
+        setVariants((prev) => [...prev, { name: '', stock: 0, cost: 0, price: 0 }]);
     };
 
     const onChangeVariant = (field: keyof VariantForm, value: string | number, index: number) => {
-        if (field === 'name') {
-            setVariants((prevVariants) =>
-                prevVariants.map((variant, i) => {
-                    if (i === index) {
-                        return {
-                            ...variant,
-                            [field]: value,
-                        };
-                    }
-                    return variant;
-                }),
-            );
-        } else {
-            const number = value.replaceAll(/[^0-9]/g, '');
-            setVariants((prevVariants) =>
-                prevVariants.map((variant, i) => {
-                    if (i === index) {
-                        return {
-                            ...variant,
-                            [field]: number,
-                        };
-                    }
-                    return variant;
-                }),
-            );
-        }
+        setVariants((prev) =>
+            prev.map((variant, i) => {
+                if (i !== index) return variant;
+
+                return {
+                    ...variant,
+                    [field]: field === 'name' ? String(value) : Number(value),
+                };
+            }),
+        );
 
         setData('variants', variants);
     };
@@ -170,7 +175,7 @@ export default function Create() {
         setData('variants', variants);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const result = productSchema.safeParse(data);
@@ -203,10 +208,23 @@ export default function Create() {
             }
         });
 
-        post('/admin/products', {
-            data: formData,
-            forceFormData: true,
-        });
+        try {
+            const response = await axios.post('/admin/products', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log('Product created:', response.data);
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            if (error.response?.data?.errors) {
+                setErrors(error.response.data.errors);
+            } else {
+                console.error('Error:', error.message);
+            }
+        }
     };
 
     return (
@@ -284,7 +302,7 @@ export default function Create() {
                     <div className="grid w-full grid-cols-2 gap-4">
                         <div>
                             <Label htmlFor="category">Category</Label>
-                            <Select onValueChange={(e) => setData('category_id', e)} value={String(data.category_id ?? '')}>
+                            <Select onValueChange={(e) => setData('category_id', parseInt(e))} value={String(data.category_id ?? '')}>
                                 <SelectTrigger className={`w-full ${errors.category_id ? 'border-red-500' : ''}`}>
                                     <SelectValue placeholder="Select category" />
                                 </SelectTrigger>
@@ -301,7 +319,7 @@ export default function Create() {
 
                         <div>
                             <Label htmlFor="unit">Unit</Label>
-                            <Select onValueChange={(e) => setData('unit_id', e)} value={String(data.unit_id ?? '')}>
+                            <Select onValueChange={(e) => setData('unit_id', parseInt(e))} value={String(data.unit_id ?? '')}>
                                 <SelectTrigger className={`w-full ${errors.unit_id ? 'border-red-500' : ''}`}>
                                     <SelectValue placeholder="Select unit" />
                                 </SelectTrigger>

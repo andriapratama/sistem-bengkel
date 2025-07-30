@@ -1,12 +1,13 @@
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type Category } from '@/types';
+import { BreadcrumbItem, Category } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
 
 interface Props {
     category: Category;
@@ -128,7 +129,7 @@ export default function Edit({ category }: Props) {
                         <Label htmlFor="slug">Description</Label>
                         <Textarea
                             id="description"
-                            value={data.description}
+                            value={data.description || ''}
                             onChange={(e) => {
                                 setData('description', e.target.value);
                             }}

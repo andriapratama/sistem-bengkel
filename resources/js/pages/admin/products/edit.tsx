@@ -1,20 +1,23 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type Category, type Product, type Unit } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
-interface PageProps {
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem, Category, Product, Unit } from '@/types';
+import { Head, useForm, usePage } from '@inertiajs/react';
+
+type PageProps = {
     product: Product;
     units: Array<Unit>;
     categories: Array<Category>;
-}
+};
 
 const productSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -33,11 +36,12 @@ type ProductFormValues = z.infer<typeof productSchema>;
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Edit Product',
+        href: '/',
     },
 ];
 
 export default function Edit() {
-    const { units, categories, product } = usePage().props as PageProps;
+    const { units, categories, product } = usePage<PageProps>().props;
     const [errors, setErrors] = useState<Partial<Record<keyof ProductFormValues, string>>>({});
 
     const {
@@ -50,12 +54,12 @@ export default function Edit() {
         name: product.name,
         slug: product.slug,
         description: product.description,
-        stock: product.stock,
-        cost: parseFloat(product.cost),
-        price: parseFloat(product.price),
-        status: product.status === 1 ? true : false,
-        category_id: product.category_id,
-        unit_id: product.unit_id,
+        stock: product.stock || 0,
+        cost: product.cost || 0,
+        price: product.price || 0,
+        status: product.status,
+        category_id: product.category_id || 0,
+        unit_id: product.unit_id || 0,
     });
 
     useEffect(() => {
@@ -86,7 +90,10 @@ export default function Edit() {
         }
     };
 
-    const onChangeNumber = (field: string, value: string) => {
+    const onChangeNumber = (
+        field: 'name' | 'slug' | 'description' | 'stock' | 'cost' | 'price' | 'status' | 'category_id' | 'unit_id',
+        value: string,
+    ) => {
         const number = value.replaceAll(/[^0-9]/g, '');
         setData(field, number);
         if (errors[field]) {
@@ -183,7 +190,7 @@ export default function Edit() {
 
                     <div>
                         <Label htmlFor="category">Category</Label>
-                        <Select onValueChange={(e) => setData('category_id', e)} value={String(data.category_id ?? '')}>
+                        <Select onValueChange={(e) => setData('category_id', parseInt(e))} value={String(data.category_id ?? '')}>
                             <SelectTrigger className={`w-full ${errors.category_id ? 'border-red-500' : ''}`}>
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
@@ -200,7 +207,7 @@ export default function Edit() {
 
                     <div>
                         <Label htmlFor="unit">Unit</Label>
-                        <Select onValueChange={(e) => setData('unit_id', e)} value={String(data.unit_id ?? '')}>
+                        <Select onValueChange={(e) => setData('unit_id', parseInt(e))} value={String(data.unit_id ?? '')}>
                             <SelectTrigger className={`w-full ${errors.unit_id ? 'border-red-500' : ''}`}>
                                 <SelectValue placeholder="Select unit" />
                             </SelectTrigger>

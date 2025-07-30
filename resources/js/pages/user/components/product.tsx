@@ -1,8 +1,10 @@
-import { Button } from '@/components/ui/button';
-import { type Product, type User } from '@/types';
-import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Product, User } from '@/types';
+import { Link, router } from '@inertiajs/react';
+
 import { showToast } from '../../../lib/utils/toast';
 
 interface ProductComponentProps {
@@ -13,7 +15,7 @@ interface ProductComponentProps {
 export function ProductComponent({ product, user }: ProductComponentProps) {
     const [processing, setProcessing] = useState<boolean>(false);
 
-    const formatPrice = (number) => {
+    const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
@@ -45,9 +47,8 @@ export function ProductComponent({ product, user }: ProductComponentProps) {
             setProcessing((prev) => !prev);
             showToast('Cart saved.');
         } catch (error) {
-            const errors = error?.response?.data?.errors || {};
-            const errorMessage = errors.quantity || errors.product_id || errors.user_id || 'Failed to add cart';
-            showToast(errorMessage, 'error');
+            console.log(error);
+            showToast('Server Error', 'error');
         }
     };
 

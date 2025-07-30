@@ -1,16 +1,19 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type VehicleBrand } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
-interface PageProps {
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem, VehicleBrand } from '@/types';
+import { Head, useForm, usePage } from '@inertiajs/react';
+
+type PageProps = {
     vehicleBrands: Array<VehicleBrand>;
-}
+};
 
 const variantSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -27,8 +30,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Create() {
-    const { vehicleBrands } = usePage().props as PageProps;
-    const [errors, setErrors] = useState<{ name?: string }>({});
+    const { vehicleBrands } = usePage<PageProps>().props;
+    const [errors, setErrors] = useState<{ name?: string; vehicle_brand_id?: string }>({});
 
     const {
         data,
@@ -38,13 +41,13 @@ export default function Create() {
         errors: serverErrors,
     } = useForm<VariantFormValues>({
         name: '',
-        vehicle_brand_id: '',
+        vehicle_brand_id: 0,
     });
 
     useEffect(() => {
         setErrors({
-            name: serverErrors.name ? serverErrors.name : undefined,
-            vehicle_brand_id: serverErrors.vehicle_brand_id ? serverErrors.vehicle_brand_id : undefined,
+            name: serverErrors?.name,
+            vehicle_brand_id: serverErrors?.vehicle_brand_id,
         });
     }, [serverErrors]);
 
@@ -91,7 +94,7 @@ export default function Create() {
 
                     <div>
                         <Label htmlFor="vehicleBrand">Vehicle Brand</Label>
-                        <Select onValueChange={(e) => setData('vehicle_brand_id', e)} value={String(data.vehicle_brand_id ?? '')}>
+                        <Select onValueChange={(e) => setData('vehicle_brand_id', parseInt(e))} value={String(data.vehicle_brand_id ?? '')}>
                             <SelectTrigger className={`w-full ${errors.vehicle_brand_id ? 'border-red-500' : ''}`}>
                                 <SelectValue placeholder="Select vehicle brand" />
                             </SelectTrigger>

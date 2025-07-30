@@ -1,18 +1,20 @@
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type Product } from '@/types';
+import { BreadcrumbItem, Product } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
 
-interface PageProps {
+type PageProps = {
     product: Product;
-}
+};
 
 const productSchema = z.object({
-    image: z.instanceof(File, { message: 'Image must be a file' }),
+    image: z.union([z.instanceof(File, { message: 'Image must be a file' }), z.null().transform(() => undefined)]).optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -20,13 +22,14 @@ type ProductFormValues = z.infer<typeof productSchema>;
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Edit Image Product',
+        href: '/',
     },
 ];
 
 export default function EditImage() {
-    const { product } = usePage().props as PageProps;
+    const { product } = usePage<PageProps>().props;
     const [errors, setErrors] = useState<Partial<Record<keyof ProductFormValues, string>>>({});
-    const [preview, setPreview] = useState<string | null>(null);
+    const [preview, setPreview] = useState<string | undefined>(undefined);
 
     const {
         data,
@@ -60,7 +63,7 @@ export default function EditImage() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const result = productSchema.safeParse(data);
 
@@ -74,14 +77,23 @@ export default function EditImage() {
         }
 
         setErrors({});
-        const formData = new FormData();
-        formData.append('image', data.image);
-        formData.append('_method', 'PUT');
+        if (data.image) {
+            const formData = new FormData();
+            formData.append('image', data.image);
+            formData.append('_method', 'PUT');
 
-        post(`/admin/products/${product.id}/image`, {
-            data: formData,
-            forceFormData: true,
-        });
+            try {
+                const response = await axios.post(`/admin/products/${product.id}/image`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+
+                console.log('Image updated:', response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
     };
 
     return (

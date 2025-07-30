@@ -1,8 +1,10 @@
+import { CircleUser, LogOut, ShoppingBag, ShoppingCart, User } from 'lucide-react';
+import { ReactNode, useEffect, useState } from 'react';
+
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Toaster } from '@/components/ui/sonner';
+import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { CircleUser, LogOut, ShoppingBag, ShoppingCart, User } from 'lucide-react';
-import { useEffect, useState, type ReactNode } from 'react';
 
 interface Menu {
     title: string;
@@ -17,7 +19,7 @@ export default ({ children }: UserLayoutProps) => {
     const { url } = usePage();
     const page = usePage<SharedData>();
     const { auth } = page.props;
-    const [menus, setMenus] = useState<Menu>();
+    const [menus, setMenus] = useState<Menu[]>([]);
 
     useEffect(() => {
         setMenus([
@@ -98,11 +100,11 @@ export default ({ children }: UserLayoutProps) => {
                                 </PopoverTrigger>
                                 <PopoverContent className="w-[250px] bg-neutral-800">
                                     <div className="flex flex-col gap-3">
-                                        <Link className="flex items-center gap-4 text-sm">
+                                        <Link href="/" className="flex items-center gap-4 text-sm">
                                             <User className="size-5" />
                                             <span>Manage My Account</span>
                                         </Link>
-                                        <Link className="flex items-center gap-4 text-sm">
+                                        <Link href="/" className="flex items-center gap-4 text-sm">
                                             <ShoppingBag className="size-5" />
                                             <span>My Order</span>
                                         </Link>

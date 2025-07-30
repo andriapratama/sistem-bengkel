@@ -1,13 +1,17 @@
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { type Product } from '@/types';
-import { usePage } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+
+import { Input } from '@/components/ui/input';
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from '@/components/ui/select';
+import { Product, SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
+
 import { ProductComponent } from '../../components/product';
 import UserLayout from '../../layouts/user-layout';
 
-interface PageProps {
+type PageProps = {
     products: {
         data: Array<Product>;
         current_page: number;
@@ -16,13 +20,13 @@ interface PageProps {
         prev_page_url: string | null;
         links: Array<{ url: string | null; label: string; active: boolean }>;
     };
-}
+};
 
 export default function Index() {
     const page = usePage<SharedData>();
     const { auth } = page.props;
 
-    const { products } = usePage().props as PageProps;
+    const { products } = usePage<PageProps>().props;
 
     const [search, setSearch] = useState<string>('');
     const [category, setCategory] = useState<string>('');

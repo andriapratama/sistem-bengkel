@@ -1,20 +1,23 @@
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Cart } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+
 import UserLayout from '../../layouts/user-layout';
 
-interface PageProps {
+type PageProps = {
     carts: Cart[];
-}
+};
 
 export default function Index() {
-    const { carts } = usePage().props as PageProps;
+    const { carts } = usePage<PageProps>().props;
 
     const [payment, setPayment] = useState<string>('');
 
-    const formatPrice = (number) => {
+    const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',

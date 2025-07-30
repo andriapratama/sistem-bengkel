@@ -1,11 +1,12 @@
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type VehicleBrand } from '@/types';
+import { BreadcrumbItem, VehicleBrand } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
 
 interface Props {
     vehicleBrand: VehicleBrand;
@@ -20,6 +21,7 @@ type BrandFormValues = z.infer<typeof brandSchema>;
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Add Vehicle Brand',
+        href: '/',
     },
 ];
 

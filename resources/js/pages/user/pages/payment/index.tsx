@@ -1,9 +1,11 @@
+import { Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from '@inertiajs/react';
-import { Clock } from 'lucide-react';
-import { useEffect, useState } from 'react';
+
 import UserLayout from '../../layouts/user-layout';
 
 export default function Index() {
@@ -12,7 +14,7 @@ export default function Index() {
     const [timeLeft, setTimeLeft] = useState(hours * 60 * 60);
     const [image, setImage] = useState<File | null>(null);
 
-    const formatPrice = (number) => {
+    const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',

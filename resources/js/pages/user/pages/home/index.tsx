@@ -1,22 +1,25 @@
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { type Category, type Product } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+
+import TextLink from '@/components/text-link';
+import { Button } from '@/components/ui/button';
+import { Category, Product, SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+
 import { ProductComponent } from '../../components/product';
 import UserLayout from '../../layouts/user-layout';
 
-interface PageProps {
-    products: Array<Product>;
-    bestSeller: Array<Product>;
-    categories: Array<Category>;
+type PageProps = {
+    products: Product[];
+    bestSeller: Product[];
+    categories: Category[];
     success?: string;
-}
+};
 
 export default function Index() {
-    const { products, bestSeller, categories, success } = usePage().props as PageProps;
+    const { products, bestSeller, categories, success } = usePage<PageProps>().props;
+
     const page = usePage<SharedData>();
     const { auth } = page.props;
 

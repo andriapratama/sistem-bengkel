@@ -1,12 +1,17 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type VehicleBrand } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { Megaphone, MoreHorizontal, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import {
+    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from '@/components/ui/table';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem, VehicleBrand } from '@/types';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface PageProps {
+type PageProps = {
     vehicleBrands: {
         data: Array<VehicleBrand>;
         current_page: number;
@@ -25,10 +30,10 @@ interface PageProps {
         links: Array<{ url: string | null; label: string; active: boolean }>;
     };
     success?: string;
-}
+};
 
 export default function Index() {
-    const { vehicleBrands, success } = usePage().props as PageProps;
+    const { vehicleBrands, success } = usePage<PageProps>().props;
 
     const [isShowSuccess, setIsShowSuccess] = useState<boolean>(true);
     const { processing, delete: destroy } = useForm();

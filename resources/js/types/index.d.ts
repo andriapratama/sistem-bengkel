@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react';
+
 import type { Config } from 'ziggy-js';
 
 export interface Auth {
@@ -75,6 +76,8 @@ export interface Product {
     stock: number;
     cost: number;
     price: number;
+    status: boolean;
+    hasVariant: boolean;
     image?: string;
     image_url?: string;
     quantity?: number;
