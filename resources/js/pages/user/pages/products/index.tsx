@@ -46,13 +46,13 @@ export default function Index() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search product"
-                            className="!border-white"
+                            className="!border-black dark:!border-white"
                         />
                     </div>
 
                     <div className="w-[300px]">
                         <Select onValueChange={(e) => setCategory(e)} value={String(category)}>
-                            <SelectTrigger className="w-full !border-white">
+                            <SelectTrigger className="w-full !border-black dark:!border-white">
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -85,20 +85,20 @@ export default function Index() {
                 </div>
 
                 <div className="flex w-full items-center justify-center gap-3">
-                    <div className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-white">
+                    <div className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-black dark:border-white">
                         <ChevronLeft />
                     </div>
                     {[1, 2, 3, 4].map((item) => {
                         return (
                             <div
                                 key={item}
-                                className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-white"
+                                className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-black dark:border-white"
                             >
                                 {item}
                             </div>
                         );
                     })}
-                    <div className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-white">
+                    <div className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-black dark:border-white">
                         <ChevronRight />
                     </div>
                 </div>

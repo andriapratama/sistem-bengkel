@@ -70,7 +70,7 @@ export default function Index() {
         <UserLayout>
             <div className="relative mt-10 flex min-h-[44.5vh] w-full flex-col">
                 <div className="relative mx-auto flex w-[90%] gap-[100px]">
-                    <div className="relative flex aspect-square w-[50%] items-center justify-center overflow-hidden bg-neutral-700">
+                    <div className="relative flex aspect-square w-[50%] items-center justify-center overflow-hidden bg-neutral-300 dark:bg-neutral-800">
                         <img src={product.image_url} alt={product.name} className="h-full w-full object-cover object-center" />
                     </div>
 

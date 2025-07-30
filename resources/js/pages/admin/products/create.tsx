@@ -209,7 +209,7 @@ export default function Create() {
         });
 
         try {
-            const response = await axios.post('/admin/products', data, {
+            const response = await axios.post('/admin/products', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

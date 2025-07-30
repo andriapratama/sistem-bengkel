@@ -2,7 +2,7 @@ import { toast as sonnerToast } from 'sonner';
 
 export function showToast(message: string, type: 'success' | 'error' = 'success') {
     sonnerToast(message, {
-        className: '!bg-neutral-800 [&>button]:!bg-neutral-800',
+        className: '!text-black dark:!text-white !bg-neutral-300 dark:!bg-neutral-800 [&>button]:!bg-neutral-300 [&>button]:dark:!bg-neutral-800',
         closeButton: true,
         style: {
             color: '#fff',

@@ -37,15 +37,15 @@ export default function Register() {
                     <img src="/images/engine.jpg" alt="Enging" className="h-auto w-full object-contain object-center" />
                 </div>
 
-                <div className="flex w-[35%] flex-col">
-                    <div className="text-[40px] text-white">Create an account</div>
-                    <p className="mb-10 text-base text-white">Enter your detail below</p>
+                <div className="flex w-[35%] flex-col text-black dark:text-white">
+                    <div className="text-[40px]">Create an account</div>
+                    <p className="mb-10 text-base">Enter your detail below</p>
 
                     <div className="mb-10 flex w-full flex-col">
                         <input
                             id="name"
                             type="text"
-                            className="w-full border-b border-solid border-neutral-600 px-1 py-1 text-white outline-none focus:border-white"
+                            className="w-full border-b border-solid border-neutral-400 px-1 py-1 outline-none focus:border-black dark:border-neutral-600 dark:focus:border-white"
                             placeholder="Name"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
@@ -58,7 +58,7 @@ export default function Register() {
                     <div className="mb-10 flex w-full flex-col">
                         <input
                             type="email"
-                            className="w-full border-b border-solid border-neutral-600 px-1 py-1 text-white outline-none focus:border-white"
+                            className="w-full border-b border-solid border-neutral-400 px-1 py-1 outline-none focus:border-black dark:border-neutral-600 dark:focus:border-white"
                             placeholder="Email"
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
@@ -71,7 +71,7 @@ export default function Register() {
                     <div className="mb-10 flex w-full flex-col">
                         <input
                             type="password"
-                            className="w-full border-b border-solid border-neutral-600 px-1 py-1 text-white outline-none focus:border-white"
+                            className="w-full border-b border-solid border-neutral-400 px-1 py-1 outline-none focus:border-black dark:border-neutral-600 dark:focus:border-white"
                             placeholder="Password"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
@@ -84,7 +84,7 @@ export default function Register() {
                     <div className="mb-10 flex w-full flex-col">
                         <input
                             type="password"
-                            className="w-full border-b border-solid border-neutral-600 px-1 py-1 text-white outline-none focus:border-white"
+                            className="w-full border-b border-solid border-neutral-400 px-1 py-1 outline-none focus:border-black dark:border-neutral-600 dark:focus:border-white"
                             placeholder="Confirm Password"
                             value={data.password_confirmation}
                             onChange={(e) => setData('password_confirmation', e.target.value)}
@@ -97,7 +97,7 @@ export default function Register() {
                     <div className="mb-5 w-full">
                         <Button
                             type="submit"
-                            className="flex h-[40px] w-full cursor-pointer items-center justify-center rounded bg-white font-semibold text-black"
+                            className="flex h-[40px] w-full cursor-pointer items-center justify-center rounded bg-black font-semibold text-white dark:bg-white dark:text-black"
                             disabled={processing}
                         >
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}

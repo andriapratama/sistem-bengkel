@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class UserProductController extends Controller
 {
-     public function index()
+    public function index()
     {
         $products = Product::orderBy('created_at', 'desc')->paginate(10);
 

@@ -61,7 +61,7 @@ export default ({ children }: UserLayoutProps) => {
             <Toaster position="top-right" />
             <header className="flex h-20 w-full flex-row justify-center border-b border-solid border-neutral-600">
                 <div className="mx-10 flex w-full max-w-[1200px] flex-row items-center justify-between">
-                    <Link href="/" className="text-2xl font-bold text-white">
+                    <Link href="/" className="text-2xl font-bold text-black dark:text-white">
                         Bengkel
                     </Link>
 
@@ -75,7 +75,7 @@ export default ({ children }: UserLayoutProps) => {
                                       <Link
                                           key={menu.title}
                                           href={menu.href}
-                                          className={`cursor-pointer border-b border-solid text-base font-normal text-white ${
+                                          className={`cursor-pointer border-b border-solid text-base font-normal text-black dark:text-white ${
                                               active ? 'border-black dark:border-white' : 'border-transparent'
                                           }`}
                                       >
@@ -98,9 +98,9 @@ export default ({ children }: UserLayoutProps) => {
                                         <CircleUser />
                                     </button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[250px] bg-neutral-800">
+                                <PopoverContent className="w-[250px] bg-neutral-300 dark:bg-neutral-800">
                                     <div className="flex flex-col gap-3">
-                                        <Link href="/" className="flex items-center gap-4 text-sm">
+                                        <Link href="/profile" className="flex items-center gap-4 text-sm">
                                             <User className="size-5" />
                                             <span>Manage My Account</span>
                                         </Link>
@@ -124,12 +124,12 @@ export default ({ children }: UserLayoutProps) => {
                 <div className="mx-10 flex w-full max-w-[1200px] flex-col">{children}</div>
             </div>
 
-            <footer className="mt-32 flex w-full justify-center bg-white">
+            <footer className="mt-32 flex w-full justify-center bg-black dark:bg-white">
                 <div className="grid w-full max-w-[1200px] grid-cols-4 py-14">
-                    <div className="flex w-full flex-col text-black">
+                    <div className="flex w-full flex-col text-white dark:text-black">
                         <p className="text-base font-bold">Bengkel</p>
                     </div>
-                    <div className="flex w-full flex-col text-black">
+                    <div className="flex w-full flex-col text-white dark:text-black">
                         <p className="text-base font-bold">Support</p>
                         <div className="mt-5 flex flex-col gap-2">
                             <p className="line-clamp-2 text-base font-medium">Badung, Denpasar, Bali, Indonesia</p>
@@ -137,7 +137,7 @@ export default ({ children }: UserLayoutProps) => {
                             <p className="text-base font-medium">+6283 239 123 230</p>
                         </div>
                     </div>
-                    <div className="flex w-full flex-col text-black">
+                    <div className="flex w-full flex-col text-white dark:text-black">
                         <p className="text-base font-bold">Account</p>
                         <div className="mt-5 flex flex-col gap-2">
                             <p className="line-clamp-2 text-base font-medium">My Account</p>
@@ -146,7 +146,7 @@ export default ({ children }: UserLayoutProps) => {
                             <p className="text-base font-medium">Book</p>
                         </div>
                     </div>
-                    <div className="flex w-full flex-col text-black">
+                    <div className="flex w-full flex-col text-white dark:text-black">
                         <p className="text-base font-bold">Quick Link</p>
                         <div className="mt-5 flex flex-col gap-2">
                             <p className="line-clamp-2 text-base font-medium">Contact</p>

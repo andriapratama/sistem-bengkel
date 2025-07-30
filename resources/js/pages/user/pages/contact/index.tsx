@@ -1,6 +1,8 @@
+import { LoaderCircle, Mail, PhoneCall } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { useForm } from '@inertiajs/react';
-import { LoaderCircle, Mail, PhoneCall } from 'lucide-react';
+
 import UserLayout from '../../layouts/user-layout';
 
 type MessageForm = {
@@ -26,10 +28,10 @@ export default function Index() {
     return (
         <UserLayout>
             <div className="mt-10 flex min-h-[44.5vh] w-full gap-5">
-                <div className="flex h-fit w-[30%] flex-col rounded border border-solid border-white p-7">
+                <div className="flex h-fit w-[30%] flex-col rounded border border-solid border-black p-7 dark:border-white">
                     <div className="mb-7 flex w-full flex-col border-b border-solid border-black pb-7 dark:border-white">
                         <div className="mb-5 flex w-full items-center gap-5">
-                            <div className="flex aspect-square w-[40px] items-center justify-center rounded-full bg-white text-black">
+                            <div className="flex aspect-square w-[40px] items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black">
                                 <PhoneCall />
                             </div>
                             <span className="text-xl font-semibold text-black dark:text-white">Call to Us</span>
@@ -38,25 +40,25 @@ export default function Index() {
                         <p className="mb-3 text-sm text-black dark:text-white">We are available 24/7, 7 days a week.</p>
                         <p className="text-sm text-black dark:text-white">Phone: 0893234923</p>
                     </div>
-                    <div className="flex w-full flex-col">
+                    <div className="flex w-full flex-col text-black dark:text-white">
                         <div className="mb-5 flex w-full items-center gap-5">
-                            <div className="flex aspect-square w-[40px] items-center justify-center rounded-full bg-white text-black">
+                            <div className="flex aspect-square w-[40px] items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black">
                                 <Mail />
                             </div>
-                            <span className="text-xl font-semibold text-black dark:text-white">Write to Us</span>
+                            <span className="text-xl font-semibold">Write to Us</span>
                         </div>
 
-                        <p className="mb-3 text-sm text-black dark:text-white">Fill out our form and we will contact you within 24 hours.</p>
-                        <p className="text-sm text-black dark:text-white">Email: test@mail.com</p>
+                        <p className="mb-3 text-sm">Fill out our form and we will contact you within 24 hours.</p>
+                        <p className="text-sm">Email: test@mail.com</p>
                     </div>
                 </div>
 
-                <form className="flex h-fit flex-1 flex-col gap-5 rounded border border-solid border-white p-7">
+                <form className="flex h-fit flex-1 flex-col gap-5 rounded border border-solid border-black p-7 dark:border-white">
                     <div className="flex w-full items-center gap-3">
                         <input
                             id="name"
                             type="type"
-                            className="w-full bg-neutral-700 px-2 py-1 font-light text-white outline-none"
+                            className="w-full bg-neutral-100 px-2 py-1 font-light text-black outline-none dark:bg-neutral-700 dark:text-white"
                             placeholder="Your name"
                             value={data.name}
                             required
@@ -67,7 +69,7 @@ export default function Index() {
                         <input
                             id="email"
                             type="email"
-                            className="w-full bg-neutral-700 px-2 py-1 font-light text-white outline-none"
+                            className="w-full bg-neutral-100 px-2 py-1 font-light text-black outline-none dark:bg-neutral-700 dark:text-white"
                             placeholder="Your email"
                             value={data.email}
                             required
@@ -78,7 +80,7 @@ export default function Index() {
                         <input
                             id="phone"
                             type="text"
-                            className="w-full bg-neutral-700 px-2 py-1 font-light text-white outline-none"
+                            className="w-full bg-neutral-100 px-2 py-1 font-light text-black outline-none dark:bg-neutral-700 dark:text-white"
                             placeholder="Your whatsapp"
                             value={data.phone}
                             required
@@ -91,7 +93,7 @@ export default function Index() {
                         <textarea
                             name="message"
                             id="message"
-                            className="min-h-[180px] w-full bg-neutral-700 px-2 py-1 font-light text-white outline-none"
+                            className="min-h-[180px] w-full bg-neutral-100 px-2 py-1 font-light text-black outline-none dark:bg-neutral-700 dark:text-white"
                             placeholder="Your message"
                             value={data.message}
                             required

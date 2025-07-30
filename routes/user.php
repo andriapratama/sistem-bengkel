@@ -7,6 +7,7 @@ use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\UserLoginController;
 use App\Http\Controllers\User\UserProductController;
+use App\Http\Controllers\User\UserProfileController;
 use App\Http\Controllers\User\UserRegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,9 @@ Route::get('/billing-detail', [BillingDetailController::class, 'index'])->name('
 
 Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+
+Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
+
 
 
 

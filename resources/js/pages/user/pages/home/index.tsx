@@ -40,7 +40,7 @@ export default function Index() {
                             <TextLink
                                 key={category.id}
                                 href="/products"
-                                className="cursor-pointer border-none px-2 py-1 text-start text-sm font-normal text-white"
+                                className="cursor-pointer border-none px-2 py-1 text-start text-sm font-normal text-black dark:text-white"
                             >
                                 {category.name}
                             </TextLink>
@@ -57,10 +57,10 @@ export default function Index() {
 
             <div className="mt-20 flex w-full flex-col gap-10">
                 <div className="flex w-full items-center justify-between">
-                    <h2 className="text-3xl font-bold text-white">Best Selling Product</h2>
+                    <h2 className="text-3xl font-bold text-black dark:text-white">Best Selling Product</h2>
                     <Button
                         type="button"
-                        className="flex h-[50px] w-[150px] cursor-pointer items-center justify-center rounded-[8px] bg-white text-sm font-semibold text-black"
+                        className="flex h-[50px] w-[150px] cursor-pointer items-center justify-center rounded-[8px] bg-black text-sm font-semibold text-white dark:bg-white dark:text-black"
                     >
                         View All
                     </Button>
@@ -92,17 +92,17 @@ export default function Index() {
 
             <div className="mt-20 flex w-full flex-col gap-10">
                 <div className="flex w-full items-center justify-between">
-                    <h2 className="text-3xl font-bold text-white">Explore Out Products</h2>
+                    <h2 className="text-3xl font-bold text-black dark:text-white">Explore Out Products</h2>
                     <div className="flex gap-2">
                         <Button
                             type="button"
-                            className="flex aspect-square w-[40px] cursor-pointer items-center justify-center rounded-full bg-neutral-800"
+                            className="flex aspect-square w-[40px] cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-black dark:bg-neutral-800 dark:text-white"
                         >
                             <ArrowLeft />
                         </Button>
                         <Button
                             type="button"
-                            className="flex aspect-square w-[40px] cursor-pointer items-center justify-center rounded-full bg-neutral-800"
+                            className="flex aspect-square w-[40px] cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-black dark:bg-neutral-800 dark:text-white"
                         >
                             <ArrowRight />
                         </Button>
@@ -119,7 +119,7 @@ export default function Index() {
                     <Link href="/products">
                         <Button
                             type="button"
-                            className="flex h-[50px] w-[180px] cursor-pointer items-center justify-center rounded-[8px] bg-white text-sm font-semibold text-black"
+                            className="flex h-[50px] w-[180px] cursor-pointer items-center justify-center rounded-[8px] bg-black text-sm font-semibold text-white dark:bg-white dark:text-black"
                         >
                             View All Products
                         </Button>
