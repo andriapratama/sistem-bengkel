@@ -1,37 +1,46 @@
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useForm } from '@inertiajs/react';
+import { SharedData } from '@/types';
+import { useForm, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+import { showToast } from '../../../../lib/utils/toast';
 
 import UserLayout from '../../layouts/user-layout';
 
+type PageProps = {
+    success?: string;
+};
+
 const profileSchema = z.object({
-    name: z.string().min(1, 'Name is required'),
-    email: z.string().min(1, 'Slug is required'),
-    phone: z.string().min(1, 'Whatsapp is required'),
-    address: z.string().min(1, 'Address is required'),
+    name: z.string().min(1, 'Name is required.').max(100, 'Name maximal 100 characters.'),
+    email: z.string().min(1, 'Slug is required.'),
+    phone: z.string().min(10, 'Whatsapp is not valid.').max(15, 'Whatsapp is not valid.'),
+    address: z.string().min(1, 'Address is required.'),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function Index() {
+    const { success } = usePage<PageProps>().props;
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
+
     const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string; address?: string }>({});
 
     const {
         data,
         setData,
-        post,
+        put,
         processing,
         errors: serverErrors,
     } = useForm<ProfileFormValues>({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
+        name: auth.user.name,
+        email: auth.user.email,
+        phone: auth.user.phone || '',
+        address: auth.user.address || '',
     });
 
     useEffect(() => {
@@ -44,7 +53,7 @@ export default function Index() {
     }, [serverErrors]);
 
     const onChangePhone = (value: string) => {
-        const phone = value.replaceAll(/^0-9/g, '');
+        const phone = value.replaceAll(/[^0-9+]/g, '');
         setData('phone', phone);
     };
 
@@ -54,6 +63,7 @@ export default function Index() {
         const result = profileSchema.safeParse(data);
 
         if (!result.success) {
+            console.log('masuk');
             const flatErrors = result.error.flatten().fieldErrors;
 
             setErrors({
@@ -66,8 +76,16 @@ export default function Index() {
         }
 
         setErrors({});
-        post(route('admin.categories.store'));
+        put(
+            route('profile.update', auth.user.id, {
+                preserveScroll: true,
+            }),
+        );
     };
+
+    useEffect(() => {
+        showToast(success);
+    }, [success]);
 
     return (
         <UserLayout>

@@ -36,6 +36,7 @@ Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 
 Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
+Route::put('/profile/{user}', [UserProfileController::class, 'update'])->name('profile.update');
 
 
 

@@ -4,12 +4,11 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Cart } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 
+import { showToast } from '../../../../lib/utils/toast';
 import UserLayout from '../../layouts/user-layout';
 
 type PageProps = {
@@ -91,6 +90,15 @@ export default function Index() {
         }
     };
 
+    const toBillDetail = () => {
+        const newCarts = cartList.find((item) => item.checked);
+
+        if (!newCarts) {
+            showToast('Please select at least 1 product to continue.');
+        } else {
+            router.visit('/billing-detail');
+        }
+    };
     return (
         <UserLayout>
             <div className="mt-10 flex min-h-[44.5vh] w-full flex-col">
@@ -110,7 +118,7 @@ export default function Index() {
                                 <TableRow key={cart.id}>
                                     <TableCell>
                                         <Checkbox
-                                            checked={cart.checked}
+                                            checked={cart.checked ? true : false}
                                             onCheckedChange={() => onChecked(i)}
                                             className="border-black dark:border-white"
                                         />
@@ -177,11 +185,9 @@ export default function Index() {
                         </div>
 
                         <div className="mt-2 flex w-full items-center justify-center">
-                            <Link href="/billing-detail" className="text-2xl font-bold text-white">
-                                <Button type="button" className="w-[200px]">
-                                    Process to Checkout
-                                </Button>
-                            </Link>
+                            <Button type="button" className="w-[200px]" onClick={toBillDetail}>
+                                Process to Checkout
+                            </Button>
                         </div>
                     </div>
                 </div>
