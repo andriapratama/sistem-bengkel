@@ -31,6 +31,7 @@ Route::post('/carts', [CartController::class, 'store'])->name('carts.store');
 Route::put('/carts/{cart}', [CartController::class, 'update'])->name('carts.update');
 
 Route::get('/billing-detail', [BillingDetailController::class, 'index'])->name('billing-detail.index');
+Route::post('/billing-detail', [BillingDetailController::class, 'store'])->name('billing-detail.store');
 
 Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');

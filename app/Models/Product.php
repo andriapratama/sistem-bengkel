@@ -25,12 +25,12 @@ class Product extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
 
     public function unit()
     {
-        return $this->belongsTo(Unit::class, 'unit_id');
+        return $this->belongsTo(Unit::class);
     }
 
     public function variants()
@@ -41,5 +41,10 @@ class Product extends Model
     public function carts()
     {
         return $this->hasMany(Cart::class);
+    }
+
+    public function transactionItems()
+    {
+        return $this->hasMany(TransactionItem::class);
     }
 }
