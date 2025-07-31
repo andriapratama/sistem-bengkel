@@ -1,13 +1,13 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Product } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+import { showToast } from '../../../lib/utils/toast';
 
 type PageProps = {
     product: Product;
@@ -30,26 +30,15 @@ export default function EditImage() {
     const { product } = usePage<PageProps>().props;
     const [errors, setErrors] = useState<Partial<Record<keyof ProductFormValues, string>>>({});
     const [preview, setPreview] = useState<string | undefined>(undefined);
+    const [processing, setProcessing] = useState<boolean>(false);
 
-    const {
-        data,
-        setData,
-        post,
-        processing,
-        errors: serverErrors,
-    } = useForm<ProductFormValues>({
+    const { data, setData } = useForm<ProductFormValues>({
         image: undefined,
     });
 
     useEffect(() => {
         setPreview(product.image_url);
     }, [product]);
-
-    useEffect(() => {
-        setErrors({
-            image: serverErrors.image ? serverErrors.image : undefined,
-        });
-    }, [serverErrors]);
 
     const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -83,14 +72,16 @@ export default function EditImage() {
             formData.append('_method', 'PUT');
 
             try {
-                const response = await axios.post(`/admin/products/${product.id}/image`, formData, {
+                setProcessing(true);
+                await axios.post(`/admin/products/${product.id}/image`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-
-                console.log('Image updated:', response.data);
+                router.visit('/admin/products');
+                setProcessing(false);
             } catch (error) {
+                showToast(error.response.data.message, 'error');
                 console.log(error);
             }
         }

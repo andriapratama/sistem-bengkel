@@ -76,15 +76,13 @@ export default function Index() {
         }
 
         setErrors({});
-        put(
-            route('profile.update', auth.user.id, {
-                preserveScroll: true,
-            }),
-        );
+        put(route('profile.update', auth.user.id));
     };
 
     useEffect(() => {
-        showToast(success);
+        if (success) {
+            showToast(success);
+        }
     }, [success]);
 
     return (

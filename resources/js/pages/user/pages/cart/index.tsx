@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Cart } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 
+import { LoaderCircle } from 'lucide-react';
 import { showToast } from '../../../../lib/utils/toast';
 import UserLayout from '../../layouts/user-layout';
 
@@ -20,8 +21,9 @@ export default function Index() {
     const [cartList, setCartList] = useState<Cart[]>([]);
     const [total, setTotal] = useState<number>(0);
     const [grandTotal, setGrandTotal] = useState<number>(0);
+    const [processing, setProcessing] = useState<boolean>(false);
 
-    const onCalculate = (type: 'increase' | 'decrease', index: number) => {
+    const onCalculate = async (type: 'increase' | 'decrease', index: number) => {
         const newCartList = [...cartList];
         let quantity = 0;
         if (type === 'increase') {
@@ -37,6 +39,13 @@ export default function Index() {
             subtotal,
         };
         setCartList(newCartList);
+
+        try {
+            await axios.put(`/carts/${cartList[index].id}`, newCartList[index]);
+        } catch (error) {
+            showToast(error.response.data.message, 'error');
+            console.log(error);
+        }
     };
 
     useEffect(() => {
@@ -86,11 +95,13 @@ export default function Index() {
         try {
             await axios.put(`/carts/${cartList[index].id}`, newCart);
         } catch (error) {
+            showToast(error.response.data.message, 'error');
             console.log(error);
         }
     };
 
     const toBillDetail = () => {
+        setProcessing(true);
         const newCarts = cartList.find((item) => item.checked);
 
         if (!newCarts) {
@@ -98,6 +109,7 @@ export default function Index() {
         } else {
             router.visit('/billing-detail');
         }
+        setProcessing(false);
     };
     return (
         <UserLayout>
@@ -185,7 +197,8 @@ export default function Index() {
                         </div>
 
                         <div className="mt-2 flex w-full items-center justify-center">
-                            <Button type="button" className="w-[200px]" onClick={toBillDetail}>
+                            <Button type="button" className="w-[200px]" onClick={toBillDetail} disabled={processing}>
+                                {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                                 Process to Checkout
                             </Button>
                         </div>

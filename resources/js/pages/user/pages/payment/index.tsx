@@ -1,18 +1,34 @@
-import { Clock } from 'lucide-react';
-import { useEffect, useState } from 'react';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Link } from '@inertiajs/react';
-
+import { Transaction } from '@/types';
+import { router, usePage } from '@inertiajs/react';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { Clock, LoaderCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { showToast } from '../../../../lib/utils/toast';
 import UserLayout from '../../layouts/user-layout';
 
+type PageProps = {
+    transaction: Transaction;
+};
+
 export default function Index() {
-    const [hours, setHours] = useState<number>(24);
-    const [payment, setPayment] = useState<string>('');
-    const [timeLeft, setTimeLeft] = useState(hours * 60 * 60);
+    const { transaction } = usePage<PageProps>().props;
+
+    const startTime = new Date(transaction.created_at).getTime(); // created_at dalam ms
+    const endTime = startTime + 24 * 60 * 60 * 1000; // tambahkan 24 jam (ms)
+    const now = Date.now();
+    const initialSecondsLeft = Math.floor((endTime - now) / 1000); // dalam detik
+    const [timeLeft, setTimeLeft] = useState(initialSecondsLeft > 0 ? initialSecondsLeft : 0);
+
     const [image, setImage] = useState<File | null>(null);
+    const [processing, setProcessing] = useState<boolean>(false);
+
+    useEffect(() => {
+        console.log(transaction);
+    }, [transaction]);
 
     const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -24,12 +40,10 @@ export default function Index() {
     };
 
     useEffect(() => {
-        if (timeLeft <= 0) {
-            return;
-        }
+        if (timeLeft <= 0) return;
 
         const interval = setInterval(() => {
-            setTimeLeft((prev) => prev - 1);
+            setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
         }, 1000);
 
         return () => clearInterval(interval);
@@ -49,6 +63,34 @@ export default function Index() {
 
     const { hours: h, minutes: m, seconds: s } = getTimeParts(timeLeft);
 
+    const onSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!image) {
+            showToast('Image payment is required.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', image);
+
+        try {
+            setProcessing(true);
+            await axios.post(`/payment/${transaction.invoice_number}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            router.visit('/payment/success');
+        } catch (error) {
+            // showToast(error.response.data.message, 'error');
+            console.log(error);
+        } finally {
+            setProcessing(false);
+        }
+    };
+
     return (
         <UserLayout>
             <div className="mt-10 flex min-h-[44.5vh] w-full gap-10">
@@ -67,7 +109,7 @@ export default function Index() {
                             Nama penerima: <span className="font-bold">Owner Bengkel</span>
                         </li>
                         <li>
-                            Masukkan nominal: <span className="font-bold">{formatPrice(200001)}</span>
+                            Masukkan nominal: <span className="font-bold">{formatPrice(transaction.total_price)}</span>
                         </li>
                         <li>Mohon masukkan nominal sesuai dengan diatas, digit terakhir merupakan code transaksi.</li>
                         <li>Lakukan transfer, lalu upload bukti di bawah in</li>
@@ -84,6 +126,7 @@ export default function Index() {
                                     setImage(e.target.files[0]);
                                 }
                             }}
+                            disabled={processing}
                             className="w-[300px] border-black dark:border-white"
                         />
                     </div>
@@ -114,31 +157,36 @@ export default function Index() {
                     <div className="flex w-full flex-col gap-3">
                         <div className="flex w-full items-center justify-between text-sm font-normal text-black dark:text-white">
                             <p>Time/Date</p>
-                            <p>26-07-2025, 19.14</p>
+                            <p>{dayjs(transaction.created_at).format('DD-MM-YYYY, HH.mm')}</p>
                         </div>
                         <div className="flex w-full items-center justify-between text-sm font-normal text-black dark:text-white">
-                            <p>Ref Number</p>
-                            <p>2507260001</p>
+                            <p>Invoice Number</p>
+                            <p>{transaction.invoice_number}</p>
                         </div>
                         <div className="flex w-full items-center justify-between text-sm font-normal text-black dark:text-white">
                             <p>Payment Method</p>
-                            <p>Transfer Bank</p>
+                            <p>
+                                {transaction.payment_method === 'bank_transfer'
+                                    ? 'Bank Transfer'
+                                    : transaction.payment_method === 'ewallet'
+                                      ? 'E-Wallet'
+                                      : 'Cash on Delivery'}
+                            </p>
                         </div>
                         <div className="flex w-full items-center justify-between text-sm font-normal text-black dark:text-white">
                             <p>Member Name</p>
-                            <p>Test Member</p>
+                            <p>{transaction.user.name}</p>
                         </div>
                         <div className="flex w-full items-center justify-between text-sm font-normal text-black dark:text-white">
                             <p>Amount Transfer</p>
-                            <p>{formatPrice(200001)}</p>
+                            <p>{formatPrice(transaction.total_price)}</p>
                         </div>
                     </div>
 
-                    <Link href="/payment/success">
-                        <Button type="button" className="mt-10 w-full">
-                            Finish
-                        </Button>
-                    </Link>
+                    <Button type="button" className="mt-10 w-full" onClick={onSubmit} disabled={processing}>
+                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                        Finish
+                    </Button>
                 </div>
             </div>
         </UserLayout>

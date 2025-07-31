@@ -50,6 +50,8 @@ class BillingDetailController extends Controller
             ->where('checked', true)
             ->get();
 
+            
+
         if ($carts->isEmpty()) {
            return redirect()->back()->with('error', 'No items selected for checkout.');
         }
@@ -57,6 +59,8 @@ class BillingDetailController extends Controller
         $totalPrice = $carts->sum(function ($cart) {
             return $cart->product->price * $cart->quantity;
         });
+        $codeNumber = random_int(1, 200);
+        $totalPrice += $codeNumber;
 
         $totalQuantity = $carts->sum(function ($cart) {
             return $cart->quantity;
@@ -74,38 +78,39 @@ class BillingDetailController extends Controller
 
         $invoiceNumber = 'TRS' . $today . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
 
-        DB::beginTransaction();
-
-        try {
+       $transaction = DB::transaction(function () use ($user, $validated, $carts, $invoiceNumber, $totalPrice, $totalQuantity) {
             $transaction = Transaction::create([
-                'invoice_number' => $invoiceNumber,
-                'user_id' => $user->id,
-                'total_price' => $totalPrice,
-                'total_quantity' => $totalQuantity,
-                'payment_method' => $validated['payment_method'],
+                'invoice_number'   => $invoiceNumber,
+                'user_id'          => $user->id,
+                'total_price'      => $totalPrice,
+                'total_quantity'   => $totalQuantity,
+                'payment_method'   => $validated['payment_method'],
                 'shipping_address' => $user->address,
             ]);
 
             foreach ($carts as $cart) {
                 TransactionItem::create([
                     'transaction_id' => $transaction->id,
-                    'product_id' => $cart->product_id,
-                    'variant_id' => $cart->variant_id,
-                    'quantity' => $cart->quantity,
-                    'price' => $cart->product->price,
+                    'product_id'     => $cart->product_id,
+                    'quantity'       => $cart->quantity,
+                    'price'          => $cart->product->price,
+                    'subtotal'       => $cart->product->price * $cart->quantity,
                 ]);
+
+                if ($cart->variant_id) {
+                    $data['variant_id'] = $cart->variant_id;
+                }
             }
 
-            Cart::where('user_id', $user->id)->where('checked', true)->delete();
+            Cart::where('user_id', $user->id)
+                ->where('checked', true)
+                ->delete();
 
-            DB::commit();
+            return $transaction;
+        });
 
-            return redirect()->route('payment.index', $transaction->id)
-                ->with('success', 'Transaction successful!');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Transaction failed. Please try again.');
-        }
+        return Inertia::location(route('payment.index', [
+            'invoice' => $transaction->invoice_number,
+        ]));
     }
 }

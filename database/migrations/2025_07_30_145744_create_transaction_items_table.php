@@ -18,11 +18,11 @@ return new class extends Migration
             $table->decimal('subtotal', 15, 2);
 
             $table->unsignedBigInteger('transaction_id')->nullable();
-            $table->foreign('transaction_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('set null');
             $table->unsignedBigInteger('product_id')->nullable();
-            $table->foreign('product_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
             $table->unsignedBigInteger('variant_id')->nullable();
-            $table->foreign('variant_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('variant_id')->references('id')->on('variants')->onDelete('set null');
             $table->timestamps();
         });
     }

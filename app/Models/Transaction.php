@@ -13,6 +13,8 @@ class Transaction extends Model
         'payment_status',
         'payment_method',
         'shipping_address',
+        'payment_image',
+        'shipping_image',
         'user_id',
     ];
 

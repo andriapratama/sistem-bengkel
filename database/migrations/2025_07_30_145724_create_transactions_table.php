@@ -19,7 +19,9 @@ return new class extends Migration
             $table->enum('payment_status', ['pending', 'paid', 'failed'])->default('pending');
             $table->enum('payment_method', ['bank_transfer', 'ewallet', 'cod'])->default('bank_transfer');
             $table->text('shipping_address');
-            
+            $table->string('payment_image')->nullable();
+            $table->string('shipping_image')->nullable();
+
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();

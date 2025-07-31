@@ -110,3 +110,17 @@ export interface Cart {
     checked: boolean;
     subtotal?: number;
 }
+
+export interface Transaction {
+    id: number;
+    invoice_number: string;
+    payment_method: string;
+    payment_status: string;
+    shipping_address: string;
+    total_price: number;
+    total_quantity: number;
+    user_id: number;
+    user: User;
+    updated_at: Date;
+    created_at: Date;
+}

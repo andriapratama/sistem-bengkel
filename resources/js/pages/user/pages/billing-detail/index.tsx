@@ -12,8 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Cart, SharedData } from '@/types';
-import { Link, router, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { Link, useForm, usePage } from '@inertiajs/react';
+import { LoaderCircle } from 'lucide-react';
+import { FormEventHandler, useEffect, useState } from 'react';
 import { showToast } from '../../../../lib/utils/toast';
 import UserLayout from '../../layouts/user-layout';
 
@@ -21,12 +22,18 @@ type PageProps = {
     carts: Cart[];
 };
 
+type Form = {
+    payment_method: string;
+};
+
 export default function Index() {
     const { carts } = usePage<PageProps>().props;
     const page = usePage<SharedData>();
     const { auth } = page.props;
 
-    const [payment, setPayment] = useState<string>('');
+    const { data, setData, post, processing, errors } = useForm<Required<Form>>({
+        payment_method: '',
+    });
     const [error, setError] = useState<boolean>(false);
     const [total, setTotal] = useState<number>(0);
     const [grandTotal, setGrandTotal] = useState<number>(0);
@@ -57,10 +64,10 @@ export default function Index() {
 
     useEffect(() => {
         setError(false);
-    }, [payment]);
+    }, [data]);
 
-    const toPayment = () => {
-        if (!payment) {
+    const toPayment: FormEventHandler = (e) => {
+        if (!data.payment_method) {
             showToast('Please select one payment option', 'error');
             setError(true);
             return;
@@ -71,8 +78,15 @@ export default function Index() {
             return;
         }
 
-        router.visit('/payment');
+        e.preventDefault();
+        post(route('billing-detail.store'));
     };
+
+    useEffect(() => {
+        if (errors.payment_method) {
+            showToast(errors.payment_method || '', 'error');
+        }
+    }, [errors]);
 
     return (
         <>
@@ -81,22 +95,24 @@ export default function Index() {
                     <div className="flex h-fit flex-1 flex-col rounded border border-solid border-black p-5 dark:border-white">
                         <h1 className="mb-5 text-xl font-semibold text-black dark:text-white">Select Payment Option</h1>
 
-                        <RadioGroup className="flex w-full flex-col gap-5" onValueChange={(e) => setPayment(e)}>
+                        <RadioGroup className="flex w-full flex-col gap-5" onValueChange={(e) => setData('payment_method', e)}>
                             <div
                                 className={`flex w-full flex-col rounded border border-solid p-5 ${error ? 'border-red-500' : 'border-black dark:border-white'}`}
                             >
                                 <div
                                     className={`flex w-full gap-5 ${
-                                        payment === 'bank' ? 'mb-5 border-b border-solid border-black pb-5 dark:border-white' : ''
+                                        data.payment_method === 'bank_transfer'
+                                            ? 'mb-5 border-b border-solid border-black pb-5 dark:border-white'
+                                            : ''
                                     }`}
                                 >
-                                    <RadioGroupItem value="bank" id="r1" className="cursor-pointer border-black dark:border-white" />
+                                    <RadioGroupItem value="bank_transfer" id="r1" className="cursor-pointer border-black dark:border-white" />
                                     <Label className="cursor-pointer" htmlFor="r1">
                                         Transfer Bank
                                     </Label>
                                 </div>
 
-                                {payment === 'bank' ? (
+                                {data.payment_method === 'bank_transfer' ? (
                                     <div className="flex w-full flex-col pl-9 text-sm text-black dark:text-white">
                                         <p>Perhatian:</p>
                                         <p>
@@ -112,16 +128,16 @@ export default function Index() {
                             >
                                 <div
                                     className={`flex w-full gap-5 ${
-                                        payment === 'wallet' ? 'mb-5 border-b border-solid border-black pb-5 dark:border-white' : ''
+                                        data.payment_method === 'ewallet' ? 'mb-5 border-b border-solid border-black pb-5 dark:border-white' : ''
                                     }`}
                                 >
-                                    <RadioGroupItem value="wallet" id="r2" className="cursor-pointer border-black dark:border-white" />
+                                    <RadioGroupItem value="ewallet" id="r2" className="cursor-pointer border-black dark:border-white" />
                                     <Label className="cursor-pointer" htmlFor="r2">
                                         E-Wallet
                                     </Label>
                                 </div>
 
-                                {payment === 'wallet' ? (
+                                {data.payment_method === 'ewallet' ? (
                                     <div className="flex w-full flex-col pl-9 text-sm text-black dark:text-white">
                                         <p>Perhatian:</p>
                                         <p>
@@ -137,7 +153,7 @@ export default function Index() {
                             >
                                 <div
                                     className={`flex w-full gap-5 ${
-                                        payment === 'cod' ? 'mb-5 border-b border-solid border-black pb-5 dark:border-white' : ''
+                                        data.payment_method === 'cod' ? 'mb-5 border-b border-solid border-black pb-5 dark:border-white' : ''
                                     }`}
                                 >
                                     <RadioGroupItem value="cod" id="r3" className="cursor-pointer border-black dark:border-white" />
@@ -146,7 +162,7 @@ export default function Index() {
                                     </Label>
                                 </div>
 
-                                {payment === 'cod' ? (
+                                {data.payment_method === 'cod' ? (
                                     <div className="flex w-full flex-col pl-9 text-sm text-black dark:text-white">
                                         <p>Perhatian:</p>
                                         <p>
@@ -202,7 +218,8 @@ export default function Index() {
                             </div>
                         </div>
 
-                        <Button type="button" className="mt-10 w-full" onClick={toPayment}>
+                        <Button type="button" className="mt-10 w-full" onClick={toPayment} disabled={processing}>
+                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                             Pay
                         </Button>
                     </div>

@@ -52,7 +52,7 @@ class AdminProductController extends Controller
             'price' => (float) $request->input('price'),
         ]);
 
-        $variants = $request->input('variants');
+       $variants = json_decode($request->input('variants'), true);
         if ($variants && is_array($variants)) {
             $normalizedVariants = array_map(function ($variant) {
                 return [
@@ -105,7 +105,9 @@ class AdminProductController extends Controller
             }
         }
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+        return response()->json([
+            'success' => 'Product created successfully.',
+        ]);
     }
 
     public function edit(Product $product){
@@ -172,9 +174,8 @@ class AdminProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')->with([
+        return response()->json([
             'success' => 'Image product updated successfully.',
-            'updated_product' => $product,
         ]);
     }
 

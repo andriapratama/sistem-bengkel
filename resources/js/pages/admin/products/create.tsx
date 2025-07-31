@@ -1,22 +1,19 @@
 import axios from 'axios';
 import { Trash } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import {
-    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Category, Unit } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { showToast } from '../../../lib/utils/toast';
 
 type PageProps = {
     units: Array<Unit>;
@@ -66,14 +63,9 @@ export default function Create() {
     const [errors, setErrors] = useState<Partial<Record<keyof ProductFormValues, string>>>({});
     const [preview, setPreview] = useState<string | null>(null);
     const [variants, setVariants] = useState<VariantForm[]>([]);
+    const [processing, setProcessing] = useState<boolean>(false);
 
-    const {
-        data,
-        setData,
-        post,
-        processing,
-        errors: serverErrors,
-    } = useForm<ProductFormValues>({
+    const { data, setData } = useForm<ProductFormValues>({
         name: '',
         slug: '',
         description: '',
@@ -87,18 +79,6 @@ export default function Create() {
         unit_id: 0,
         variants: [],
     });
-
-    useEffect(() => {
-        setErrors({
-            name: serverErrors.name ? serverErrors.name : undefined,
-            slug: serverErrors.slug ? serverErrors.slug : undefined,
-            stock: serverErrors.stock ? serverErrors.stock : undefined,
-            cost: serverErrors.cost ? serverErrors.cost : undefined,
-            price: serverErrors.price ? serverErrors.price : undefined,
-            category_id: serverErrors.category_id ? serverErrors.category_id : undefined,
-            unit_id: serverErrors.unit_id ? serverErrors.unit_id : undefined,
-        });
-    }, [serverErrors]);
 
     const onChangeString = (field: keyof ProductFormValues, value: string) => {
         if (field === 'name') {
@@ -196,34 +176,36 @@ export default function Create() {
 
         setErrors({});
         const formData = new FormData();
-        Object.entries(data).forEach(([key, value]) => {
-            if (key === 'image' && value instanceof FileList && value.length > 0) {
-                formData.append(key, value[0]);
-            } else if (typeof value === 'boolean') {
-                formData.append(key, value ? '1' : '0');
-            } else if (key === 'variants') {
-                formData.append('variants', JSON.stringify(variants));
-            } else if (value !== null && value !== undefined && value !== '') {
-                formData.append(key, String(value));
-            }
-        });
+        formData.append('name', data.name);
+        formData.append('stock', data.stock);
+        formData.append('cost', data.cost);
+        formData.append('price', data.price);
+        formData.append('slug', data.slug);
+        formData.append('description', data.description);
+        formData.append('status', data.status);
+        formData.append('hasVariant', data.hasVariant);
+        formData.append('category_id', data.category_id);
+        formData.append('unit_id', data.unit_id);
+        formData.append('image', data.image);
+        formData.append('variants', JSON.stringify(variants));
 
         try {
-            const response = await axios.post('/admin/products', formData, {
+            setProcessing(true);
+            await axios.post('/admin/products', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            console.log('Product created:', response.data);
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
-            if (error.response?.data?.errors) {
-                setErrors(error.response.data.errors);
-            } else {
-                console.error('Error:', error.message);
-            }
+            showToast('Product created Successfully.');
+            setTimeout(() => {
+                router.visit('/admin/products');
+            }, 1000);
+        } catch (error) {
+            showToast(error.response.data.message, 'error');
+            console.log(error);
+        } finally {
+            setProcessing(false);
         }
     };
 

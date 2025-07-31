@@ -33,8 +33,9 @@ Route::put('/carts/{cart}', [CartController::class, 'update'])->name('carts.upda
 Route::get('/billing-detail', [BillingDetailController::class, 'index'])->name('billing-detail.index');
 Route::post('/billing-detail', [BillingDetailController::class, 'store'])->name('billing-detail.store');
 
-Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/{invoice}', [PaymentController::class, 'index'])->name('payment.index');
+Route::post('/payment/{invoice}', [PaymentController::class, 'store'])->name('payment.store');
 
 Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
 Route::put('/profile/{user}', [UserProfileController::class, 'update'])->name('profile.update');
