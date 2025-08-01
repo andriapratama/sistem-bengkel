@@ -1,9 +1,9 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useEffect } from 'react';
-import { toast } from 'sonner';
 
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
+import { showToast } from '@/lib/utils/toast';
 import { Category, Product, SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
@@ -25,10 +25,7 @@ export default function Index() {
 
     useEffect(() => {
         if (success) {
-            toast(success, {
-                className: '!bg-neutral-800 [&>button]:!bg-neutral-800',
-                closeButton: true,
-            });
+            showToast(success);
         }
     }, [success]);
     return (

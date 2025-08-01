@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Minus, Plus } from 'lucide-react';
+import { Image, Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ export default function Index() {
     const [quantity, setQuantity] = useState<number>(0);
     const [variant, setVariant] = useState<string>('');
     const [processing, setProcessing] = useState<boolean>(false);
+    const [isImageError, setIsImageError] = useState<boolean>(false);
 
     const onCalculate = (type: 'increase' | 'decrease') => {
         if (type === 'increase') {
@@ -58,12 +59,14 @@ export default function Index() {
                 quantity: quantity,
                 product_id: product.id,
                 user_id: auth.user.id,
+                variant_id: null,
             });
-            setProcessing((prev) => !prev);
             showToast('Cart saved.');
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            console.log(error.response);
             showToast('Server Error', 'error');
+        } finally {
+            setProcessing((prev) => !prev);
         }
     };
     return (
@@ -71,7 +74,18 @@ export default function Index() {
             <div className="relative mt-10 flex min-h-[44.5vh] w-full flex-col">
                 <div className="relative mx-auto flex w-[90%] gap-[100px]">
                     <div className="relative flex aspect-square w-[50%] items-center justify-center overflow-hidden bg-neutral-300 dark:bg-neutral-800">
-                        <img src={product.image_url} alt={product.name} className="h-full w-full object-cover object-center" />
+                        <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className={`h-full w-full object-cover object-center ${isImageError ? 'opacity-0' : 'opacity-100'}`}
+                            onLoad={() => {
+                                setIsImageError(false);
+                            }}
+                            onError={() => {
+                                setIsImageError(true);
+                            }}
+                        />
+                        <Image className={`absolute size-[100px] text-black dark:text-white ${isImageError ? 'opacity-100' : 'opacity-0'}`} />
                     </div>
 
                     <div className="flex h-fit w-[50%] flex-col text-black dark:text-white">

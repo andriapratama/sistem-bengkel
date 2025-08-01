@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
 use App\Http\Controllers\Admin\AdminVehicleBrandController;
@@ -26,6 +27,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             return Inertia::render('admin/dashboard');
         })->name('dashboard');
 
+        Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{id}', [AdminOrderController::class, 'detail'])->name('orders.detail');
+
         Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
         Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
         Route::get('/products/add', [AdminProductController::class, 'create'])->name('products.create');
@@ -48,7 +52,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/categories/{category}/edit', [AdminCategoryController::class, "edit"])->name('categories.edit');
         Route::put('/categories/{category}', [AdminCategoryController::class, "update"])->name('categories.update');
         Route::delete('/categories/{category}', [AdminCategoryController::class, "destroy"])->name('categories.destroy');
-    
+
         Route::get('/vehicle-brands', [AdminVehicleBrandController::class, 'index'])->name('vehicle-brands.index');
         Route::post('/vehicle-brands', [AdminVehicleBrandController::class, 'store'])->name('vehicle-brands.store');
         Route::get('/vehicle-brands/add', [AdminVehicleBrandController::class, 'create'])->name('vehicle-brands.create');

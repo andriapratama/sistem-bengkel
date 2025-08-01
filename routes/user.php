@@ -9,6 +9,7 @@ use App\Http\Controllers\User\UserLoginController;
 use App\Http\Controllers\User\UserProductController;
 use App\Http\Controllers\User\UserProfileController;
 use App\Http\Controllers\User\UserRegisterController;
+use App\Http\Controllers\User\UserMyOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -40,6 +41,8 @@ Route::post('/payment/{invoice}', [PaymentController::class, 'store'])->name('pa
 Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
 Route::put('/profile/{user}', [UserProfileController::class, 'update'])->name('profile.update');
 
+Route::get('/my-orders', [UserMyOrderController::class, 'index'])->name('my-orders.index');
+Route::get('/my-orders/{invoice}', [UserMyOrderController::class, 'detail'])->name('my-orders.detail');
 
 
 

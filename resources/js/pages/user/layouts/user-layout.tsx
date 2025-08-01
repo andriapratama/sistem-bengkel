@@ -104,7 +104,7 @@ export default ({ children }: UserLayoutProps) => {
                                             <User className="size-5" />
                                             <span>Manage My Account</span>
                                         </Link>
-                                        <Link href="/" className="flex items-center gap-4 text-sm">
+                                        <Link href="/my-orders" className="flex items-center gap-4 text-sm">
                                             <ShoppingBag className="size-5" />
                                             <span>My Order</span>
                                         </Link>

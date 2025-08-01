@@ -1,10 +1,12 @@
+import { BookOpen, Database, Folder, LayoutGrid, ShoppingCart, Wrench } from 'lucide-react';
+
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import { NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Database, Folder, LayoutGrid, Wrench } from 'lucide-react';
+
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -12,6 +14,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/admin/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: 'Orders',
+        href: '/admin/orders',
+        icon: ShoppingCart,
     },
     {
         title: 'Products',

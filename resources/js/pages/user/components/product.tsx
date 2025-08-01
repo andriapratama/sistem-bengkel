@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Image } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ interface ProductComponentProps {
 
 export function ProductComponent({ product, user }: ProductComponentProps) {
     const [processing, setProcessing] = useState<boolean>(false);
+    const [isError, setIsError] = useState<boolean>(false);
 
     const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -59,7 +61,18 @@ export function ProductComponent({ product, user }: ProductComponentProps) {
                 href={`/products/${product.slug}`}
                 className="flex aspect-square w-full items-center justify-center overflow-hidden bg-neutral-200 dark:bg-neutral-800"
             >
-                <img src={product.image_url} alt={product.name} className="h-full w-full object-cover object-center" />
+                <img
+                    src={product.image_url}
+                    alt={product.name}
+                    onLoad={() => {
+                        setIsError(false);
+                    }}
+                    onError={() => {
+                        setIsError(true);
+                    }}
+                    className={`h-full w-full object-cover object-center ${isError ? 'opacity-0' : 'opacity-100'}`}
+                />
+                <Image className={`absolute size-[70px] text-black dark:text-white ${isError ? 'opacity-100' : 'opacity-0'}`} />
             </Link>
             <div className="flex w-full flex-col px-2">
                 <p className="line-clamp-1 text-sm font-semibold text-black dark:text-white">{product.name}</p>

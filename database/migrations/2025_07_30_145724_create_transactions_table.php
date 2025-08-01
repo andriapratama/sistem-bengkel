@@ -18,8 +18,9 @@ return new class extends Migration
             $table->integer('total_quantity');
             $table->enum('payment_status', ['pending', 'paid', 'failed'])->default('pending');
             $table->enum('payment_method', ['bank_transfer', 'ewallet', 'cod'])->default('bank_transfer');
-            $table->text('shipping_address');
             $table->string('payment_image')->nullable();
+            $table->text('shipping_address');
+            $table->enum('shipping_status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'failed'])->default('bank_transfer')->default('pending');
             $table->string('shipping_image')->nullable();
 
             $table->unsignedBigInteger('user_id')->nullable();

@@ -1,3 +1,6 @@
+import { Image, LoaderCircle } from 'lucide-react';
+import { FormEventHandler, useEffect, useState } from 'react';
+
 import {
     AlertDialog,
     AlertDialogAction,
@@ -13,8 +16,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Cart, SharedData } from '@/types';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler, useEffect, useState } from 'react';
+
 import { showToast } from '../../../../lib/utils/toast';
 import UserLayout from '../../layouts/user-layout';
 
@@ -34,6 +36,7 @@ export default function Index() {
     const { data, setData, post, processing, errors } = useForm<Required<Form>>({
         payment_method: '',
     });
+    const [cartList, setCartList] = useState<Cart[]>([]);
     const [error, setError] = useState<boolean>(false);
     const [total, setTotal] = useState<number>(0);
     const [grandTotal, setGrandTotal] = useState<number>(0);
@@ -50,6 +53,13 @@ export default function Index() {
 
     useEffect(() => {
         if (carts && carts.length > 0) {
+            const newCarts: Cart[] = [];
+            carts.map((cart) => {
+                const cartTmp = { ...cart, isImageError: false };
+                newCarts.push(cartTmp);
+            });
+            setCartList(newCarts);
+
             const total = carts.reduce((total, item) => {
                 const subtotal = item.quantity * item.product.price;
                 return total + subtotal;
@@ -178,21 +188,29 @@ export default function Index() {
 
                     <div className="flex w-[400px] flex-col">
                         <div className="flex w-full flex-col gap-6">
-                            {carts.map((cart) => {
+                            {cartList.map((cart, i) => {
                                 return (
-                                    <div key={cart.id} className="flex w-full items-center justify-between">
+                                    <div key={cart.id} className="flex w-full items-center justify-between gap-5">
                                         <div className="flex items-center gap-5">
                                             <div className="flex aspect-square w-[50px] items-center justify-center overflow-hidden">
                                                 <img
                                                     src={`/storage/${cart.product.image}`}
                                                     alt={cart.product.name}
-                                                    className="h-full w-full object-cover object-center"
+                                                    className={`h-full w-full object-cover object-center ${cart.isImageError ? 'opacity-0' : 'opacity-100'}`}
                                                     loading="lazy"
+                                                    onError={() => {
+                                                        setCartList((prev) =>
+                                                            prev.map((item, index) => (index === i ? { ...item, isImageError: true } : item)),
+                                                        );
+                                                    }}
+                                                />
+                                                <Image
+                                                    className={`absolute size-[50px] text-black dark:text-white ${cart.isImageError ? 'opacity-100' : 'opacity-0'}`}
                                                 />
                                             </div>
 
                                             <div className="flex flex-col gap-1 text-sm font-light text-black dark:text-white">
-                                                <p>{cart.product.name}</p>
+                                                <p className="line-clamp-2">{cart.product.name}</p>
                                                 <p>Quantity: {cart.quantity}</p>
                                             </div>
                                         </div>

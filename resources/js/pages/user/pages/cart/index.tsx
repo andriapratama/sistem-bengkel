@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Minus, Plus } from 'lucide-react';
+import { Image, LoaderCircle, Minus, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Cart } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 
-import { LoaderCircle } from 'lucide-react';
 import { showToast } from '../../../../lib/utils/toast';
 import UserLayout from '../../layouts/user-layout';
 
@@ -42,7 +41,7 @@ export default function Index() {
 
         try {
             await axios.put(`/carts/${cartList[index].id}`, newCartList[index]);
-        } catch (error) {
+        } catch (error: any) {
             showToast(error.response.data.message, 'error');
             console.log(error);
         }
@@ -53,7 +52,7 @@ export default function Index() {
 
         carts.map((cart) => {
             const subtotal = cart.quantity * cart.product.price;
-            const tmpCart = { ...cart, subtotal };
+            const tmpCart = { ...cart, subtotal, isImageError: false };
             newCarts.push(tmpCart);
         });
 
@@ -94,7 +93,7 @@ export default function Index() {
 
         try {
             await axios.put(`/carts/${cartList[index].id}`, newCart);
-        } catch (error) {
+        } catch (error: any) {
             showToast(error.response.data.message, 'error');
             console.log(error);
         }
@@ -141,8 +140,16 @@ export default function Index() {
                                                 <img
                                                     src={`/storage/${cart.product.image}`}
                                                     alt={cart.product.name}
-                                                    className="h-full w-full object-cover object-center"
+                                                    className={`h-full w-full object-cover object-center ${cart.isImageError ? 'opacity-0' : 'opacity-100'}`}
                                                     loading="lazy"
+                                                    onError={() => {
+                                                        setCartList((prev) =>
+                                                            prev.map((item, index) => (index === i ? { ...item, isImageError: true } : item)),
+                                                        );
+                                                    }}
+                                                />
+                                                <Image
+                                                    className={`absolute size-[50px] text-black dark:text-white ${cart.isImageError ? 'opacity-100' : 'opacity-0'}`}
                                                 />
                                             </div>
 
