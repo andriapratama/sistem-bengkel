@@ -25,10 +25,7 @@ export default function Index() {
 
     const [image, setImage] = useState<File | null>(null);
     const [processing, setProcessing] = useState<boolean>(false);
-
-    useEffect(() => {
-        console.log(transaction);
-    }, [transaction]);
+    const [isError, setIsError] = useState<boolean>(false);
 
     const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -67,7 +64,8 @@ export default function Index() {
         e.preventDefault();
 
         if (!image) {
-            showToast('Image payment is required.');
+            showToast('Image payment is required.', 'error');
+            setIsError(true);
             return;
         }
 
@@ -109,7 +107,7 @@ export default function Index() {
                             Nama penerima: <span className="font-bold">Owner Bengkel</span>
                         </li>
                         <li>
-                            Masukkan nominal: <span className="font-bold">{formatPrice(transaction.total_price)}</span>
+                            Masukkan nominal: <span className="font-bold">{formatPrice(transaction.grand_total)}</span>
                         </li>
                         <li>Mohon masukkan nominal sesuai dengan diatas, digit terakhir merupakan code transaksi.</li>
                         <li>Lakukan transfer, lalu upload bukti di bawah in</li>
@@ -123,11 +121,12 @@ export default function Index() {
                             accept="image/*"
                             onChange={(e) => {
                                 if (e.target.files && e.target.files[0]) {
+                                    setIsError(false);
                                     setImage(e.target.files[0]);
                                 }
                             }}
                             disabled={processing}
-                            className="w-[300px] border-black dark:border-white"
+                            className={`w-[300px] ${isError ? 'border-red-500' : 'border-black dark:border-white'}`}
                         />
                     </div>
                 </div>
@@ -179,13 +178,13 @@ export default function Index() {
                         </div>
                         <div className="flex w-full items-center justify-between text-sm font-normal text-black dark:text-white">
                             <p>Amount Transfer</p>
-                            <p>{formatPrice(transaction.total_price)}</p>
+                            <p>{formatPrice(transaction.grand_total)}</p>
                         </div>
                     </div>
 
                     <Button type="button" className="mt-10 w-full" onClick={onSubmit} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Finish
+                        Complete Payment
                     </Button>
                 </div>
             </div>

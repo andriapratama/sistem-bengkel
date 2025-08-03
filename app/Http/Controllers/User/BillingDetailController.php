@@ -28,6 +28,10 @@ class BillingDetailController extends Controller
             ->where('checked', true)
             ->get();
 
+        if ($carts->isEmpty()) {
+            return redirect()->route('carts.index');
+        }
+
         return Inertia::render('user/pages/billing-detail/index', [
             'carts' => $carts
         ]);
@@ -50,8 +54,6 @@ class BillingDetailController extends Controller
             ->where('checked', true)
             ->get();
 
-            
-
         if ($carts->isEmpty()) {
            return redirect()->back()->with('error', 'No items selected for checkout.');
         }
@@ -59,8 +61,10 @@ class BillingDetailController extends Controller
         $totalPrice = $carts->sum(function ($cart) {
             return $cart->product->price * $cart->quantity;
         });
+
+        $grandTotal = $totalPrice;
         $codeNumber = random_int(1, 200);
-        $totalPrice += $codeNumber;
+        $grandTotal += $codeNumber;
 
         $totalQuantity = $carts->sum(function ($cart) {
             return $cart->quantity;
@@ -78,15 +82,24 @@ class BillingDetailController extends Controller
 
         $invoiceNumber = 'TRS' . $today . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
 
-       $transaction = DB::transaction(function () use ($user, $validated, $carts, $invoiceNumber, $totalPrice, $totalQuantity) {
-            $transaction = Transaction::create([
+       $transaction = DB::transaction(function () use ($user, $validated, $carts, $invoiceNumber, $totalPrice, $grandTotal, $totalQuantity) {
+            $data = [
                 'invoice_number'   => $invoiceNumber,
                 'user_id'          => $user->id,
                 'total_price'      => $totalPrice,
+                'grand_total'      => $grandTotal,
                 'total_quantity'   => $totalQuantity,
                 'payment_method'   => $validated['payment_method'],
                 'shipping_address' => $user->address,
-            ]);
+            ];
+
+            if ($validated['payment_method'] === 'cod') {
+                $data['shipping_status'] = 'processing';
+            } else {
+                $data['shipping_status'] = 'pending';
+            }
+
+            $transaction = Transaction::create($data);
 
             foreach ($carts as $cart) {
                 TransactionItem::create([
@@ -109,8 +122,13 @@ class BillingDetailController extends Controller
             return $transaction;
         });
 
-        return Inertia::location(route('payment.index', [
-            'invoice' => $transaction->invoice_number,
-        ]));
+
+        if ($transaction->payment_method === 'cod') {
+            return Inertia::location(route('payment.success'));
+        } else {
+            return Inertia::location(route('payment.index', [
+                'invoice' => $transaction->invoice_number,
+            ]));
+        }
     }
 }

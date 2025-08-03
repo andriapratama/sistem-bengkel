@@ -126,3 +126,16 @@ export interface Transaction {
     updated_at: Date;
     created_at: Date;
 }
+
+export interface TransactionItem {
+    id: number;
+    transaction_id: number;
+    price: number;
+    product_id: number;
+    product: Product;
+    quantity: number;
+    subtotal: number;
+    variant_id: number | null;
+    created_at: Date;
+    updated_at: Date;
+}

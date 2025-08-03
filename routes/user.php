@@ -42,6 +42,7 @@ Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.i
 Route::put('/profile/{user}', [UserProfileController::class, 'update'])->name('profile.update');
 
 Route::get('/my-orders', [UserMyOrderController::class, 'index'])->name('my-orders.index');
+Route::get('/my-orders/get-all', [UserMyOrderController::class, 'getAll'])->name('my-orders.getAll');
 Route::get('/my-orders/{invoice}', [UserMyOrderController::class, 'detail'])->name('my-orders.detail');
 
 

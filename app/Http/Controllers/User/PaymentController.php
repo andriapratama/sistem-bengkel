@@ -19,11 +19,7 @@ class PaymentController extends Controller
 
         $transaction = Transaction::with('user')->where('invoice_number', $invoice)->firstOrFail();
 
-        if ($user->id !== $transaction->user_id) {
-            return redirect()->route('home');
-        }
-
-        if ($transaction->payment_status !== 'pending') {
+        if ($user->id !== $transaction->user_id || $transaction->payment_method === 'cod' || $transaction->payment_status !== 'pending') {
             return redirect()->route('home');
         }
 
@@ -48,7 +44,8 @@ class PaymentController extends Controller
 
         $transaction->update([
             'payment_image' => $path,         
-            'payment_status' => 'paid',       
+            'payment_status' => 'paid',
+            'shipping_status' => 'processing'      
         ]);
 
         return response()->json([

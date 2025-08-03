@@ -28,7 +28,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         })->name('dashboard');
 
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/get-all', [AdminOrderController::class, 'getAll'])->name('orders.getAll');
         Route::get('/orders/{id}', [AdminOrderController::class, 'detail'])->name('orders.detail');
+        Route::post('/orders/{id}', [AdminOrderController::class, 'store'])->name('orders.store');
+        Route::get('/orders/get-one/{id}', [AdminOrderController::class, 'getOneById'])->name('orders.getOneById');
+        Route::put('/orders/update/{id}', [AdminOrderController::class, 'updateShippingStatus'])->name('orders.updateShippingStatus');
 
         Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
         Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
