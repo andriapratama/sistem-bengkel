@@ -12,4 +12,9 @@ class VehicleVariant extends Model
     {
         return $this->belongsTo(VehicleBrand::class, 'vehicle_brand_id');
     }
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class);
+    }
 }

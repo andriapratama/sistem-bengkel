@@ -10,6 +10,7 @@ use App\Http\Controllers\User\UserProductController;
 use App\Http\Controllers\User\UserProfileController;
 use App\Http\Controllers\User\UserRegisterController;
 use App\Http\Controllers\User\UserMyOrderController;
+use App\Http\Controllers\User\UserVehicleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -44,6 +45,11 @@ Route::put('/profile/{user}', [UserProfileController::class, 'update'])->name('p
 Route::get('/my-orders', [UserMyOrderController::class, 'index'])->name('my-orders.index');
 Route::get('/my-orders/get-all', [UserMyOrderController::class, 'getAll'])->name('my-orders.getAll');
 Route::get('/my-orders/{invoice}', [UserMyOrderController::class, 'detail'])->name('my-orders.detail');
+
+Route::get('/vehicles', [UserVehicleController::class, 'index'])->name('vehicles.index');
+Route::get('/vehicles/create', [UserVehicleController::class, 'create'])->name('vehicles.create');
+Route::get('/vehicles/get-all/vehicle-brands', [UserVehicleController::class, 'getAllVehicleBrands'])->name('vehicles.getAllVehicleBrands');
+Route::post('/vehicles', [UserVehicleController::class, 'store'])->name('vehicles.store');
 
 
 

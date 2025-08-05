@@ -1,4 +1,4 @@
-import { CircleUser, LogOut, ShoppingBag, ShoppingCart, User } from 'lucide-react';
+import { Bike, CircleUser, LogOut, ShoppingBag, ShoppingCart, User } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -107,6 +107,10 @@ export default ({ children }: UserLayoutProps) => {
                                         <Link href="/my-orders" className="flex items-center gap-4 text-sm">
                                             <ShoppingBag className="size-5" />
                                             <span>My Order</span>
+                                        </Link>
+                                        <Link href="/vehicles" className="flex items-center gap-4 text-sm">
+                                            <Bike className="size-5" />
+                                            <span>Vehicle</span>
                                         </Link>
                                         <Link className="flex items-center gap-4 bg-transparent text-sm" method="post" href={route('logout')}>
                                             <LogOut className="size-5 rotate-180" />
