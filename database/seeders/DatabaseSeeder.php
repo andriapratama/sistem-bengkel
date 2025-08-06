@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             VehicleVariantSeeder::class,
             ProductSeeder::class,
             SettingSedder::class,
+            ServiceSedder::class,
         ]);
     }
 }

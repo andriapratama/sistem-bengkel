@@ -24,7 +24,7 @@ type CategoryFormValues = z.infer<typeof categorySchema>;
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Edit Category',
-        href: '/categories/add',
+        href: '/categories/edit',
     },
 ];
 

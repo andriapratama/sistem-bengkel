@@ -26,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Create() {
-    const [errors, setErrors] = useState<{ name?: string; code?: string }>({});
+    const [errors, setErrors] = useState<{ name?: string }>({});
 
     const {
         data,

@@ -5,6 +5,7 @@ use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\ContactController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\PaymentController;
+use App\Http\Controllers\User\UserBookingController;
 use App\Http\Controllers\User\UserLoginController;
 use App\Http\Controllers\User\UserProductController;
 use App\Http\Controllers\User\UserProfileController;
@@ -52,5 +53,7 @@ Route::get('/vehicles/get-all', [UserVehicleController::class, 'getAll'])->name(
 Route::get('/vehicles/get-all/vehicle-brands', [UserVehicleController::class, 'getAllVehicleBrands'])->name('vehicles.getAllVehicleBrands');
 Route::post('/vehicles', [UserVehicleController::class, 'store'])->name('vehicles.store');
 
+Route::get('/booking', [UserBookingController::class, 'index'])->name('booking.index');
+Route::get('/booking/get-all/services', [UserBookingController::class, 'getAllServices'])->name('booking.getAllServices');
 
 

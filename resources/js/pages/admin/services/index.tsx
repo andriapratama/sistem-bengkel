@@ -39,10 +39,6 @@ export default function Index() {
         }
     }, [success]);
 
-    useEffect(() => {
-        console.log(services);
-    }, [services]);
-
     const handleDelete = (id: number, name: string) => {
         if (confirm(`Do you want to delete a service - ${id}. ${name}`)) {
             destroy(route('admin.services.destroy', id));

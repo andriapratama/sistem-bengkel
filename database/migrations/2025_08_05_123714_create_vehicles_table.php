@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("vehicle_year");
             $table->string("police_number")->unique();
             $table->dateTime('last_service_date')->nullable();
+            $table->boolean('status_booking')->default(false);
 
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
