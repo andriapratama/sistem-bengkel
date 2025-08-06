@@ -29,6 +29,7 @@ const mainNavItems: NavItem[] = [
         title: 'Master',
         icon: Database,
         children: [
+            { title: 'Services', href: '/admin/services' },
             { title: 'Units', href: '/admin/units' },
             { title: 'Categories', href: '/admin/categories' },
             { title: 'Vehicle Brands', href: '/admin/vehicle-brands' },

@@ -26,7 +26,7 @@ class UserVehicleController extends Controller
         if (!Auth::check()) {
             return redirect()->route('login');
         }
-        
+
         return Inertia::render('user/pages/vehicles/create');
     }
 
@@ -36,7 +36,7 @@ class UserVehicleController extends Controller
         $vehicleVariants = VehicleVariant::orderBy('name')->get();
 
          return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Get all vehicle brands dan vehicle variant',
             'vehicleBrands' => $vehicleBrands,
             'vehicleVariants' => $vehicleVariants,
@@ -64,6 +64,19 @@ class UserVehicleController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Vehicle added succesfully.'
+        ]);
+    }
+
+    public function getAll()
+    {
+        $user = Auth::user();
+
+        $vehicles = Vehicle::with(['vehicleVariant.vehicleBrand'])->orderBy('created_at')->where('user_id', $user->id)->get();
+
+         return response()->json([
+            'success' => true,
+            'message' => 'Get all vehicles',
+            'vehicles' => $vehicles,
         ]);
     }
 }

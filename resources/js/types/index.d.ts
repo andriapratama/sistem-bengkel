@@ -92,6 +92,19 @@ export interface Product {
     updated_at: Date;
 }
 
+export interface Vehicle {
+    id: number;
+    vehicle_year: string;
+    police_number: string;
+    last_service_date: Date;
+    user_id: number;
+    user?: User;
+    vehicle_variant_id: number;
+    vehicle_variant?: VehicleVariant;
+    created_at: Date;
+    updated_at: Date;
+}
+
 export interface VehicleBrand {
     id: number;
     name: string;
@@ -119,12 +132,19 @@ export interface Transaction {
     payment_method: string;
     payment_status: string;
     shipping_address: string;
+    shipping_status: string;
+    discount_amount: number;
     total_price: number;
     total_quantity: number;
+    grand_total: number;
     user_id: number;
     user: User;
+    transaction_items: TransactionItem[];
+    payment_image?: string;
+    shipping_image?: string;
     updated_at: Date;
     created_at: Date;
+    isImageError?: boolean;
 }
 
 export interface TransactionItem {
@@ -136,6 +156,16 @@ export interface TransactionItem {
     quantity: number;
     subtotal: number;
     variant_id: number | null;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface Service {
+    id: number;
+    name: string;
+    description?: string;
+    estimated_duration?: number;
+    estimated_price?: number;
     created_at: Date;
     updated_at: Date;
 }

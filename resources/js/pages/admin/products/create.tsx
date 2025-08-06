@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Category, Unit } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
+
 import { showToast } from '../../../lib/utils/toast';
 
 type PageProps = {
@@ -96,24 +97,9 @@ export default function Create() {
         }
     };
 
-    const onChangeNumber = (
-        field:
-            | 'name'
-            | 'stock'
-            | 'cost'
-            | 'price'
-            | 'slug'
-            | 'description'
-            | 'image'
-            | 'status'
-            | 'hasVariant'
-            | 'category_id'
-            | 'unit_id'
-            | 'variants',
-        value: string,
-    ) => {
+    const onChangeNumber = (field: 'stock' | 'cost' | 'price', value: string) => {
         const number = value.replaceAll(/[^0-9]/g, '');
-        setData(field, number);
+        setData(field, parseFloat(number));
         if (errors[field]) {
             setErrors((prev) => ({ ...prev, [field]: undefined }));
         }
@@ -177,16 +163,16 @@ export default function Create() {
         setErrors({});
         const formData = new FormData();
         formData.append('name', data.name);
-        formData.append('stock', data.stock);
-        formData.append('cost', data.cost);
-        formData.append('price', data.price);
+        formData.append('stock', data.stock.toString());
+        formData.append('cost', data.cost.toString());
+        formData.append('price', data.price.toString());
         formData.append('slug', data.slug);
-        formData.append('description', data.description);
-        formData.append('status', data.status);
-        formData.append('hasVariant', data.hasVariant);
-        formData.append('category_id', data.category_id);
-        formData.append('unit_id', data.unit_id);
-        formData.append('image', data.image);
+        formData.append('description', data.description ?? '');
+        formData.append('status', data.status.toString());
+        formData.append('hasVariant', data.hasVariant.toString());
+        formData.append('category_id', data.category_id.toString());
+        formData.append('unit_id', data.unit_id.toString());
+        formData.append('image', data.image as Blob);
         formData.append('variants', JSON.stringify(variants));
 
         try {
@@ -201,7 +187,7 @@ export default function Create() {
             setTimeout(() => {
                 router.visit('/admin/products');
             }, 1000);
-        } catch (error) {
+        } catch (error: any) {
             showToast(error.response.data.message, 'error');
             console.log(error);
         } finally {
@@ -242,7 +228,7 @@ export default function Create() {
                     </div>
 
                     <div>
-                        <Label htmlFor="slug">Description</Label>
+                        <Label htmlFor="description">Description</Label>
                         <Textarea id="description" value={data.description} onChange={(e) => setData('description', e.target.value)} />
                     </div>
 

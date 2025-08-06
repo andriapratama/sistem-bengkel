@@ -1,14 +1,15 @@
+import axios from 'axios';
+import { useCallback, useEffect, useState } from 'react';
+import { z } from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { router, useForm } from '@inertiajs/react';
-import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
-import { z } from 'zod';
+
 import { showToast } from '../../../../lib/utils/toast';
 import { VehicleBrand, VehicleVariant } from '../../../../types';
-
 import UserLayout from '../../layouts/user-layout';
 
 const vehicleSchema = z.object({
@@ -110,13 +111,13 @@ export default function Create() {
                 <form onSubmit={handleSubmit} className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                     <div>
                         <Label htmlFor="vehicle_brand">Vehicle Brand</Label>
-                        <Select onValueChange={(e) => setVehicleBrandId(parseInt(e))} value={vehicleBrandId ?? ''}>
-                            <SelectTrigge disabled={processing} r className={`w-full`}>
+                        <Select onValueChange={(e) => setVehicleBrandId(parseInt(e))} value={vehicleBrandId?.toString() ?? ''}>
+                            <SelectTrigger disabled={processing} className={`w-full`}>
                                 <SelectValue placeholder="Select vehicle brand" />
-                            </SelectTrigge>
+                            </SelectTrigger>
                             <SelectContent>
                                 {vehicleBrands.map((item) => (
-                                    <SelectItem key={item.id} value={item.id}>
+                                    <SelectItem key={item.id} value={item.id.toString()}>
                                         {item.name}
                                     </SelectItem>
                                 ))}
@@ -125,7 +126,7 @@ export default function Create() {
                     </div>
 
                     <div>
-                        <Label htmlFor="vehicle_variant_id">Vehicle Type</Label>
+                        <Label htmlFor="vehicle_variant">Vehicle Type</Label>
                         <Select
                             onValueChange={(e) => {
                                 setData('vehicle_variant_id', parseInt(e));
@@ -133,15 +134,18 @@ export default function Create() {
                                     setErrors((prev) => ({ ...prev, vehicle_variant_id: undefined }));
                                 }
                             }}
-                            value={data.vehicle_variant_id}
+                            value={data.vehicle_variant_id > 0 ? data.vehicle_variant_id.toString() : ''}
                         >
-                            <SelectTrigger disabled={processing} className={`w-full ${errors.vehicle_variant_id ? 'border-red-500' : ''}`}>
+                            <SelectTrigger
+                                disabled={processing || !vehicleBrandId}
+                                className={`w-full ${errors.vehicle_variant_id ? 'border-red-500' : ''}`}
+                            >
                                 <SelectValue placeholder="Select vehicle type" />
                             </SelectTrigger>
                             {vehicleVariantsTmp && vehicleVariantsTmp.length > 0 ? (
                                 <SelectContent>
                                     {vehicleVariantsTmp.map((item) => (
-                                        <SelectItem key={item.id} value={item.id}>
+                                        <SelectItem key={item.id} value={item.id.toString()}>
                                             {item.name}
                                         </SelectItem>
                                     ))}

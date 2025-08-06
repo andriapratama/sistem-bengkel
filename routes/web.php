@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
+use App\Http\Controllers\Admin\AdminServiceController;
 use App\Http\Controllers\Admin\AdminVehicleBrandController;
 use App\Http\Controllers\Admin\AdminVehicleVariantController;
 use App\Http\Controllers\Settings\PasswordController;
@@ -70,6 +71,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/vehicle-variants/{vehicleVariant}/edit', [AdminVehicleVariantController::class, "edit"])->name('vehicle-variants.edit');
         Route::put('/vehicle-variants/{vehicleVariant}', [AdminVehicleVariantController::class, "update"])->name('vehicle-variants.update');
         Route::delete('/vehicle-variants/{vehicleVariant}', [AdminVehicleVariantController::class, "destroy"])->name('vehicle-variants.destroy');
+
+        Route::get('/services', [AdminServiceController::class, 'index'])->name('services.index');
+        Route::post('/services', [AdminServiceController::class, 'store'])->name('services.store');
+        Route::get('/services/add', [AdminServiceController::class, 'create'])->name('services.create');
+        Route::get('/services/{service}/edit', [AdminServiceController::class, "edit"])->name('services.edit');
+        Route::put('/services/{service}', [AdminServiceController::class, "update"])->name('services.update');
+        Route::delete('/services/{service}', [AdminServiceController::class, "destroy"])->name('services.destroy');
 
         Route::redirect('settings', '/settings/profile');
 

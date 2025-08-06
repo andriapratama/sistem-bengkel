@@ -48,6 +48,7 @@ Route::get('/my-orders/{invoice}', [UserMyOrderController::class, 'detail'])->na
 
 Route::get('/vehicles', [UserVehicleController::class, 'index'])->name('vehicles.index');
 Route::get('/vehicles/create', [UserVehicleController::class, 'create'])->name('vehicles.create');
+Route::get('/vehicles/get-all', [UserVehicleController::class, 'getAll'])->name('vehicles.getAll');
 Route::get('/vehicles/get-all/vehicle-brands', [UserVehicleController::class, 'getAllVehicleBrands'])->name('vehicles.getAllVehicleBrands');
 Route::post('/vehicles', [UserVehicleController::class, 'store'])->name('vehicles.store');
 
