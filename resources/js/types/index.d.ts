@@ -173,8 +173,8 @@ export interface Service {
 export interface BookingService {
     id: number;
     date_booking: Date;
-    estimate_service_end: Date;
-    estimate_service_start: Date;
+    estimated_service_end: Date;
+    estimated_service_start: Date;
     estimated_service_duration: number;
     estimated_service_price: number;
     note: string;

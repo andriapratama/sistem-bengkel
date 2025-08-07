@@ -55,6 +55,8 @@ Route::post('/vehicles', [UserVehicleController::class, 'store'])->name('vehicle
 
 Route::get('/booking', [UserBookingController::class, 'index'])->name('booking.index');
 Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store');
-Route::get('/booking/get-all/services', [UserBookingController::class, 'getAllServices'])->name('booking.getAllServices');
+Route::get('/booking/get-one', [UserBookingController::class, 'getOneByUser'])->name('booking.getOneByUser');
+Route::get('/booking/get-all/{date}', [UserBookingController::class, 'getAll'])->name('booking.getAll');
+Route::get('/booking/services', [UserBookingController::class, 'getAllServices'])->name('booking.getAllServices');
 
 

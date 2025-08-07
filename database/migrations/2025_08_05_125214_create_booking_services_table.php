@@ -17,9 +17,9 @@ return new class extends Migration
             $table->integer('queue_number');
             $table->integer('estimated_service_duration')->nullable();
             $table->decimal('estimated_service_price', 15, 2)->nullable();
-            $table->dateTime('estimate_service_start')->nullable();
-            $table->dateTime('estimate_service_end')->nullable();
-            $table->enum('status', ['pending', 'processing', 'completed', 'canceled'])->default('pending');
+            $table->dateTime('estimated_service_start')->nullable();
+            $table->dateTime('estimated_service_end')->nullable();
+            $table->enum('status', ['pending', 'accepted', 'processing', 'completed', 'canceled'])->default('pending');
             $table->text('note')->nullable();
 
             $table->unsignedBigInteger('user_id')->nullable();

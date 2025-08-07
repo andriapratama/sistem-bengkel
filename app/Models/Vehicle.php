@@ -11,7 +11,8 @@ class Vehicle extends Model
         'police_number', 
         'last_service_date', 
         'user_id', 
-        'vehicle_variant_id'
+        'vehicle_variant_id',
+        'status_booking'
     ];
 
     public function user()

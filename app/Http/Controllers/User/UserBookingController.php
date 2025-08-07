@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Service;
 use App\Models\BookingService;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ class UserBookingController extends Controller
 
     public function getAllServices()
     {
-        $services = Service::orderBy('name')->get();
+        $services = Service::orderBy('name', 'asc')->get();
 
         return response()->json([
             'success' => true,
@@ -43,12 +44,25 @@ class UserBookingController extends Controller
 
         $user = Auth::user();
 
-        $booking = BookingService::where('date_booking', $validated['date'])
+        $booking = BookingService::where('date_booking', Carbon::parse($validated['date'])->toDateString())
                     ->latest()
                     ->first();
 
+
         if ($booking) {
-            $startTime = Carbon::parse($validated['date'])->setTime(8, 0);
+            $startTime = Carbon::parse($booking->estimated_service_end)->addMinutes(5);
+            $minutes = $startTime->minute;
+            $remainder = $minutes % 5;
+            if ($remainder > 0) {
+                $startTime->addMinutes(5 - $remainder);
+            }
+            $startTime->second(0);
+
+            $endTime = $startTime->copy()->addMinutes($validated['estimated_duration']);
+
+            $validated['queue_number'] = $booking->queue_number + 1;
+            $validated['estimated_service_start'] = $startTime;
+            $validated['estimated_service_end'] = $endTime;
         } else {
             $startTime = Carbon::parse($validated['date'])->setTime(8, 0);
 
@@ -62,8 +76,8 @@ class UserBookingController extends Controller
             $endTime = $startTime->copy()->addMinutes($validated['estimated_duration']);
 
             $validated['queue_number'] = 1;
-            $validated['estimate_service_start'] = $startTime;
-            $validated['estimate_service_end'] = $endTime;
+            $validated['estimated_service_start'] = $startTime;
+            $validated['estimated_service_end'] = $endTime;
         }
 
 
@@ -74,8 +88,8 @@ class UserBookingController extends Controller
             'queue_number' => $validated['queue_number'],
             'estimated_service_duration' => $validated['estimated_duration'],
             'estimated_service_price' => $validated['estimated_price'],
-            'estimate_service_start' => $validated['estimate_service_start'],
-            'estimate_service_end' => $validated['estimate_service_end'],
+            'estimated_service_start' => $validated['estimated_service_start'],
+            'estimated_service_end' => $validated['estimated_service_end'],
             'status' => 'pending',
             'note' => $validated['note'] ?? null,
         ]);
@@ -89,11 +103,38 @@ class UserBookingController extends Controller
             }
         }
 
+        $vehicle = Vehicle::where('id', $validated['vehicle_id'])->firstOrFail();
+        $vehicle->update([
+            'status_booking' => true,
+        ]);
+
         return response()->json([
             'message' => 'Booking created successfully',
             'data' => $newBooking
         ], 201);
     }
 
+    public function getAll($date)
+    {
+        $bookings = BookingService::orderBy('queue_number', 'asc')->where('date_booking', $date)->get();
 
+        return response()->json([
+            'success' => true,
+            'message' => 'Get all bookings',
+            'bookings' => $bookings,
+        ]);
+    }
+
+    public function getOneByUser() 
+    {
+        $user = Auth::user();
+
+        $bookings = BookingService::with(['vehicle.vehicleVariant'])->orderBy('created_at', 'desc')->where('user_id', $user->id)->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Get all bookings',
+            'bookings' => $bookings,
+        ]);
+    }
 }

@@ -7,24 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from '@/components/ui/select';
-import {
-    Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle
-} from '@/components/ui/sheet';
-import {
-    Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
-import { Service, Vehicle } from '@/types';
+import { BookingService, Service, Vehicle } from '@/types';
+import { showToast } from '../../../../lib/utils/toast';
 
 import UserLayout from '../../layouts/user-layout';
 
 export default function Index() {
     const [date, setDate] = useState<Date | undefined>(new Date());
-    const [firstTimeList, setFirstTimeList] = useState<string[]>([]);
-    const [secondTimeList, setSecondTimeList] = useState<string[]>([]);
+    const [timeList, setTimeList] = useState<string[]>([]);
     const [isShowBookingForm, setIsShowBookingForm] = useState<boolean>(false);
     const [isShowService, setIsShowService] = useState<boolean>(false);
 
@@ -39,20 +32,10 @@ export default function Index() {
     const [totalEstimatedPriceTmp, setTotalEstimatedPriceTmp] = useState<number>(0);
     const [processing, setProcessing] = useState<boolean>(false);
     const [note, setNote] = useState<string>('');
-    const [data, setData] = useState<{ queue_number: number; estimate_service_start: string; estimate_service_end: string }[]>([
-        {
-            queue_number: 1,
-            estimate_service_start: '2025-08-06 08:00:00',
-            estimate_service_end: '2025-08-06 08:30:00',
-        },
-        {
-            queue_number: 2,
-            estimate_service_start: '2025-08-06 08:35:00',
-            estimate_service_end: '2025-08-06 09:00:00',
-        },
-    ]);
-
+    const [bookingList, setBookingList] = useState<BookingService[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<{ vehicle?: string; service?: string }>({ vehicle: undefined, service: undefined });
+    const [userBookingList, setUserBookingList] = useState<BookingService[]>([]);
 
     useEffect(() => {
         const start = '08:00';
@@ -73,16 +56,11 @@ export default function Index() {
         while (current <= endTime) {
             const h = pad(current.getHours());
             const m = pad(current.getMinutes());
-            slots.push(`${h}.${m}`);
+            slots.push(`${h}:${m}`);
             current.setMinutes(current.getMinutes() + interval);
         }
 
-        const half = Math.ceil(slots.length / 2);
-        const firstList = slots.slice(0, half);
-        const secondList = slots.slice(half);
-
-        setFirstTimeList(firstList);
-        setSecondTimeList(secondList);
+        setTimeList(slots);
     }, []);
 
     const getVehicle = useCallback(async () => {
@@ -90,7 +68,8 @@ export default function Index() {
             const rs = await axios.get('/vehicles/get-all');
 
             if (rs.data.success) {
-                setVehicleList(rs.data.vehicles);
+                const filter = rs.data.vehicles.filter((item) => !item.status_booking);
+                setVehicleList(filter);
             } else {
                 console.log(rs);
             }
@@ -105,7 +84,7 @@ export default function Index() {
 
     const getServices = useCallback(async () => {
         try {
-            const rs = await axios.get('/booking/get-all/services');
+            const rs = await axios.get('/booking/services');
 
             if (rs.data.success) {
                 setServiceList(rs.data.services);
@@ -183,7 +162,15 @@ export default function Index() {
             const res = await axios.post('/booking', data);
 
             if (res) {
-                console.log(res);
+                showToast('Booking successfully');
+                setIsShowBookingForm(false);
+                await getAllBookings();
+                await getVehicle();
+                setVehicleId(null);
+                serviceListSelected([]);
+                setNote('');
+                setTotalEstimatedDuration(0);
+                setTotalEstimatedPrice(0);
             }
         } catch (error) {
             console.log(error);
@@ -191,91 +178,139 @@ export default function Index() {
             setProcessing(false);
         }
     };
+
+    const getAllBookings = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const formatDate = dayjs(date).format('YYYY-MM-DD');
+            const rs = await axios.get(`/booking/get-all/${formatDate}`);
+
+            if (rs.data.success) {
+                setBookingList(rs.data.bookings);
+            } else {
+                console.log(rs);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [date]);
+
+    useEffect(() => {
+        getAllBookings();
+    }, [getAllBookings]);
+
+    const getUserBooking = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const rs = await axios.get(`/booking/get-one`);
+
+            if (rs.data.success) {
+                setUserBookingList(rs.data.bookings);
+            } else {
+                console.log(rs);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        getUserBooking();
+    }, [getUserBooking]);
     return (
         <>
             <UserLayout>
-                <div className="mt-10 flex min-h-[calc(100vh-524px)] w-full items-start justify-center gap-5">
-                    <div className="flex flex-col gap-5">
-                        <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={setDate}
-                            className="h-fit rounded-md border shadow-sm"
-                            captionLayout="dropdown"
-                        />
-                        <p className="text-sm">Last queue number: 2</p>
-                        <p className="text-sm">Last queue time: 09:00</p>
-                        <Button type="button" onClick={() => setIsShowBookingForm(true)}>
-                            Booking Now
-                        </Button>
+                <div className="mt-10 flex min-h-[calc(100vh-524px)] w-full flex-col items-start justify-center gap-5">
+                    <div className="flex w-full items-start justify-center gap-5">
+                        <div className="flex flex-col gap-5">
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={setDate}
+                                className="h-fit rounded-md border shadow-sm"
+                                captionLayout="dropdown"
+                            />
+                        </div>
+
+                        {userBookingList.map((item) => (
+                            <div className="flex w-[250px] flex-col items-center gap-1 rounded-lg border border-solid p-3 text-black dark:text-white">
+                                <div className="text-sm">Queue</div>
+                                <div className="my-4 text-7xl font-semibold">{item.queue_number}</div>
+                                <div className="flex w-full items-center justify-between gap-5 text-sm">
+                                    <div>Vehicle</div>
+                                    <div className="line-clamp-1">{item.vehicle.vehicle_variant.name}</div>
+                                </div>
+                                <div className="flex w-full items-center justify-between gap-5 text-sm">
+                                    <div>Polic Number</div>
+                                    <div className="line-clamp-1">{item.vehicle.police_number}</div>
+                                </div>
+                                <div className="flex w-full items-center justify-between gap-5 text-sm">
+                                    <div>Date</div>
+                                    <div className="line-clamp-1">{item.date_booking}</div>
+                                </div>
+                                <div className="flex w-full items-center justify-between gap-5 text-sm">
+                                    <div>Estimated</div>
+                                    <div className="line-clamp-1">{dayjs(item.estimated_service_start).format('hh:mm')}</div>
+                                </div>
+                                <Button type="button" className="w-full">
+                                    Open
+                                </Button>
+                            </div>
+                        ))}
                     </div>
-                    <div className="w-[250px]">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Time</TableHead>
-                                    <TableHead>Queue</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {firstTimeList.map((timeItem) => {
-                                    const currentTime = dayjs(`2025-08-06 ${timeItem.replace('.', ':')}:00`);
 
-                                    const matched = data.find((entry) => {
-                                        const start = dayjs(entry.estimate_service_start);
-                                        const end = dayjs(entry.estimate_service_end);
-                                        return (
-                                            currentTime.isSame(start) ||
-                                            (currentTime.isAfter(start) && currentTime.isSame(end)) ||
-                                            currentTime.isBefore(end)
-                                        );
-                                    });
+                    <div className="mx-auto flex w-auto flex-col gap-5">
+                        <div className="flex w-auto items-center justify-between rounded-lg bg-black px-4 py-2 dark:bg-white">
+                            <p className="text-sm text-white dark:text-black">
+                                Last queue number: {bookingList[bookingList.length - 1]?.queue_number ?? 0}
+                            </p>
+                            <p className="text-sm text-white dark:text-black">
+                                Last queue time:{' '}
+                                {bookingList[bookingList.length - 1]?.estimated_service_end
+                                    ? dayjs(bookingList[bookingList.length - 1].estimated_service_end).format('hh:mm')
+                                    : '08:00'}
+                            </p>
+                            <Button
+                                type="button"
+                                className="bg-white text-black dark:bg-black dark:text-white"
+                                onClick={() => setIsShowBookingForm(true)}
+                            >
+                                Booking Now
+                            </Button>
+                        </div>
+                        <div className="mx-auto grid grid-flow-col grid-rows-17 gap-x-5 gap-y-1">
+                            {timeList.map((timeItem) => {
+                                const currentDate = dayjs(date).format('YYYY-MM-DD');
+                                const currentTime = dayjs(`${currentDate} ${timeItem}:00`);
 
+                                const matched = bookingList.find((entry) => {
+                                    const start = dayjs(entry.estimated_service_start);
+
+                                    const end = dayjs(entry.estimated_service_end);
                                     return (
-                                        <TableRow key={timeItem}>
-                                            <TableCell>{timeItem}</TableCell>
-                                            <TableCell className={matched ? 'bg-yellow-500' : ''}>
-                                                {matched ? `Queue ${matched.queue_number}` : ''}
-                                            </TableCell>
-                                        </TableRow>
+                                        currentTime.isSame(start) ||
+                                        (currentTime.isAfter(start) && currentTime.isSame(end)) ||
+                                        currentTime.isBefore(end)
                                     );
-                                })}
-                            </TableBody>
-                        </Table>
-                    </div>
-                    <div className="w-[250px]">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Time</TableHead>
-                                    <TableHead>Queue</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {secondTimeList.map((timeItem) => {
-                                    const currentTime = dayjs(`2025-08-06 ${timeItem.replace('.', ':')}:00`);
+                                });
 
-                                    const matched = data.find((entry) => {
-                                        const start = dayjs(entry.estimate_service_start);
-                                        const end = dayjs(entry.estimate_service_end);
-                                        return (
-                                            currentTime.isSame(start) ||
-                                            (currentTime.isAfter(start) && currentTime.isSame(end)) ||
-                                            currentTime.isBefore(end)
-                                        );
-                                    });
-
-                                    return (
-                                        <TableRow key={timeItem}>
-                                            <TableCell>{timeItem}</TableCell>
-                                            <TableCell className={matched ? 'bg-yellow-500' : ''}>
-                                                {matched ? `Queue ${matched.queue_number}` : ''}
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
+                                return (
+                                    <div
+                                        key={timeItem}
+                                        className="flex items-center border-b border-solid border-black text-sm text-black dark:border-white dark:text-white"
+                                    >
+                                        <div className="flex w-[60px] items-center justify-start p-2">{timeItem}</div>
+                                        <div className={`flex w-[80px] items-center justify-start p-2 ${matched ? 'bg-yellow-500' : ''}`}>
+                                            {matched ? `Queue ${matched.queue_number}` : ''}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </UserLayout>
@@ -416,7 +451,7 @@ export default function Index() {
 
                         <div className="w-full">
                             <div className="text-sm font-semibold">Service List</div>
-                            {serviceList.map((service) => (
+                            {serviceList?.map((service) => (
                                 <div
                                     key={service.id}
                                     className="flex w-full items-center gap-5 border-b border-solid border-black p-3 last:border-transparent dark:border-white"
@@ -462,6 +497,12 @@ export default function Index() {
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
+
+            {isLoading ? (
+                <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 dark:bg-white/40">
+                    <LoaderCircle className="h-14 w-14 animate-spin" />
+                </div>
+            ) : null}
         </>
     );
 }
