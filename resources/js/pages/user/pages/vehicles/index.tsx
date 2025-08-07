@@ -55,7 +55,7 @@ export default function Index() {
                             >
                                 <div className="flex flex-col gap-1">
                                     <div>
-                                        {item.vehicle_variant?.name} ({item.police_number})
+                                        {item.vehicle_variant?.name} <span className="uppercase">({item.police_number})</span>
                                     </div>
                                     <div>{item.vehicle_variant?.vehicle_brand?.name}</div>
                                     <div>Last Service: {item.last_service_date ? formatDate(item.last_service_date) : '-'}</div>

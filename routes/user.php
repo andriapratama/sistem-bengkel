@@ -54,6 +54,7 @@ Route::get('/vehicles/get-all/vehicle-brands', [UserVehicleController::class, 'g
 Route::post('/vehicles', [UserVehicleController::class, 'store'])->name('vehicles.store');
 
 Route::get('/booking', [UserBookingController::class, 'index'])->name('booking.index');
+Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store');
 Route::get('/booking/get-all/services', [UserBookingController::class, 'getAllServices'])->name('booking.getAllServices');
 
 
