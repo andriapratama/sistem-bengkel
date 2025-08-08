@@ -101,6 +101,7 @@ export interface Vehicle {
     user?: User;
     vehicle_variant_id: number;
     vehicle_variant?: VehicleVariant;
+    status_booking: boolean;
     created_at: Date;
     updated_at: Date;
 }
@@ -181,7 +182,18 @@ export interface BookingService {
     queue_number: number;
     status: string;
     user_id: number;
+    user?: User;
     vehicle_id: number;
+    vehicle?: Vehicle;
+    created_at: Date;
+    updated_at: Date;
+    booking_service_detail?: BookingServiceDetail[];
+}
+
+export interface BookingServiceDetail {
+    id: number;
+    booking_service_id: number;
+    service_id: number;
     created_at: Date;
     updated_at: Date;
 }

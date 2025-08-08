@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
 use App\Http\Controllers\Admin\AdminServiceController;
@@ -34,6 +35,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/orders/{id}', [AdminOrderController::class, 'store'])->name('orders.store');
         Route::get('/orders/get-one/{id}', [AdminOrderController::class, 'getOneById'])->name('orders.getOneById');
         Route::put('/orders/update/{id}', [AdminOrderController::class, 'updateShippingStatus'])->name('orders.updateShippingStatus');
+
+        Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
+        Route::get('/bookings/get-all', [AdminBookingController::class, 'getAll'])->name('bookings.getAll');
+        Route::get('/bookings/{id}', [AdminBookingController::class, 'detail'])->name('bookings.detail');
+        Route::post('/bookings/{id}', [AdminBookingController::class, 'store'])->name('bookings.store');
+        Route::get('/bookings/get-one/{id}', [AdminBookingController::class, 'getOneById'])->name('bookings.getOneById');
 
         Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
         Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');

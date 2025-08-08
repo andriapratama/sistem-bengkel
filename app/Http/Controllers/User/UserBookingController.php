@@ -41,10 +41,10 @@ class UserBookingController extends Controller
             'note' => 'nullable|string|max:255'
         ]);
 
-
         $user = Auth::user();
 
         $booking = BookingService::where('date_booking', Carbon::parse($validated['date'])->toDateString())
+                    ->whereNot('status', 'canceled')
                     ->latest()
                     ->first();
 
@@ -116,7 +116,10 @@ class UserBookingController extends Controller
 
     public function getAll($date)
     {
-        $bookings = BookingService::orderBy('queue_number', 'asc')->where('date_booking', $date)->get();
+        $bookings = BookingService::orderBy('queue_number', 'asc')
+            ->where('date_booking', $date)
+            ->whereNot('status', 'canceled')
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -125,16 +128,63 @@ class UserBookingController extends Controller
         ]);
     }
 
-    public function getOneByUser() 
+    public function getOneByUser()
     {
         $user = Auth::user();
 
-        $bookings = BookingService::with(['vehicle.vehicleVariant'])->orderBy('created_at', 'desc')->where('user_id', $user->id)->get();
+        $bookings = BookingService::with(['vehicle.vehicleVariant', 'bookingServiceDetail'])
+            ->orderBy('created_at', 'asc')
+            ->where('user_id', $user->id)
+            ->whereNot('status', 'canceled')
+            ->get();
 
         return response()->json([
             'success' => true,
             'message' => 'Get all bookings',
             'bookings' => $bookings,
         ]);
+    }
+
+    public function cancel($id)
+    {
+        $booking = BookingService::where('id', $id)->firstOrFail();
+        $booking->update([
+            'status' => 'canceled',
+        ]);
+
+        $vehicle = Vehicle::where('id', $booking->vehicle_id)->firstOrFail();
+        $vehicle->update([
+            'status_booking' => false,
+        ]);
+
+        $queueNumber = $booking->queue_number;
+        $date = $booking->date_booking;
+        $bookings = BookingService::where('date_booking', $date)
+            ->whereNot('status', 'canceled')
+            ->where('queue_number', '>', $queueNumber)
+            ->orderBy('queue_number', 'asc')
+            ->get();
+
+        foreach ($bookings as $bk) {
+            $startTime = Carbon::parse($bk->estimated_service_start)->subMinutes($booking->estimated_service_duration + 5);
+            $minutes = $startTime->minute;
+            $remainder = $minutes % 5;
+            if ($remainder > 0) {
+                $startTime->addMinutes(5 - $remainder);
+            }
+            $startTime->second(0);
+
+            $endTime = $startTime->copy()->addMinutes($bk->estimated_service_duration);
+
+            $bk->update([
+                'estimated_service_start' => $startTime,
+                'estimated_service_end' => $endTime,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking canceled.',
+        ], 200);
     }
 }

@@ -58,5 +58,6 @@ Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.
 Route::get('/booking/get-one', [UserBookingController::class, 'getOneByUser'])->name('booking.getOneByUser');
 Route::get('/booking/get-all/{date}', [UserBookingController::class, 'getAll'])->name('booking.getAll');
 Route::get('/booking/services', [UserBookingController::class, 'getAllServices'])->name('booking.getAllServices');
+Route::put('/booking/cancel/{id}', [UserBookingController::class, 'cancel'])->name('booking.cancel');
 
 

@@ -3,6 +3,15 @@ import dayjs from 'dayjs';
 import { LoaderCircle, Plus, Trash } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -10,8 +19,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
+import { showToast } from '@/lib/utils/toast';
 import { BookingService, Service, Vehicle } from '@/types';
-import { showToast } from '../../../../lib/utils/toast';
 
 import UserLayout from '../../layouts/user-layout';
 
@@ -36,6 +45,12 @@ export default function Index() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<{ vehicle?: string; service?: string }>({ vehicle: undefined, service: undefined });
     const [userBookingList, setUserBookingList] = useState<BookingService[]>([]);
+
+    const [isOpenBooking, setIsOpenBooking] = useState<boolean>(false);
+    const [vehicleName, setVehicleName] = useState<string>('');
+
+    const [isShowAlertCancel, setIsShowAlertCancel] = useState<boolean>(false);
+    const [bookingId, setBookingId] = useState<number | null>(null);
 
     useEffect(() => {
         const start = '08:00';
@@ -68,7 +83,7 @@ export default function Index() {
             const rs = await axios.get('/vehicles/get-all');
 
             if (rs.data.success) {
-                const filter = rs.data.vehicles.filter((item) => !item.status_booking);
+                const filter = rs.data.vehicles.filter((item: Vehicle) => !item.status_booking);
                 setVehicleList(filter);
             } else {
                 console.log(rs);
@@ -151,7 +166,7 @@ export default function Index() {
         try {
             setProcessing(true);
             const data = {
-                date: date?.toISOString() || new Date().toISOString(),
+                date: dayjs(date).format('YYYY-MM-DD'),
                 vehicle_id: vehicleId,
                 services: serviceListSelected.map((service) => service.id),
                 note: note,
@@ -166,8 +181,9 @@ export default function Index() {
                 setIsShowBookingForm(false);
                 await getAllBookings();
                 await getVehicle();
+                await getUserBooking();
                 setVehicleId(null);
-                serviceListSelected([]);
+                setServiceListSelected([]);
                 setNote('');
                 setTotalEstimatedDuration(0);
                 setTotalEstimatedPrice(0);
@@ -221,6 +237,36 @@ export default function Index() {
     useEffect(() => {
         getUserBooking();
     }, [getUserBooking]);
+
+    const onOpenBooking = (booking: BookingService) => {
+        setIsOpenBooking(true);
+        setDate(booking.date_booking);
+        setVehicleName(`${booking.vehicle?.vehicle_variant?.name} (${booking.vehicle?.police_number.toUpperCase()})`);
+        setNote(booking.note);
+
+        const newService: Service[] = [];
+        booking.booking_service_detail?.map((item) => {
+            const findService = serviceList.find((svc) => svc.id === item.service_id);
+            if (findService) newService.push(findService);
+        });
+        setServiceListSelected(newService);
+    };
+
+    const onCancelBooking = async () => {
+        try {
+            setIsLoading(true);
+            await axios.put(`/booking/cancel/${bookingId}`);
+            setIsShowAlertCancel(false);
+            await getAllBookings();
+            await getVehicle();
+            await getUserBooking();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <>
             <UserLayout>
@@ -237,27 +283,41 @@ export default function Index() {
                         </div>
 
                         {userBookingList.map((item) => (
-                            <div className="flex w-[250px] flex-col items-center gap-1 rounded-lg border border-solid p-3 text-black dark:text-white">
+                            <div
+                                key={item.id}
+                                className="flex w-[250px] flex-col items-center gap-1 rounded-lg border border-solid p-3 text-black shadow dark:text-white"
+                            >
                                 <div className="text-sm">Queue</div>
                                 <div className="my-4 text-7xl font-semibold">{item.queue_number}</div>
                                 <div className="flex w-full items-center justify-between gap-5 text-sm">
                                     <div>Vehicle</div>
-                                    <div className="line-clamp-1">{item.vehicle.vehicle_variant.name}</div>
+                                    <div className="line-clamp-1">{item.vehicle?.vehicle_variant?.name}</div>
                                 </div>
                                 <div className="flex w-full items-center justify-between gap-5 text-sm">
                                     <div>Polic Number</div>
-                                    <div className="line-clamp-1">{item.vehicle.police_number}</div>
+                                    <div className="line-clamp-1">{item.vehicle?.police_number}</div>
                                 </div>
                                 <div className="flex w-full items-center justify-between gap-5 text-sm">
                                     <div>Date</div>
-                                    <div className="line-clamp-1">{item.date_booking}</div>
+                                    <div className="line-clamp-1">{item.date_booking.toString()}</div>
                                 </div>
                                 <div className="flex w-full items-center justify-between gap-5 text-sm">
                                     <div>Estimated</div>
                                     <div className="line-clamp-1">{dayjs(item.estimated_service_start).format('hh:mm')}</div>
                                 </div>
-                                <Button type="button" className="w-full">
+                                <Button type="button" className="w-full" onClick={() => onOpenBooking(item)}>
                                     Open
+                                </Button>
+                                <Button
+                                    type="button"
+                                    className="w-full"
+                                    variant="destructive"
+                                    onClick={() => {
+                                        setIsShowAlertCancel(true);
+                                        setBookingId(item.id);
+                                    }}
+                                >
+                                    Cancel
                                 </Button>
                             </div>
                         ))}
@@ -276,8 +336,12 @@ export default function Index() {
                             </p>
                             <Button
                                 type="button"
-                                className="bg-white text-black dark:bg-black dark:text-white"
-                                onClick={() => setIsShowBookingForm(true)}
+                                className="bg-white text-black hover:bg-white/90 dark:bg-black dark:text-white dark:hover:bg-black/90"
+                                onClick={() => {
+                                    setIsShowBookingForm(true);
+                                    setServiceListSelected([]);
+                                    setNote('');
+                                }}
                             >
                                 Booking Now
                             </Button>
@@ -304,7 +368,21 @@ export default function Index() {
                                         className="flex items-center border-b border-solid border-black text-sm text-black dark:border-white dark:text-white"
                                     >
                                         <div className="flex w-[60px] items-center justify-start p-2">{timeItem}</div>
-                                        <div className={`flex w-[80px] items-center justify-start p-2 ${matched ? 'bg-yellow-500' : ''}`}>
+                                        <div
+                                            className={`flex w-[80px] items-center justify-start p-2 ${
+                                                matched?.status === 'pending'
+                                                    ? 'bg-yellow-200 text-yellow-800'
+                                                    : matched?.status === 'processing'
+                                                      ? 'bg-blue-200 text-blue-800'
+                                                      : matched?.status === 'accepted'
+                                                        ? 'bg-indigo-200 text-indigo-800'
+                                                        : matched?.status === 'completed'
+                                                          ? 'bg-green-200 text-green-800'
+                                                          : matched?.status === 'canceled'
+                                                            ? 'bg-red-200 text-red-800'
+                                                            : 'bg-transparent text-transparent'
+                                            }`}
+                                        >
                                             {matched ? `Queue ${matched.queue_number}` : ''}
                                         </div>
                                     </div>
@@ -497,6 +575,69 @@ export default function Index() {
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
+
+            <Sheet open={isOpenBooking} onOpenChange={setIsOpenBooking}>
+                <SheetContent className="min-w-[500px]">
+                    <SheetHeader>
+                        <SheetTitle>Booking Detail</SheetTitle>
+                    </SheetHeader>
+                    <div className="grid flex-1 auto-rows-min gap-6 overflow-y-auto px-4">
+                        <div>
+                            <Label htmlFor="date-booking">Date</Label>
+                            <Input id="date-booking" value={dayjs(date).format('DD/MM/YYYY')} disabled />
+                        </div>
+
+                        <div>
+                            <Label htmlFor="vehicle-booking">Vehicle</Label>
+                            <Input id="vehicle-booking" value={vehicleName} disabled />
+                        </div>
+
+                        {serviceListSelected.length > 0 ? (
+                            <div className="w-full">
+                                <Label htmlFor="service">Service</Label>
+                                {serviceListSelected.map((service) => (
+                                    <div
+                                        key={service.id}
+                                        className="flex w-full items-center gap-5 border-b border-solid border-black p-2 text-sm dark:border-white"
+                                    >
+                                        <div className="flex flex-1 flex-col">
+                                            <div className="font-semibold">{service.name}</div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <p className="mt-5 text-sm">Total Estimated Duration: {totalEstimatedDuration ?? 0} Minutes</p>
+                                <p className="text-sm">Total Estimated Price: {formatPrice(totalEstimatedPrice ?? 0)}</p>
+                            </div>
+                        ) : null}
+
+                        <div>
+                            <Label htmlFor="note-booking">Note</Label>
+                            <Textarea id="note-booking" value={note} disabled />
+                        </div>
+                    </div>
+                    <SheetFooter>
+                        <SheetClose asChild>
+                            <Button variant="outline">Close</Button>
+                        </SheetClose>
+                    </SheetFooter>
+                </SheetContent>
+            </Sheet>
+
+            <AlertDialog open={isShowAlertCancel} onOpenChange={setIsShowAlertCancel}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Cancel Booking?</AlertDialogTitle>
+                        <AlertDialogDescription>Are you sure you want to cancel this booking? This action cannot be undone.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Button type="button" variant="destructive" onClick={() => onCancelBooking()}>
+                            Continue
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             {isLoading ? (
                 <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 dark:bg-white/40">
