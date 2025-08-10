@@ -46,7 +46,7 @@ export default function Detail() {
     const [isPaymentImageError, setIsPaymentImageError] = useState<boolean>(false);
     const [isShippingImageError, setIsShippingImageError] = useState<boolean>(false);
 
-    const getAll = useCallback(async () => {
+    const getOrder = useCallback(async () => {
         try {
             const rs = await axios.get(`/admin/orders/get-one/${id}`);
 
@@ -59,8 +59,6 @@ export default function Detail() {
                     newError.push(false);
                 }
                 setIsErrorImages(newError);
-            } else {
-                console.log(rs);
             }
         } catch (error) {
             console.log(error);
@@ -68,8 +66,8 @@ export default function Detail() {
     }, [id]);
 
     useEffect(() => {
-        getAll();
-    }, [getAll]);
+        getOrder();
+    }, [getOrder]);
 
     const updateShippingStatus = async (status: string) => {
         try {
@@ -79,7 +77,7 @@ export default function Detail() {
 
             if (rs) {
                 console.log(rs);
-                await getAll();
+                await getOrder();
             }
         } catch (error) {
             console.log(error);
@@ -117,7 +115,7 @@ export default function Detail() {
 
             if (rs) {
                 console.log(rs);
-                await getAll();
+                await getOrder();
             }
         } catch (error) {
             console.log(error);

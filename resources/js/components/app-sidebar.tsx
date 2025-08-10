@@ -1,4 +1,4 @@
-import { BookOpen, BookOpenText, Database, Folder, LayoutGrid, ShoppingCart, Wrench } from 'lucide-react';
+import { BookOpen, BookOpenText, Boxes, Database, Folder, LayoutGrid, ShoppingCart, Wrench } from 'lucide-react';
 
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -16,19 +16,24 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Bookings',
-        href: '/admin/bookings',
-        icon: BookOpenText,
-    },
-    {
         title: 'Orders',
         href: '/admin/orders',
         icon: ShoppingCart,
     },
     {
+        title: 'Bookings',
+        href: '/admin/bookings',
+        icon: BookOpenText,
+    },
+    {
+        title: 'Mechanic Jobs',
+        href: '/admin/mechanic-jobs',
+        icon: Wrench,
+    },
+    {
         title: 'Products',
         href: '/admin/products',
-        icon: Wrench,
+        icon: Boxes,
     },
     {
         title: 'Master',

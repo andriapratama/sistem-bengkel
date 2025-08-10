@@ -110,7 +110,7 @@ export default function Detail() {
                                     </div>
                                     <div className="flex w-full items-start">
                                         <div className="w-[150px]">Whatsapp</div>
-                                        <div>{data.user?.phone}</div>
+                                        <div>{data.user?.phone ?? '-'}</div>
                                     </div>
                                     <div className="flex w-full items-start">
                                         <div className="w-[150px]">Email</div>
@@ -130,7 +130,7 @@ export default function Detail() {
                                     </div>
                                     <div className="flex w-full items-start">
                                         <div className="w-[150px]">Police Number</div>
-                                        <div>{data.vehicle.police_number}</div>
+                                        <div className="uppercase">{data.vehicle.police_number}</div>
                                     </div>
                                 </div>
                                 <div className="my-10 flex w-full flex-col gap-3 bg-neutral-100 px-7 py-5 text-sm text-black dark:bg-neutral-900 dark:text-white">

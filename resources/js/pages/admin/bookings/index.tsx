@@ -128,7 +128,7 @@ export default function Index() {
                                     <TableCell>{formatDate(booking.date_booking)}</TableCell>
                                     <TableCell>{booking.user?.name}</TableCell>
                                     <TableCell>{booking.vehicle?.vehicle_variant?.name}</TableCell>
-                                    <TableCell>{booking.vehicle?.police_number}</TableCell>
+                                    <TableCell className="uppercase">{booking.vehicle?.police_number}</TableCell>
                                     <TableCell>{booking.queue_number}</TableCell>
                                     <TableCell>{dayjs(booking.estimated_service_start).format('hh:mm')}</TableCell>
                                     <TableCell>

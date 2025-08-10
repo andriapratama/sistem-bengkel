@@ -197,3 +197,37 @@ export interface BookingServiceDetail {
     created_at: Date;
     updated_at: Date;
 }
+
+export interface ServiceOrder {
+    id: number;
+    cashier_name: string | null;
+    discount_percentage: string | null;
+    discounta_amount: string | null;
+    grand_total: string | null;
+    mechanic_name: string | null;
+    note: string;
+    payment_status: string;
+    queue_number: number;
+    service_date: Date;
+    service_number: string;
+    service_type: string;
+    status: string;
+    user?: User;
+    user_id: number;
+    vehicle?: Vehicle;
+    vehicle_id: number;
+    booking_service_id: number;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface ServiceOrderDetail {
+    id: number;
+    name: string;
+    price: number | null;
+    service?: Service;
+    service_id: number;
+    service_order_id: number;
+    created_at: Date;
+    updated_at: Date;
+}

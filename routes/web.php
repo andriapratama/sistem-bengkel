@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminBookingController;
+use App\Http\Controllers\Admin\AdminMechanicJobController;
 use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
 use App\Http\Controllers\Admin\AdminServiceController;
@@ -42,6 +43,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/bookings/{id}', [AdminBookingController::class, 'store'])->name('bookings.store');
         Route::get('/bookings/get-one/{id}', [AdminBookingController::class, 'getOneById'])->name('bookings.getOneById');
         Route::put('/bookings/update/{id}', [AdminBookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+
+        Route::get('/mechanic-jobs', [AdminMechanicJobController::class, 'index'])->name('mechanic-jobs.index');
+        Route::get('/mechanic-jobs/get-all', [AdminMechanicJobController::class, 'getAll'])->name('mechanic-jobs.getAll');
+        Route::get('/mechanic-jobs/{id}', [AdminMechanicJobController::class, 'detail'])->name('mechanic-jobs.detail');
+        Route::get('/mechanic-jobs/get-one/{id}', [AdminMechanicJobController::class, 'getOneById'])->name('mechanic-jobs.getOneById');
+        Route::post('/mechanic-jobs/store-service', [AdminMechanicJobController::class, 'storeService'])->name('mechanic-jobs.storeService');
+        Route::delete('/mechanic-jobs/destroy-service/{id}', [AdminMechanicJobController::class, "destroyService"])->name('mechanic-jobs.destroyService');
 
         Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
         Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
