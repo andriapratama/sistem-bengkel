@@ -21,6 +21,7 @@ import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle }
 import { Textarea } from '@/components/ui/textarea';
 import { showToast } from '@/lib/utils/toast';
 import { BookingService, Service, Vehicle } from '@/types';
+import { Link } from '@inertiajs/react';
 
 import UserLayout from '../../layouts/user-layout';
 
@@ -30,8 +31,10 @@ export default function Index() {
     const [isShowBookingForm, setIsShowBookingForm] = useState<boolean>(false);
     const [isShowService, setIsShowService] = useState<boolean>(false);
 
+    const [isShowVehicleAlertDialog, setIsShowVehicleAlertDialog] = useState<boolean>(false);
     const [vehicleList, setVehicleList] = useState<Vehicle[]>([]);
     const [vehicleId, setVehicleId] = useState<number | null>(null);
+
     const [serviceList, setServiceList] = useState<Service[]>([]);
     const [serviceListSelected, setServiceListSelected] = useState<Service[]>([]);
     const [serviceListSelectedTmp, setServiceListSelectedTmp] = useState<Service[]>([]);
@@ -51,6 +54,8 @@ export default function Index() {
 
     const [isShowAlertCancel, setIsShowAlertCancel] = useState<boolean>(false);
     const [bookingId, setBookingId] = useState<number | null>(null);
+
+    const [isHideBooking, setIsHideBooking] = useState<boolean>(false);
 
     useEffect(() => {
         const start = '08:00';
@@ -78,6 +83,13 @@ export default function Index() {
         setTimeList(slots);
     }, []);
 
+    useEffect(() => {
+        if (date) {
+            const today = dayjs(new Date()).format('YYYY-MM-DD');
+            setIsHideBooking(dayjs(date).isBefore(today) ? true : false);
+        }
+    }, [date, setIsHideBooking, isHideBooking]);
+
     const getVehicle = useCallback(async () => {
         try {
             const rs = await axios.get('/vehicles/get-all');
@@ -85,8 +97,9 @@ export default function Index() {
             if (rs.data.success) {
                 const filter = rs.data.vehicles.filter((item: Vehicle) => !item.status_booking);
                 setVehicleList(filter);
-            } else {
-                console.log(rs);
+                if (rs.data.vehicles.length <= 0) {
+                    setIsShowVehicleAlertDialog(true);
+                }
             }
         } catch (error) {
             console.log(error);
@@ -103,8 +116,6 @@ export default function Index() {
 
             if (rs.data.success) {
                 setServiceList(rs.data.services);
-            } else {
-                console.log(rs);
             }
         } catch (error) {
             console.log(error);
@@ -203,8 +214,6 @@ export default function Index() {
 
             if (rs.data.success) {
                 setBookingList(rs.data.bookings);
-            } else {
-                console.log(rs);
             }
         } catch (error) {
             console.log(error);
@@ -224,8 +233,6 @@ export default function Index() {
 
             if (rs.data.success) {
                 setUserBookingList(rs.data.bookings);
-            } else {
-                console.log(rs);
             }
         } catch (error) {
             console.log(error);
@@ -285,8 +292,25 @@ export default function Index() {
                         {userBookingList.map((item) => (
                             <div
                                 key={item.id}
-                                className="flex w-[250px] flex-col items-center gap-1 rounded-lg border border-solid p-3 text-black shadow dark:text-white"
+                                className="relative flex w-[250px] flex-col items-center gap-1 overflow-hidden rounded-lg border border-solid p-3 text-black shadow dark:text-white"
                             >
+                                <div
+                                    className={`absolute top-0 left-0 flex items-center justify-center rounded-br-lg p-2 text-[10px] font-semibold capitalize ${
+                                        item?.status === 'pending'
+                                            ? 'bg-yellow-200 text-yellow-800'
+                                            : item?.status === 'processing'
+                                              ? 'bg-blue-200 text-blue-800'
+                                              : item?.status === 'accepted'
+                                                ? 'bg-indigo-200 text-indigo-800'
+                                                : item?.status === 'completed'
+                                                  ? 'bg-green-200 text-green-800'
+                                                  : item?.status === 'canceled'
+                                                    ? 'bg-red-200 text-red-800'
+                                                    : 'bg-transparent text-transparent'
+                                    }`}
+                                >
+                                    {item.status}
+                                </div>
                                 <div className="text-sm">Queue</div>
                                 <div className="my-4 text-7xl font-semibold">{item.queue_number}</div>
                                 <div className="flex w-full items-center justify-between gap-5 text-sm">
@@ -334,17 +358,20 @@ export default function Index() {
                                     ? dayjs(bookingList[bookingList.length - 1].estimated_service_end).format('hh:mm')
                                     : '08:00'}
                             </p>
-                            <Button
-                                type="button"
-                                className="bg-white text-black hover:bg-white/90 dark:bg-black dark:text-white dark:hover:bg-black/90"
-                                onClick={() => {
-                                    setIsShowBookingForm(true);
-                                    setServiceListSelected([]);
-                                    setNote('');
-                                }}
-                            >
-                                Booking Now
-                            </Button>
+                            {!isHideBooking ? (
+                                <Button
+                                    type="button"
+                                    className="bg-white text-black hover:bg-white/90 dark:bg-black dark:text-white dark:hover:bg-black/90"
+                                    onClick={() => {
+                                        setIsShowBookingForm(true);
+                                        setServiceListSelected([]);
+                                        setNote('');
+                                        setVehicleId(null);
+                                    }}
+                                >
+                                    Booking Now
+                                </Button>
+                            ) : null}
                         </div>
                         <div className="mx-auto grid grid-flow-col grid-rows-17 gap-x-5 gap-y-1">
                             {timeList.map((timeItem) => {
@@ -381,7 +408,7 @@ export default function Index() {
                                                           : matched?.status === 'canceled'
                                                             ? 'bg-red-200 text-red-800'
                                                             : 'bg-transparent text-transparent'
-                                            }`}
+                                            } `}
                                         >
                                             {matched ? `Queue ${matched.queue_number}` : ''}
                                         </div>
@@ -635,6 +662,24 @@ export default function Index() {
                         <Button type="button" variant="destructive" onClick={() => onCancelBooking()}>
                             Continue
                         </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={isShowVehicleAlertDialog} onOpenChange={setIsShowVehicleAlertDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Booking Unavailable</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You are unable to proceed with the booking because you have not registered your vehicle. Please register your vehicle
+                            first to continue.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Link href="/vehicles">
+                            <Button type="button">To Vehicle</Button>
+                        </Link>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

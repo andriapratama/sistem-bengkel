@@ -1,7 +1,3 @@
-import axios from 'axios';
-import { Image } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,6 +15,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Transaction } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
+import axios from 'axios';
+import { Image, LoaderCircle } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { showToast } from '../../../lib/utils/toast';
 
@@ -74,6 +73,8 @@ export default function Detail() {
 
     const updateShippingStatus = async (status: string) => {
         try {
+            setProcessing((prev) => !prev);
+
             const rs = await axios.put(`/admin/orders/update/${id}`, { shipping_status: status });
 
             if (rs) {
@@ -82,6 +83,8 @@ export default function Detail() {
             }
         } catch (error) {
             console.log(error);
+        } finally {
+            setProcessing((prev) => !prev);
         }
     };
 
@@ -132,7 +135,7 @@ export default function Detail() {
                         <div className="mb-5 w-full text-xl font-semibold">Invoice Number: {data.invoice_number}</div>
 
                         <div className="flex w-full gap-10">
-                            <div className="h-[400px] flex-1">
+                            <div className="flex-1">
                                 <Table>
                                     <TableHeader>
                                         <TableRow className="border-black dark:border-white">
@@ -370,6 +373,12 @@ export default function Detail() {
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
+
+                {processing ? (
+                    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 dark:bg-white/40">
+                        <LoaderCircle className="h-14 w-14 animate-spin" />
+                    </div>
+                ) : null}
             </>
         );
     }

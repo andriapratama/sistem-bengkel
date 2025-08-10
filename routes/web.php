@@ -41,6 +41,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/bookings/{id}', [AdminBookingController::class, 'detail'])->name('bookings.detail');
         Route::post('/bookings/{id}', [AdminBookingController::class, 'store'])->name('bookings.store');
         Route::get('/bookings/get-one/{id}', [AdminBookingController::class, 'getOneById'])->name('bookings.getOneById');
+        Route::put('/bookings/update/{id}', [AdminBookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 
         Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
         Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');

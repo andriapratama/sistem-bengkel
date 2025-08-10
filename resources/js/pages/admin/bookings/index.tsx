@@ -4,6 +4,7 @@ import { MoreHorizontal } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,7 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BookingService, BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -72,7 +72,7 @@ export default function Index() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Orders" />
+            <Head title="Bookings" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full items-end gap-4 px-5">
                     <div className="flex flex-col gap-1">
@@ -162,7 +162,7 @@ export default function Index() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem className="cursor-pointer" asChild>
-                                                    <Link href={route('admin.orders.detail', booking.id)}>Detail</Link>
+                                                    <Link href={route('admin.bookings.detail', booking.id)}>Detail</Link>
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

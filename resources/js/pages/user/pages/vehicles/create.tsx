@@ -99,7 +99,12 @@ export default function Create() {
                 }, 1000);
             }
         } catch (error) {
-            console.log(error);
+            const errors = error.response.data.errors;
+            setErrors({
+                vehicle_year: errors.vehicle_year?.[0],
+                police_number: errors.police_number?.[0],
+                vehicle_variant_id: errors.vehicle_variant_id?.[0],
+            });
         } finally {
             setProcessing(false);
         }

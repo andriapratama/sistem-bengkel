@@ -15,6 +15,10 @@ class UserBookingController extends Controller
 {
     public function index()
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        
         return Inertia::render('user/pages/booking/index');
     }
 
@@ -131,6 +135,12 @@ class UserBookingController extends Controller
     public function getOneByUser()
     {
         $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthentication'
+            ], 400);
+        }
 
         $bookings = BookingService::with(['vehicle.vehicleVariant', 'bookingServiceDetail'])
             ->orderBy('created_at', 'asc')

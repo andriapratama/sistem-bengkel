@@ -47,4 +47,9 @@ class Product extends Model
     {
         return $this->hasMany(TransactionItem::class);
     }
+
+    public function serviceOrderDetailProduct()
+    {
+        return $this->hasMany(ServiceOrderDetailProduct::class);
+    }
 }

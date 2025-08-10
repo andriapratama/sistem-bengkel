@@ -30,4 +30,9 @@ class Vehicle extends Model
         return $this->belongsTo(BookingService::class);
     }
 
+    public function serviceOrderDetail()
+    {
+        return $this->belongsTo(ServiceOrderDetail::class);
+    }
+
 }

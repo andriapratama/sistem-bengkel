@@ -71,6 +71,12 @@ class UserVehicleController extends Controller
     {
         $user = Auth::user();
 
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthentication'
+            ], 400);
+        }
+
         $vehicles = Vehicle::with(['vehicleVariant.vehicleBrand'])->orderBy('created_at')->where('user_id', $user->id)->get();
 
          return response()->json([

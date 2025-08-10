@@ -67,4 +67,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Vehicle::class);
     }
+
+    public function serviceOrder()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
 }

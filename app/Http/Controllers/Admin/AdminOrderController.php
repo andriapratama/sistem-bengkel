@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
-
 class AdminOrderController extends Controller
 {
     public function index()

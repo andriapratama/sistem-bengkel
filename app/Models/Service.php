@@ -17,4 +17,9 @@ class Service extends Model
     {
         return $this->hasMany(BookingServiceDetail::class);
     }
+
+    public function serviceOrderDetail()
+    {
+        return $this->hasMany(ServiceOrderDetail::class);
+    }
 }
