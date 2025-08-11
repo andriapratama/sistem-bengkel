@@ -1,4 +1,7 @@
-import { MoreHorizontal } from 'lucide-react';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { ChevronDownIcon, MoreHorizontal } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -11,10 +14,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, ServiceOrder } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import axios from 'axios';
-import dayjs from 'dayjs';
-import { ChevronDownIcon } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -86,7 +85,7 @@ export default function Index() {
                             <PopoverContent className="w-auto overflow-hidden p-0" align="start">
                                 <Calendar
                                     mode="single"
-                                    selected={date}
+                                    selected={new Date(date)}
                                     captionLayout="dropdown"
                                     onSelect={(date) => {
                                         setDate(dayjs(date).format('YYYY-MM-DD'));
@@ -195,9 +194,9 @@ export default function Index() {
                                 <TableRow key={order.id} className="border-black dark:border-white">
                                     <TableCell>{dayjs(order.service_date).format('DD/MM/YYYY')}</TableCell>
                                     <TableCell>{order.service_number}</TableCell>
-                                    <TableCell>{order.user.name}</TableCell>
-                                    <TableCell>{order.vehicle.vehicle_variant.name}</TableCell>
-                                    <TableCell>{order.vehicle.police_number}</TableCell>
+                                    <TableCell>{order.user?.name}</TableCell>
+                                    <TableCell>{order.vehicle?.vehicle_variant?.name}</TableCell>
+                                    <TableCell className="uppercase">{order.vehicle?.police_number}</TableCell>
                                     <TableCell>{order.queue_number ?? '-'}</TableCell>
                                     <TableCell>
                                         <div className="flex justify-center">

@@ -95,7 +95,7 @@ export default function Index() {
                             {product.description ? <p className="text-sm font-light">{product.description}</p> : null}
                         </div>
 
-                        {product.hasVariant ? (
+                        {product.has_variant ? (
                             <div className="mb-5 flex gap-3">
                                 <div className="text-lg font-normal">Variants:</div>
                                 <div className="flex flex-1 flex-wrap gap-3">

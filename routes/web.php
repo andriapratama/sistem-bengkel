@@ -54,6 +54,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
         Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');
         Route::get('/products/add', [AdminProductController::class, 'create'])->name('products.create');
+        Route::get('/products/get-all', [AdminProductController::class, 'getAll'])->name('products.getAll');
         Route::get('/products/{product}/edit', [AdminProductController::class, "edit"])->name('products.edit');
         Route::get('/products/{product}/edit-image', [AdminProductController::class, "editImage"])->name('products.edit-image');
         Route::match(['post', 'put'], '/products/{product}/image', [AdminProductController::class, 'updateImage'])->name('products.update-image');

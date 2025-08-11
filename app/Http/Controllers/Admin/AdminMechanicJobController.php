@@ -17,7 +17,7 @@ class AdminMechanicJobController extends Controller
     }
 
     public function getAll(Request $request)
-    {   
+    {
         $date = $request->query('service_date');
         $status = $request->query('status');
         $paymentStatus = $request->query('payment_status');
@@ -40,9 +40,9 @@ class AdminMechanicJobController extends Controller
             })
             ->orderBy('queue_number', 'asc')
             ->paginate($limit, ['*'], 'page', $page);
-        
+
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Get all service orders',
             'serviceOrders' => $serviceOrders,
         ], 200);
@@ -56,12 +56,12 @@ class AdminMechanicJobController extends Controller
     }
 
     public function getOneById($id)
-    {   
-        $serviceOrder = ServiceOrder::with(['user', 'vehicle.vehicleVariant.vehicleBrand', 'serviceOrderDetails.service'])
+    {
+        $serviceOrder = ServiceOrder::with(['user', 'vehicle.vehicleVariant.vehicleBrand', 'serviceOrderDetails.service', 'serviceOrderDetailProducts'])
             ->where('id', $id)->firstOrFail();
-        
+
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Get one service order by id',
             'serviceOrder' => $serviceOrder,
         ], 200);

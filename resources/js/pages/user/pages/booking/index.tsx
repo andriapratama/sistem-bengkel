@@ -318,8 +318,8 @@ export default function Index() {
                                     <div className="line-clamp-1">{item.vehicle?.vehicle_variant?.name}</div>
                                 </div>
                                 <div className="flex w-full items-center justify-between gap-5 text-sm">
-                                    <div>Polic Number</div>
-                                    <div className="line-clamp-1">{item.vehicle?.police_number}</div>
+                                    <div>Police Number</div>
+                                    <div className="line-clamp-1 uppercase">{item.vehicle?.police_number}</div>
                                 </div>
                                 <div className="flex w-full items-center justify-between gap-5 text-sm">
                                     <div>Date</div>
@@ -556,31 +556,38 @@ export default function Index() {
 
                         <div className="w-full">
                             <div className="text-sm font-semibold">Service List</div>
-                            {serviceList?.map((service) => (
-                                <div
-                                    key={service.id}
-                                    className="flex w-full items-center gap-5 border-b border-solid border-black p-3 last:border-transparent dark:border-white"
-                                >
-                                    <div className="flex flex-1 flex-col">
-                                        <div className="font-semibold">{service.name}</div>
-                                        <p className="line-clamp-6 text-[13px]">{service.description}</p>
-                                        <p className="text-sm">Estimated Duration: {service.estimated_duration ?? 0} Minutes</p>
-                                        <p className="text-sm">Estimated Price: {formatPrice(service.estimated_price ?? 0)}</p>
-                                    </div>
-                                    <Button
-                                        type="button"
-                                        size="icon"
-                                        className="size-8"
-                                        onClick={() => {
-                                            setServiceListSelectedTmp((prev) =>
-                                                prev.some((item) => item.id === service.id) ? prev : [...prev, service],
-                                            );
-                                        }}
+                            {serviceList?.map((service) => {
+                                const check = serviceListSelectedTmp.find((item) => item.id === service.id);
+
+                                return (
+                                    <div
+                                        key={service.id}
+                                        className="flex w-full items-center gap-5 border-b border-solid border-black p-3 last:border-transparent dark:border-white"
                                     >
-                                        <Plus />
-                                    </Button>
-                                </div>
-                            ))}
+                                        <div className="flex flex-1 flex-col">
+                                            <div className="font-semibold">{service.name}</div>
+                                            <p className="line-clamp-6 text-[13px]">{service.description}</p>
+                                            <p className="text-sm">Estimated Duration: {service.estimated_duration ?? 0} Minutes</p>
+                                            <p className="text-sm">Estimated Price: {formatPrice(service.estimated_price ?? 0)}</p>
+                                        </div>
+
+                                        {!check ? (
+                                            <Button
+                                                type="button"
+                                                size="icon"
+                                                className="size-8"
+                                                onClick={() => {
+                                                    setServiceListSelectedTmp((prev) =>
+                                                        prev.some((item) => item.id === service.id) ? prev : [...prev, service],
+                                                    );
+                                                }}
+                                            >
+                                                <Plus />
+                                            </Button>
+                                        ) : null}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                     <SheetFooter>

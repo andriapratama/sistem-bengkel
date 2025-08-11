@@ -44,7 +44,7 @@ const productSchema = z.object({
     price: z.coerce.number().min(1, 'Price must be ≥ 0'),
     image: z.union([z.instanceof(File), z.undefined(), z.null()]).optional(),
     status: z.boolean(),
-    hasVariant: z.boolean(),
+    has_variant: z.boolean(),
     category_id: z.coerce.number().min(1, 'Category is required'),
     unit_id: z.coerce.number().min(1, 'Unit is required'),
     variants: z.array(variantSchema).nullable().optional(),
@@ -75,7 +75,7 @@ export default function Create() {
         price: 0,
         image: null,
         status: false,
-        hasVariant: false,
+        has_variant: false,
         category_id: 0,
         unit_id: 0,
         variants: [],
@@ -169,7 +169,7 @@ export default function Create() {
         formData.append('slug', data.slug);
         formData.append('description', data.description ?? '');
         formData.append('status', data.status.toString());
-        formData.append('hasVariant', data.hasVariant.toString());
+        formData.append('has_variant', data.has_variant.toString());
         formData.append('category_id', data.category_id.toString());
         formData.append('unit_id', data.unit_id.toString());
         formData.append('image', data.image as Blob);
@@ -321,12 +321,12 @@ export default function Create() {
                     </div>
 
                     <div className="flex items-center gap-5">
-                        <Label htmlFor="hasVariant">Variant</Label>
-                        <Switch checked={data.hasVariant} onCheckedChange={(e) => setData('hasVariant', e)} />
+                        <Label htmlFor="has_variant">Variant</Label>
+                        <Switch checked={data.has_variant} onCheckedChange={(e) => setData('has_variant', e)} />
                     </div>
                 </div>
 
-                {data.hasVariant ? (
+                {data.has_variant ? (
                     <div className="mx-auto mb-10 flex w-[80%] flex-col gap-4 p-4">
                         <Label htmlFor="variants">Variants</Label>
                         <Table>

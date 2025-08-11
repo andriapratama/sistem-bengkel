@@ -21,10 +21,10 @@ return new class extends Migration
             $table->decimal('price', 15, 2);
             $table->string('image')->nullable();
             $table->boolean('status');
-            $table->integer('discountPercentage')->nullable();
-            $table->decimal('discountAmount', 15, 2)->nullable();
-            $table->decimal('priceAfterDiscount', 15, 2)->nullable();
-            $table->boolean('hasVariant');
+            $table->integer('discount_percentage')->nullable();
+            $table->decimal('discount_amount', 15, 2)->nullable();
+            $table->decimal('price_after_discount', 15, 2)->nullable();
+            $table->boolean('has_variant');
 
             $table->unsignedBigInteger('category_id')->nullable();
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');

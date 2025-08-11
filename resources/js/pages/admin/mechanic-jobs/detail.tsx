@@ -1,3 +1,7 @@
+import axios from 'axios';
+import { LoaderCircle, Minus, Plus, Trash } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+
 import {
     AlertDialog,
     AlertDialogCancel,
@@ -12,11 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Service, ServiceOrder, ServiceOrderDetail } from '@/types';
+import { BreadcrumbItem, Product, Service, ServiceOrder, ServiceOrderDetail } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import axios from 'axios';
-import { LoaderCircle, Plus, Trash } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
 
 type PageProps = {
     id: number;
@@ -38,6 +39,10 @@ export default function Detail() {
     const [serviceList, setServiceList] = useState<Service[]>([]);
     const [serviceDetailId, setServiceDetailId] = useState<number | null>(null);
     const [isShowRemoveServiceAlert, setIsShowRemoveServiceAlert] = useState<boolean>(false);
+
+    const [serviceDetailProduct, setServiceDetailProduct] = useState<ServiceOrderDetail[]>([]);
+    const [isShowProduct, setIsShowProduct] = useState<boolean>(false);
+    const [productList, setProductList] = useState<Product[]>([]);
 
     const [processing, setProcessing] = useState<boolean>(false);
 
@@ -80,9 +85,27 @@ export default function Detail() {
         getServices();
     }, [getServices]);
 
+    const getProducts = useCallback(async () => {
+        try {
+            const rs = await axios.get('/admin/products/get-all');
+
+            if (rs.data.success) {
+                setProductList(rs.data.products.data);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setProcessing(false);
+        }
+    }, []);
+
     useEffect(() => {
-        console.log(serviceDetail);
-    }, [serviceDetail]);
+        getProducts();
+    }, [getProducts]);
+
+    useEffect(() => {
+        console.log(productList);
+    }, [productList]);
 
     const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -131,52 +154,112 @@ export default function Detail() {
                     <div className="flex h-full flex-1 gap-10 overflow-x-auto rounded-xl p-7">
                         <div className="flex w-full gap-10">
                             <div className="flex-1">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className="border-black dark:border-white">
-                                            <TableHead className="line-clamp-1">Service Name</TableHead>
-                                            <TableHead>Estimated Price</TableHead>
-                                            <TableHead className="w-[30%]">Fix Price</TableHead>
-                                            <TableHead className="w-[10%] text-center">Action</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {serviceDetail?.map((item, i) => {
-                                            return (
-                                                <TableRow key={item.id} className="border-black dark:border-white">
-                                                    <TableCell>{item.name}</TableCell>
-                                                    <TableCell>{formatPrice(item.service.estimated_price ?? 0)}</TableCell>
-                                                    <TableCell>
-                                                        <div className="relative flex items-center">
-                                                            <Input id={'price' + i} className="pl-10" />
-                                                            <div className="pointer-events-none absolute left-3 text-sm">Rp</div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex justify-center">
-                                                            <Button
-                                                                type="button"
-                                                                size="icon"
-                                                                variant="destructive"
-                                                                className="size-8"
-                                                                onClick={() => {
-                                                                    setServiceDetailId(item.id);
-                                                                    setIsShowRemoveServiceAlert(true);
-                                                                }}
-                                                            >
-                                                                <Trash />
-                                                            </Button>
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    </TableBody>
-                                </Table>
-                                <div className="mt-5 flex w-full justify-end">
-                                    <Button type="button" onClick={() => setIsShowService(true)}>
-                                        Add Service
-                                    </Button>
+                                <div className="mb-10 flex flex-1 flex-col">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-black dark:border-white">
+                                                <TableHead className="line-clamp-1">Service Name</TableHead>
+                                                <TableHead>Estimated Price</TableHead>
+                                                <TableHead className="w-[30%]">Fix Price</TableHead>
+                                                <TableHead className="w-[10%] text-center">Action</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {serviceDetail?.map((item, i) => {
+                                                return (
+                                                    <TableRow key={item.id} className="border-black dark:border-white">
+                                                        <TableCell>{item.name}</TableCell>
+                                                        <TableCell>{formatPrice(item.service?.estimated_price ?? 0)}</TableCell>
+                                                        <TableCell>
+                                                            <div className="relative flex items-center">
+                                                                <Input id={'price' + i} className="pl-10" />
+                                                                <div className="pointer-events-none absolute left-3 text-sm">Rp</div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <div className="flex justify-center">
+                                                                <Button
+                                                                    type="button"
+                                                                    size="icon"
+                                                                    variant="destructive"
+                                                                    className="size-8"
+                                                                    onClick={() => {
+                                                                        setServiceDetailId(item.id);
+                                                                        setIsShowRemoveServiceAlert(true);
+                                                                    }}
+                                                                >
+                                                                    <Trash />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                    <div className="mt-5 flex w-full justify-end">
+                                        <Button type="button" onClick={() => setIsShowService(true)}>
+                                            Add Service
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-1 flex-col">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-black dark:border-white">
+                                                <TableHead className="line-clamp-1">Product Name</TableHead>
+                                                <TableHead>Price</TableHead>
+                                                <TableHead className="w-[20%] text-center">Quantity</TableHead>
+                                                <TableHead>Subtotal</TableHead>
+                                                <TableHead className="w-[10%] text-center">Action</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {[1]?.map((item, i) => {
+                                                return (
+                                                    <TableRow key={item} className="border-black dark:border-white">
+                                                        <TableCell>Oli Castrol</TableCell>
+                                                        <TableCell>{formatPrice(100000)}</TableCell>
+                                                        <TableCell>
+                                                            <div className="flex w-full items-center justify-center gap-1">
+                                                                <Button
+                                                                    type="button"
+                                                                    className="rounded border-black dark:border-white"
+                                                                    variant="outline"
+                                                                >
+                                                                    <Minus />
+                                                                </Button>
+                                                                <div className="flex h-[35px] w-[100px] items-center justify-center rounded border border-solid border-black dark:border-white">
+                                                                    {1}
+                                                                </div>
+                                                                <Button
+                                                                    type="button"
+                                                                    className="rounded border-black dark:border-white"
+                                                                    variant="outline"
+                                                                >
+                                                                    <Plus />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell>{formatPrice(100000)}</TableCell>
+                                                        <TableCell>
+                                                            <div className="flex justify-center">
+                                                                <Button type="button" size="icon" variant="destructive" className="size-8">
+                                                                    <Trash />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                    <div className="mt-5 flex w-full justify-end">
+                                        <Button type="button" onClick={() => setIsShowProduct(true)}>
+                                            Add Product
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -236,31 +319,31 @@ export default function Detail() {
                                     <div className="w-full text-lg font-semibold">Customer Information</div>
                                     <div className="flex w-full items-center justify-between">
                                         <p>Name :</p>
-                                        <p>{data.user.name}</p>
+                                        <p>{data.user?.name}</p>
                                     </div>
                                     <div className="flex w-full items-center justify-between">
                                         <p>Whatsapp :</p>
-                                        <p>{data.user.phone ?? '-'}</p>
+                                        <p>{data.user?.phone ?? '-'}</p>
                                     </div>
                                     <div className="flex w-full items-center justify-between">
                                         <p>Email :</p>
-                                        <p>{data.user.email}</p>
+                                        <p>{data.user?.email}</p>
                                     </div>
                                     <div className="flex w-full items-center justify-between">
                                         <p>Vehicle :</p>
-                                        <p>{data.vehicle.vehicle_variant.name}</p>
+                                        <p>{data.vehicle?.vehicle_variant?.name}</p>
                                     </div>
                                     <div className="flex w-full items-center justify-between">
                                         <p>Vehicle Brand :</p>
-                                        <p>{data.vehicle.vehicle_variant.vehicle_brand.name}</p>
+                                        <p>{data.vehicle?.vehicle_variant?.vehicle_brand?.name}</p>
                                     </div>
                                     <div className="flex w-full items-center justify-between">
                                         <p>Vehicle Year :</p>
-                                        <p>{data.vehicle.vehicle_year}</p>
+                                        <p>{data.vehicle?.vehicle_year}</p>
                                     </div>
                                     <div className="flex w-full items-center justify-between">
                                         <p>Police Number :</p>
-                                        <p className="uppercase">{data.vehicle.police_number}</p>
+                                        <p className="uppercase">{data.vehicle?.police_number}</p>
                                     </div>
                                 </div>
                             </div>
@@ -292,6 +375,39 @@ export default function Detail() {
                                                     <Plus />
                                                 </Button>
                                             ) : null}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                        <SheetFooter>
+                            <SheetClose asChild>
+                                <Button variant="outline">Close</Button>
+                            </SheetClose>
+                        </SheetFooter>
+                    </SheetContent>
+                </Sheet>
+
+                <Sheet open={isShowProduct} onOpenChange={setIsShowProduct}>
+                    <SheetContent className="min-w-[500px]">
+                        <SheetHeader>
+                            <SheetTitle>Products</SheetTitle>
+                        </SheetHeader>
+                        <div className="grid flex-1 auto-rows-min gap-6 overflow-y-auto px-4">
+                            <div className="w-full">
+                                {productList?.map((product) => {
+                                    return (
+                                        <div
+                                            key={product.id}
+                                            className="flex w-full items-center gap-5 border-b border-solid border-black p-3 last:border-transparent dark:border-white"
+                                        >
+                                            <div className="flex flex-1 flex-col">
+                                                <div className="font-semibold">{product.name}</div>
+                                            </div>
+
+                                            <Button type="button" size="icon" className="size-8">
+                                                <Plus />
+                                            </Button>
                                         </div>
                                     );
                                 })}

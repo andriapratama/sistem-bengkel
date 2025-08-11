@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('payment_status', ['unpaid', 'paid',])->default('unpaid');
             $table->decimal('grand_total', 15, 2)->nullable();
             $table->integer('discount_percentage')->nullable();
-            $table->decimal('discounta_amount', 15, 2)->nullable();
+            $table->decimal('discount_amount', 15, 2)->nullable();
             $table->text('note')->nullable();
             $table->string('mechanic_name')->nullable();
             $table->string('cashier_name')->nullable();

@@ -80,7 +80,7 @@ export interface Product {
     cost: number;
     price: number;
     status: boolean;
-    hasVariant: boolean;
+    has_variant: boolean;
     image?: string;
     image_url?: string;
     quantity?: number;
@@ -194,6 +194,7 @@ export interface BookingServiceDetail {
     id: number;
     booking_service_id: number;
     service_id: number;
+    service?: Service;
     created_at: Date;
     updated_at: Date;
 }
@@ -227,6 +228,19 @@ export interface ServiceOrderDetail {
     price: number | null;
     service?: Service;
     service_id: number;
+    service_order_id: number;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface ServiceOrderDetailProduct {
+    id: number;
+    name: string;
+    quantity: number | null;
+    price: number | null;
+    sub_total: number | null;
+    product?: Product;
+    product_id: number;
     service_order_id: number;
     created_at: Date;
     updated_at: Date;

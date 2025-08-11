@@ -1,3 +1,8 @@
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { LoaderCircle } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,12 +16,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Transaction } from '@/types';
+import { BookingService, BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import axios from 'axios';
-import dayjs from 'dayjs';
-import { LoaderCircle } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
 
 type PageProps = {
     id: number;
@@ -31,7 +32,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Detail() {
     const { id } = usePage<PageProps>().props;
-    const [data, setData] = useState<Transaction | null>(null);
+    const [data, setData] = useState<BookingService | null>(null);
     const [isShowAlertStatus, setIsShowAlertStatus] = useState<boolean>(false);
     const [isShowAlertStatusCancel, setIsShowAlertStatusCancel] = useState<boolean>(false);
 
@@ -88,7 +89,7 @@ export default function Detail() {
                                     {data.booking_service_detail?.map((item, i) => {
                                         return (
                                             <TableRow key={item.id} className="border-black dark:border-white">
-                                                <TableCell>{item.service.name}</TableCell>
+                                                <TableCell>{item.service?.name}</TableCell>
                                             </TableRow>
                                         );
                                     })}
@@ -118,19 +119,19 @@ export default function Detail() {
                                     </div>
                                     <div className="flex w-full items-start">
                                         <div className="w-[150px]">Vehicle</div>
-                                        <div>{data.vehicle.vehicle_variant.name}</div>
+                                        <div>{data.vehicle?.vehicle_variant?.name}</div>
                                     </div>
                                     <div className="flex w-full items-start">
                                         <div className="w-[150px]">Vehicle Brand</div>
-                                        <div>{data.vehicle.vehicle_variant.vehicle_brand.name}</div>
+                                        <div>{data.vehicle?.vehicle_variant?.vehicle_brand?.name}</div>
                                     </div>
                                     <div className="flex w-full items-start">
                                         <div className="w-[150px]">Vehicle Year</div>
-                                        <div>{data.vehicle.vehicle_year}</div>
+                                        <div>{data.vehicle?.vehicle_year}</div>
                                     </div>
                                     <div className="flex w-full items-start">
                                         <div className="w-[150px]">Police Number</div>
-                                        <div className="uppercase">{data.vehicle.police_number}</div>
+                                        <div className="uppercase">{data.vehicle?.police_number}</div>
                                     </div>
                                 </div>
                                 <div className="my-10 flex w-full flex-col gap-3 bg-neutral-100 px-7 py-5 text-sm text-black dark:bg-neutral-900 dark:text-white">

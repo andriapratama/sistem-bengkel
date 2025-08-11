@@ -72,7 +72,7 @@ export default function Index() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Bookings" />
+            <Head title="Orders" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full items-end gap-4 px-5">
                     <div className="flex flex-col gap-1">

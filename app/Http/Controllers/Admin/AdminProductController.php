@@ -33,7 +33,7 @@ class AdminProductController extends Controller
     public function create(){
         $category = Category::all();
         $unit = Unit::all();
-        
+
         return Inertia::render('admin/products/create', [
             'categories' => $category,
             'units' => $unit,
@@ -46,7 +46,7 @@ class AdminProductController extends Controller
             'category_id' => (int) $request->input('category_id'),
             'unit_id' => (int) $request->input('unit_id'),
             'status' => filter_var($request->input('status'), FILTER_VALIDATE_BOOLEAN),
-            'hasVariant' => filter_var($request->input('hasVariant'), FILTER_VALIDATE_BOOLEAN),
+            'has_variant' => filter_var($request->input('has_variant'), FILTER_VALIDATE_BOOLEAN),
             'stock' => (int) $request->input('stock'),
             'cost' => (float) $request->input('cost'),
             'price' => (float) $request->input('price'),
@@ -77,7 +77,7 @@ class AdminProductController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'status' => ['required', 'boolean'],
-            'hasVariant' => ['required', 'boolean'],
+            'has_variant' => ['required', 'boolean'],
             'category_id' => ['required', 'exists:categories,id'],
             'unit_id' => ['required', 'exists:units,id'],
             'variants' => ['nullable', 'array'],
@@ -129,7 +129,7 @@ class AdminProductController extends Controller
             'category_id' => (int) $request->input('category_id'),
             'unit_id' => (int) $request->input('unit_id'),
             'status' => filter_var($request->input('status'), FILTER_VALIDATE_BOOLEAN),
-            'hasVariant' => filter_var($request->input('hasVariant'), FILTER_VALIDATE_BOOLEAN),
+            'has_variant' => filter_var($request->input('has_variant'), FILTER_VALIDATE_BOOLEAN),
             'stock' => (int) $request->input('stock'),
             'cost' => (float) $request->input('cost'),
             'price' => (float) $request->input('price'),
@@ -143,7 +143,7 @@ class AdminProductController extends Controller
             'cost' => ['required', 'numeric', 'min:0'],
             'price' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'boolean'],
-            'hasVariant' => ['required', 'boolean'],
+            'has_variant' => ['required', 'boolean'],
             'category_id' => ['required', 'exists:categories,id'],
             'unit_id' => ['required', 'exists:units,id'],
         ]);
@@ -185,6 +185,26 @@ class AdminProductController extends Controller
 
         return redirect()->route('admin.products.index')->with([
             'success' => 'Product deleted successfully.',
+        ]);
+    }
+
+    public function getAll(Request $request)
+    {
+        $page = $request->query('page', 1);
+        $limit = $request->query('limit', 10);
+        $search = $request->query('search');
+
+        $products = Product::with(['variants'])
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', $search);
+            })
+            ->orderBy('name', 'asc')
+            ->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Get all products',
+            'products' => $products,
         ]);
     }
 }

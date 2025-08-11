@@ -32,7 +32,7 @@ export function ProductComponent({ product, user }: ProductComponentProps) {
             return;
         }
 
-        if (product.hasVariant) {
+        if (product.has_variant) {
             router.visit(`/products/${product.slug}`);
             return;
         }

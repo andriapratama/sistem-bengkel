@@ -23,10 +23,10 @@ class ProductSeeder extends Seeder
                 'price' => 50000.00,
                 'image' => 'products/a0QCMtlaD4NTwHulAHyPO7RpBRjBtdP2KyLFdOzs.jpg',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => 10,
-                'discountAmount' => 5000.00,
-                'priceAfterDiscount' => 45000.00,
+                'has_variant' => false,
+                'discount_percentage' => 10,
+                'discount_amount' => 5000.00,
+                'price_after_discount' => 45000.00,
                 'category_id' => 2, // Oil & Lubricants
                 'unit_id' => 8,     // Liter
             ],
@@ -39,10 +39,10 @@ class ProductSeeder extends Seeder
                 'price' => 25000.00,
                 'image' => 'products/1EMZ1hO3VshBfUV7zuI94t62U4McxvDcjunN4p3w.jpg',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => null,
-                'discountAmount' => null,
-                'priceAfterDiscount' => null,
+                'has_variant' => false,
+                'discount_percentage' => null,
+                'discount_amount' => null,
+                'price_after_discount' => null,
                 'category_id' => 3, // Brake Components
                 'unit_id' => 9,     // Pieces
             ],
@@ -55,10 +55,10 @@ class ProductSeeder extends Seeder
                 'price' => 30000.00,
                 'image' => 'products/cNAjWCx7peXJbMleI3auYqA544o3TD9iUGK5Poau.jpg',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => null,
-                'discountAmount' => null,
-                'priceAfterDiscount' => null,
+                'has_variant' => false,
+                'discount_percentage' => null,
+                'discount_amount' => null,
+                'price_after_discount' => null,
                 'category_id' => 8, // Filters
                 'unit_id' => 9,     // Pieces
             ],
@@ -71,10 +71,10 @@ class ProductSeeder extends Seeder
                 'price' => 18000.00,
                 'image' => 'products/qI79WwWuvQduAs6gPzGU7aVCHWe49hbQl8XpU3sJ.webp',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => null,
-                'discountAmount' => null,
-                'priceAfterDiscount' => null,
+                'has_variant' => false,
+                'discount_percentage' => null,
+                'discount_amount' => null,
+                'price_after_discount' => null,
                 'category_id' => 5, // Electrical Parts
                 'unit_id' => 9,     // Pieces
             ],
@@ -87,10 +87,10 @@ class ProductSeeder extends Seeder
                 'price' => 85000.00,
                 'image' => 'products/UyoT2tZMjcKgxDaYZt4I5FUdao8jS8jcNlkMzwk0.jpg',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => 5,
-                'discountAmount' => 4250.00,
-                'priceAfterDiscount' => 80750.00,
+                'has_variant' => false,
+                'discount_percentage' => 5,
+                'discount_amount' => 4250.00,
+                'price_after_discount' => 80750.00,
                 'category_id' => 7, // Transmission Parts
                 'unit_id' => 9,     // Pieces
             ],
@@ -103,10 +103,10 @@ class ProductSeeder extends Seeder
                 'price' => 150000.00,
                 'image' => 'products/hZLU9OexRwiM8GCEY74hW0vX6wpTyPQwutuYUktu.webp',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => null,
-                'discountAmount' => null,
-                'priceAfterDiscount' => null,
+                'has_variant' => false,
+                'discount_percentage' => null,
+                'discount_amount' => null,
+                'price_after_discount' => null,
                 'category_id' => 4, // Suspension Parts
                 'unit_id' => 9,     // Pieces
             ],
@@ -119,10 +119,10 @@ class ProductSeeder extends Seeder
                 'price' => 45000.00,
                 'image' => 'products/7XrLEZzyv40VoyJKGIwrjawTJ8eGa3uVcMG69cIA.webp',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => null,
-                'discountAmount' => null,
-                'priceAfterDiscount' => null,
+                'has_variant' => false,
+                'discount_percentage' => null,
+                'discount_amount' => null,
+                'price_after_discount' => null,
                 'category_id' => 1, // Engine Parts
                 'unit_id' => 9,     // Pieces
             ],
@@ -135,10 +135,10 @@ class ProductSeeder extends Seeder
                 'price' => 40000.00,
                 'image' => 'products/PdviJ9FDDrLJJVW4GArPfyT4uiyzKCUqeEdSqYW8.jpg',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => 15,
-                'discountAmount' => 6000.00,
-                'priceAfterDiscount' => 34000.00,
+                'has_variant' => false,
+                'discount_percentage' => 15,
+                'discount_amount' => 6000.00,
+                'price_after_discount' => 34000.00,
                 'category_id' => 5, // Electrical Parts
                 'unit_id' => 9,     // Pieces
             ],
@@ -151,10 +151,10 @@ class ProductSeeder extends Seeder
                 'price' => 15000.00,
                 'image' => 'products/YLE4n6RWiCQAEKlVF3WgQDOErlWTndAH8lSvgVXD.webp',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => null,
-                'discountAmount' => null,
-                'priceAfterDiscount' => null,
+                'has_variant' => false,
+                'discount_percentage' => null,
+                'discount_amount' => null,
+                'price_after_discount' => null,
                 'category_id' => 8, // Filters
                 'unit_id' => 9,     // Pieces
             ],
@@ -167,10 +167,10 @@ class ProductSeeder extends Seeder
                 'price' => 200000.00,
                 'image' => 'products/reJhDQWMmtfmuVHEFm70yBdhz1dzts3hL1i1aZet.webp',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => 5,
-                'discountAmount' => 10000.00,
-                'priceAfterDiscount' => 190000.00,
+                'has_variant' => false,
+                'discount_percentage' => 5,
+                'discount_amount' => 10000.00,
+                'price_after_discount' => 190000.00,
                 'category_id' => 5, // Electrical Parts
                 'unit_id' => 9,     // Pieces
             ],
@@ -183,10 +183,10 @@ class ProductSeeder extends Seeder
                 'price' => 225000.00,
                 'image' => 'products/1TEhiUUaE7Jh4q0A0ABkCneHUklMg1eKX8Q9Wmx5.jpg',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => null,
-                'discountAmount' => null,
-                'priceAfterDiscount' => null,
+                'has_variant' => false,
+                'discount_percentage' => null,
+                'discount_amount' => null,
+                'price_after_discount' => null,
                 'category_id' => 9, // Tires & Wheels
                 'unit_id' => 9,     // Pieces
             ],
@@ -199,10 +199,10 @@ class ProductSeeder extends Seeder
                 'price' => 400000.00,
                 'image' => 'products/l7rFOCNaCP3pjEDQLynFo1R2FlGGObTZHGpSETgC.jpg',
                 'status' => true,
-                'hasVariant' => false,
-                'discountPercentage' => 10,
-                'discountAmount' => 40000.00,
-                'priceAfterDiscount' => 360000.00,
+                'has_variant' => false,
+                'discount_percentage' => 10,
+                'discount_amount' => 40000.00,
+                'price_after_discount' => 360000.00,
                 'category_id' => 6, // Air Conditioning
                 'unit_id' => 9,     // Pieces
             ],
