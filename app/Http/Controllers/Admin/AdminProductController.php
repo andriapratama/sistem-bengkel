@@ -196,7 +196,7 @@ class AdminProductController extends Controller
 
         $products = Product::with(['variants'])
             ->when($search, function ($query) use ($search) {
-                $query->where('name', $search);
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%']);
             })
             ->orderBy('name', 'asc')
             ->paginate($limit, ['*'], 'page', $page);

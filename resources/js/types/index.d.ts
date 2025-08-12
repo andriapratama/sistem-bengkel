@@ -202,9 +202,9 @@ export interface BookingServiceDetail {
 export interface ServiceOrder {
     id: number;
     cashier_name: string | null;
-    discount_percentage: string | null;
-    discounta_amount: string | null;
-    grand_total: string | null;
+    discount_percentage: number | null;
+    discounta_amount: number | null;
+    grand_total: number | null;
     mechanic_name: string | null;
     note: string;
     payment_status: string;

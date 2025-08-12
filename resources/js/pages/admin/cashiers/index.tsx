@@ -17,8 +17,8 @@ import { Head, Link } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Mechanic Jobs',
-        href: '/admin/mechanic-jobs',
+        title: 'Cashiers',
+        href: '/admin/cashiers',
     },
 ];
 
@@ -66,9 +66,16 @@ export default function Index() {
         getAll();
     }, [getAll]);
 
+    const formatPrice = (number: number) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+        }).format(number);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Mechanic Jobs" />
+            <Head title="Cashiers" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full items-end gap-4 px-5">
                     <div className="flex flex-col gap-1">
@@ -182,7 +189,7 @@ export default function Index() {
                                 <TableHead>Member</TableHead>
                                 <TableHead>Vehicle</TableHead>
                                 <TableHead>Police Number</TableHead>
-                                <TableHead>Queue</TableHead>
+                                <TableHead>Total</TableHead>
                                 <TableHead className="text-center">Status</TableHead>
                                 <TableHead className="text-center">Payment Status</TableHead>
                                 <TableHead>Service Type</TableHead>
@@ -197,7 +204,7 @@ export default function Index() {
                                     <TableCell>{order.user?.name}</TableCell>
                                     <TableCell>{order.vehicle?.vehicle_variant?.name}</TableCell>
                                     <TableCell className="uppercase">{order.vehicle?.police_number}</TableCell>
-                                    <TableCell>{order.queue_number ?? '-'}</TableCell>
+                                    <TableCell>{formatPrice(order.grand_total ?? 0)}</TableCell>
                                     <TableCell>
                                         <div className="flex justify-center">
                                             <div

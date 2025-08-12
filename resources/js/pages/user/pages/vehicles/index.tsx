@@ -34,7 +34,7 @@ export default function Index() {
     }, [getAll]);
 
     const formatDate = (created_at: Date) => {
-        return dayjs(created_at).format('DD/MM/YYYY, HH.mm');
+        return dayjs(created_at).format('DD/MM/YYYY');
     };
 
     return (

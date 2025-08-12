@@ -332,17 +332,19 @@ export default function Index() {
                                 <Button type="button" className="w-full" onClick={() => onOpenBooking(item)}>
                                     Open
                                 </Button>
-                                <Button
-                                    type="button"
-                                    className="w-full"
-                                    variant="destructive"
-                                    onClick={() => {
-                                        setIsShowAlertCancel(true);
-                                        setBookingId(item.id);
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
+                                {item.status === 'pending' || item.status === 'accepted' ? (
+                                    <Button
+                                        type="button"
+                                        className="w-full"
+                                        variant="destructive"
+                                        onClick={() => {
+                                            setIsShowAlertCancel(true);
+                                            setBookingId(item.id);
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                ) : null}
                             </div>
                         ))}
                     </div>

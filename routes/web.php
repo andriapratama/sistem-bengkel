@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Admin\AdminMechanicJobController;
+use App\Http\Controllers\Admin\AdminCashierController;
 use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
 use App\Http\Controllers\Admin\AdminServiceController;
@@ -49,7 +50,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/mechanic-jobs/{id}', [AdminMechanicJobController::class, 'detail'])->name('mechanic-jobs.detail');
         Route::get('/mechanic-jobs/get-one/{id}', [AdminMechanicJobController::class, 'getOneById'])->name('mechanic-jobs.getOneById');
         Route::post('/mechanic-jobs/store-service', [AdminMechanicJobController::class, 'storeService'])->name('mechanic-jobs.storeService');
+        Route::put('/mechanic-jobs/update-service/{id}', [AdminMechanicJobController::class, "updateService"])->name('mechanic-jobs.updateService');
         Route::delete('/mechanic-jobs/destroy-service/{id}', [AdminMechanicJobController::class, "destroyService"])->name('mechanic-jobs.destroyService');
+        Route::post('/mechanic-jobs/store-product', [AdminMechanicJobController::class, 'storeProduct'])->name('mechanic-jobs.storeProduct');
+        Route::put('/mechanic-jobs/update-product/{id}', [AdminMechanicJobController::class, 'updateProduct'])->name('mechanic-jobs.updateProduct');
+        Route::delete('/mechanic-jobs/destroy-product/{id}', [AdminMechanicJobController::class, 'destroyProduct'])->name('mechanic-jobs.destroyProduct');
+        Route::put('/mechanic-jobs/update-status/{id}', [AdminMechanicJobController::class, 'updateStatus'])->name('mechanic-jobs.updateStatus');
+
+        Route::get('/cashiers', [AdminCashierController::class, 'index'])->name('cashier.index');
 
         Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
         Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');

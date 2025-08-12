@@ -183,7 +183,7 @@ export default function Detail() {
                                         </Button>
                                     ) : null}
 
-                                    {data.status !== 'canceled' && data.status !== 'completed' ? (
+                                    {data.status !== 'canceled' && data.status !== 'completed' && data.status !== 'processing' ? (
                                         <Button type="button" variant="destructive" onClick={() => setIsShowAlertStatusCancel(true)}>
                                             Cancel Booking
                                         </Button>

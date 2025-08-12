@@ -18,7 +18,7 @@ class UserBookingController extends Controller
         if (!Auth::check()) {
             return redirect()->route('login');
         }
-        
+
         return Inertia::render('user/pages/booking/index');
     }
 
@@ -145,7 +145,7 @@ class UserBookingController extends Controller
         $bookings = BookingService::with(['vehicle.vehicleVariant', 'bookingServiceDetail'])
             ->orderBy('created_at', 'asc')
             ->where('user_id', $user->id)
-            ->whereNot('status', 'canceled')
+            ->whereNotIn('status', ['canceled', 'completed'])
             ->get();
 
         return response()->json([
