@@ -28,13 +28,6 @@ export default function Index() {
     const [totalPage, setTotalPage] = useState<number>(1);
     const [paginations, setPaginations] = useState<number[]>([]);
 
-    const formatPrice = (number: number) => {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-        }).format(number);
-    };
-
     const formatDate = (created_at: Date) => {
         return dayjs(created_at).format('DD/MM/YYYY');
     };

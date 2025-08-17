@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Admin\AdminMechanicJobController;
 use App\Http\Controllers\Admin\AdminCashierController;
+use App\Http\Controllers\Admin\AdminEwalletController;
 use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
 use App\Http\Controllers\Admin\AdminServiceController;
@@ -107,6 +108,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/services/{service}', [AdminServiceController::class, "update"])->name('services.update');
         Route::delete('/services/{service}', [AdminServiceController::class, "destroy"])->name('services.destroy');
 
+        Route::get('/ewallets', [AdminEwalletController::class, 'index'])->name('ewallets.index');
+        Route::post('/ewallets', [AdminEwalletController::class, 'store'])->name('ewallets.store');
+        Route::get('/ewallets/get-all', [AdminEwalletController::class, 'getAll'])->name('ewallets.getAll');
+
         Route::redirect('settings', '/settings/profile');
 
         Route::get('/settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -117,7 +122,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/settings/password', [PasswordController::class, 'update'])->name('password.update');
 
         Route::get('/settings/appearance', function () {
-            return Inertia::render('settings/appearance');
+            return Inertia::render('admin/settings/appearance');
         })->name('appearance');
 
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');

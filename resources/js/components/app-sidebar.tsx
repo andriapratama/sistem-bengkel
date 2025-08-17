@@ -1,4 +1,4 @@
-import { BookOpen, BookOpenText, Boxes, Computer, Database, Folder, LayoutGrid, ShoppingCart, Wrench } from 'lucide-react';
+import { BookOpen, BookOpenText, Boxes, Computer, Database, Folder, House, LayoutGrid, ShoppingCart, Wrench } from 'lucide-react';
 
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -49,6 +49,15 @@ const mainNavItems: NavItem[] = [
             { title: 'Categories', href: '/admin/categories' },
             { title: 'Vehicle Brands', href: '/admin/vehicle-brands' },
             { title: 'Vehicle Variant', href: '/admin/vehicle-variants' },
+        ],
+    },
+    {
+        title: 'Company',
+        icon: House,
+        children: [
+            { title: 'Home Page', href: '/admin/home-page' },
+            { title: 'Banks', href: '/admin/banks' },
+            { title: 'e-Wallets', href: '/admin/ewallets' },
         ],
     },
 ];
