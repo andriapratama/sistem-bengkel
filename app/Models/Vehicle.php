@@ -35,4 +35,8 @@ class Vehicle extends Model
         return $this->belongsTo(ServiceOrderDetail::class);
     }
 
+    public function serviceOrder()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
 }

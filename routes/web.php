@@ -56,8 +56,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/mechanic-jobs/update-product/{id}', [AdminMechanicJobController::class, 'updateProduct'])->name('mechanic-jobs.updateProduct');
         Route::delete('/mechanic-jobs/destroy-product/{id}', [AdminMechanicJobController::class, 'destroyProduct'])->name('mechanic-jobs.destroyProduct');
         Route::put('/mechanic-jobs/update-status/{id}', [AdminMechanicJobController::class, 'updateStatus'])->name('mechanic-jobs.updateStatus');
+        Route::post('/mechanic-jobs/store-new-service', [AdminMechanicJobController::class, 'storeNewService'])->name('mechanic-jobs.storeNewService');
 
         Route::get('/cashiers', [AdminCashierController::class, 'index'])->name('cashier.index');
+        Route::get('/cashiers/{id}', [AdminCashierController::class, 'detail'])->name('cashier.detail');
+        Route::put('/cashiers/{id}', [AdminCashierController::class, 'update'])->name('cashier.update');
 
         Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
         Route::post('/products', [AdminProductController::class, 'store'])->name('products.store');

@@ -33,4 +33,9 @@ class BookingService extends Model
     {
         return $this->hasMany(BookingServiceDetail::class);
     }
+
+    public function serviceOrder()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
 }

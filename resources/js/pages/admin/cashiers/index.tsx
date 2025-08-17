@@ -1,14 +1,12 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { ChevronDownIcon, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
@@ -27,8 +25,6 @@ export default function Index() {
     const [status, setStatus] = useState<string>('');
     const [paymentStatus, setPaymentStatus] = useState<string>('');
     const [serviceType, setServiceType] = useState<string>('');
-    const [date, setDate] = useState<string>(dayjs(new Date()).format('YYYY-MM-DD'));
-    const [isShowDate, setIsShowDate] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
     const [pageActive, setPageActive] = useState<number>(1);
     const [totalPage, setTotalPage] = useState<number>(1);
@@ -39,7 +35,6 @@ export default function Index() {
             const queryParams: string[] = [];
 
             if (page) queryParams.push(`page=${page}`);
-            if (date) queryParams.push(`service_date=${date}`);
             if (status) queryParams.push(`status=${status}`);
             if (paymentStatus) queryParams.push(`payment_status=${paymentStatus}`);
             if (serviceType) queryParams.push(`service_type=${serviceType}`);
@@ -60,7 +55,7 @@ export default function Index() {
         } catch (error) {
             console.log(error);
         }
-    }, [status, date, paymentStatus, page, serviceType]);
+    }, [status, paymentStatus, page, serviceType]);
 
     useEffect(() => {
         getAll();
@@ -78,30 +73,6 @@ export default function Index() {
             <Head title="Cashiers" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full items-end gap-4 px-5">
-                    <div className="flex flex-col gap-1">
-                        <Label htmlFor="date" className="px-1">
-                            Date of birth
-                        </Label>
-                        <Popover open={isShowDate} onOpenChange={setIsShowDate}>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" id="date" className="w-[200px] justify-between border-black font-normal dark:border-white">
-                                    {date ? dayjs(date).format('DD/MM/YYYY') : 'Select date'}
-                                    <ChevronDownIcon />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={new Date(date)}
-                                    captionLayout="dropdown"
-                                    onSelect={(date) => {
-                                        setDate(dayjs(date).format('YYYY-MM-DD'));
-                                        setIsShowDate(false);
-                                    }}
-                                />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
                     <div className="flex flex-col gap-1">
                         <Label htmlFor="status">Status</Label>
                         <Select
@@ -138,7 +109,7 @@ export default function Index() {
                             <SelectContent>
                                 {['booking', 'walk_in'].map((item) => (
                                     <SelectItem key={item} value={item} className="capitalize">
-                                        {item}
+                                        {item === 'booking' ? 'Booking' : 'Walk In'}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -201,9 +172,9 @@ export default function Index() {
                                 <TableRow key={order.id} className="border-black dark:border-white">
                                     <TableCell>{dayjs(order.service_date).format('DD/MM/YYYY')}</TableCell>
                                     <TableCell>{order.service_number}</TableCell>
-                                    <TableCell>{order.user?.name}</TableCell>
-                                    <TableCell>{order.vehicle?.vehicle_variant?.name}</TableCell>
-                                    <TableCell className="uppercase">{order.vehicle?.police_number}</TableCell>
+                                    <TableCell>{order.user?.name ?? '-'}</TableCell>
+                                    <TableCell>{order.vehicle_variant?.name ?? '-'}</TableCell>
+                                    <TableCell className="uppercase">{order.police_number ?? '-'}</TableCell>
                                     <TableCell>{formatPrice(order.grand_total ?? 0)}</TableCell>
                                     <TableCell>
                                         <div className="flex justify-center">
@@ -252,7 +223,7 @@ export default function Index() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem className="cursor-pointer" asChild>
-                                                    <Link href={route('admin.mechanic-jobs.detail', order.id)}>Detail</Link>
+                                                    <Link href={route('admin.cashier.detail', order.id)}>Detail</Link>
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

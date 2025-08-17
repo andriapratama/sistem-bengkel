@@ -42,8 +42,6 @@ export default function Create() {
             if (rs.data.success) {
                 setVehicleBrands(rs.data.vehicleBrands);
                 setVehicleVariants(rs.data.vehicleVariants);
-            } else {
-                console.log(rs);
             }
         } catch (error) {
             console.log(error);

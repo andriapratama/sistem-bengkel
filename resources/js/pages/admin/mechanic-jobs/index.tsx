@@ -2,18 +2,29 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { ChevronDownIcon, MoreHorizontal } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, ServiceOrder } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { BreadcrumbItem, ServiceOrder, VehicleBrand, VehicleVariant } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
+
+const vehicleSchema = z.object({
+    vehicle_year: z.string().min(1, 'Vehicle year is required').max(4, 'Vehicle year maximal 4 characters.'),
+    police_number: z.string().min(3, 'Police number minimum 3 characters').max(12, 'police number maximal 12 characters'),
+    vehicle_variant_id: z.coerce.number().min(1, 'Vehicle type is required'),
+});
+
+type VehicleFormValues = z.infer<typeof vehicleSchema>;
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -33,6 +44,21 @@ export default function Index() {
     const [pageActive, setPageActive] = useState<number>(1);
     const [totalPage, setTotalPage] = useState<number>(1);
     const [paginations, setPaginations] = useState<number[]>([]);
+
+    const [isShowNewService, setIsShowNewService] = useState<boolean>(false);
+    const [errors, setErrors] = useState<Partial<Record<keyof VehicleFormValues, string>>>({});
+    const [vehicleBrandId, setVehicleBrandId] = useState<number | null>(null);
+    const [vehicleBrands, setVehicleBrands] = useState<VehicleBrand[]>([]);
+    const [vehicleVariants, setVehicleVariants] = useState<VehicleVariant[]>([]);
+    const [vehicleVariantsTmp, setVehicleVariantsTmp] = useState<VehicleVariant[]>([]);
+    const [years, setYears] = useState<string[]>([]);
+    const [processing, setProcessing] = useState<boolean>(false);
+
+    const [newService, setNewService] = useState<VehicleFormValues>({
+        vehicle_year: '',
+        police_number: '',
+        vehicle_variant_id: 0,
+    });
 
     const getAll = useCallback(async () => {
         try {
@@ -65,6 +91,74 @@ export default function Index() {
     useEffect(() => {
         getAll();
     }, [getAll]);
+
+    const getAllVehicle = useCallback(async () => {
+        try {
+            const rs = await axios.get(`/vehicles/get-all/vehicle-brands`);
+
+            if (rs.data.success) {
+                setVehicleBrands(rs.data.vehicleBrands);
+                setVehicleVariants(rs.data.vehicleVariants);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+
+    useEffect(() => {
+        getAllVehicle();
+    }, [getAllVehicle]);
+
+    useEffect(() => {
+        if (vehicleBrandId) {
+            const filter = vehicleVariants.filter((item) => item.vehicle_brand_id === vehicleBrandId);
+            setVehicleVariantsTmp(filter);
+        }
+    }, [vehicleBrandId, vehicleVariants]);
+
+    useEffect(() => {
+        const yearList: string[] = [];
+        const year = new Date().getFullYear();
+
+        for (let i = year; i > 1940; i--) {
+            yearList.push(`${i}`);
+        }
+
+        setYears(yearList);
+    }, []);
+
+    const onCreateService = async () => {
+        const result = vehicleSchema.safeParse(newService);
+        if (!result.success) {
+            const flatErrors = result.error.flatten().fieldErrors;
+            setErrors({
+                vehicle_year: flatErrors.vehicle_year?.[0],
+                police_number: flatErrors.police_number?.[0],
+                vehicle_variant_id: flatErrors.vehicle_variant_id?.[0],
+            });
+            return;
+        }
+
+        try {
+            setProcessing(true);
+            const res = await axios.post('/admin/mechanic-jobs/store-new-service', newService);
+
+            if (res.data.success) {
+                const serviceOrder = res.data.data;
+                router.visit(`/admin/mechanic-jobs/${serviceOrder.id}`);
+                setIsShowNewService(false);
+            }
+        } catch (error) {
+            const errors = error.response.data.errors;
+            setErrors({
+                vehicle_year: errors.vehicle_year?.[0],
+                police_number: errors.police_number?.[0],
+                vehicle_variant_id: errors.vehicle_variant_id?.[0],
+            });
+        } finally {
+            setProcessing(false);
+        }
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -172,6 +266,21 @@ export default function Index() {
                     >
                         Clear
                     </Button>
+
+                    <Button
+                        type="button"
+                        onClick={() => {
+                            setIsShowNewService(true);
+                            setVehicleBrandId(null);
+                            setNewService({
+                                vehicle_year: '',
+                                police_number: '',
+                                vehicle_variant_id: 0,
+                            });
+                        }}
+                    >
+                        New Service
+                    </Button>
                 </div>
                 <div className="m-4">
                     <Table>
@@ -194,9 +303,9 @@ export default function Index() {
                                 <TableRow key={order.id} className="border-black dark:border-white">
                                     <TableCell>{dayjs(order.service_date).format('DD/MM/YYYY')}</TableCell>
                                     <TableCell>{order.service_number}</TableCell>
-                                    <TableCell>{order.user?.name}</TableCell>
-                                    <TableCell>{order.vehicle?.vehicle_variant?.name}</TableCell>
-                                    <TableCell className="uppercase">{order.vehicle?.police_number}</TableCell>
+                                    <TableCell>{order.user?.name ?? '-'}</TableCell>
+                                    <TableCell>{order.vehicle_variant?.name ?? '-'}</TableCell>
+                                    <TableCell className="uppercase">{order.police_number ?? '-'}</TableCell>
                                     <TableCell>{order.queue_number ?? '-'}</TableCell>
                                     <TableCell>
                                         <div className="flex justify-center">
@@ -288,6 +397,110 @@ export default function Index() {
                     </Pagination>
                 ) : null}
             </div>
+
+            <Sheet open={isShowNewService} onOpenChange={setIsShowNewService}>
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>New Service</SheetTitle>
+                    </SheetHeader>
+                    <div className="grid flex-1 auto-rows-min gap-6 overflow-y-auto px-4">
+                        <div className="w-full">
+                            <Label htmlFor="vehicle_brand">Vehicle Brand</Label>
+                            <Select onValueChange={(e) => setVehicleBrandId(parseInt(e))} value={vehicleBrandId?.toString() ?? ''}>
+                                <SelectTrigger disabled={processing} className={`w-full`}>
+                                    <SelectValue placeholder="Select vehicle brand" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {vehicleBrands.map((item) => (
+                                        <SelectItem key={item.id} value={item.id.toString()}>
+                                            {item.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="w-full">
+                            <Label htmlFor="vehicle_variant">Vehicle Type</Label>
+                            <Select
+                                onValueChange={(e) => {
+                                    setNewService((prev) => ({ ...prev, vehicle_variant_id: parseInt(e) }));
+                                    if (errors.vehicle_variant_id) {
+                                        setErrors((prev) => ({ ...prev, vehicle_variant_id: undefined }));
+                                    }
+                                }}
+                                value={newService?.vehicle_variant_id > 0 ? newService?.vehicle_variant_id.toString() : ''}
+                            >
+                                <SelectTrigger
+                                    disabled={processing || !vehicleBrandId}
+                                    className={`w-full ${errors.vehicle_variant_id ? 'border-red-500' : ''}`}
+                                >
+                                    <SelectValue placeholder="Select vehicle type" />
+                                </SelectTrigger>
+                                {vehicleVariantsTmp && vehicleVariantsTmp.length > 0 ? (
+                                    <SelectContent>
+                                        {vehicleVariantsTmp.map((item) => (
+                                            <SelectItem key={item.id} value={item.id.toString()}>
+                                                {item.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                ) : null}
+                            </Select>
+                            {errors.vehicle_variant_id && <p className="text-sm text-red-500">{errors.vehicle_variant_id}</p>}
+                        </div>
+                        <div className="w-full">
+                            <Label htmlFor="vehicle_year">Vehicle Year</Label>
+                            <Select
+                                onValueChange={(e) => {
+                                    setNewService((prev) => ({ ...prev, vehicle_year: e }));
+                                    if (errors.vehicle_year) {
+                                        setErrors((prev) => ({ ...prev, vehicle_year: undefined }));
+                                    }
+                                }}
+                                value={newService?.vehicle_year}
+                            >
+                                <SelectTrigger disabled={processing} className={`w-full ${errors.vehicle_year ? 'border-red-500' : ''}`}>
+                                    <SelectValue placeholder="Select vehicle year" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {years.map((year) => (
+                                        <SelectItem key={year} value={year}>
+                                            {year}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.vehicle_year && <p className="text-sm text-red-500">{errors.vehicle_year}</p>}
+                        </div>
+                        <div className="w-full">
+                            <Label htmlFor="police_number">Police Number</Label>
+                            <Input
+                                id="police_number"
+                                value={newService?.police_number}
+                                disabled={processing}
+                                placeholder="ex: DK 1212 MD"
+                                onChange={(e) => {
+                                    setNewService((prev) => ({ ...prev, police_number: e.target.value }));
+
+                                    if (errors.police_number) {
+                                        setErrors((prev) => ({ ...prev, police_number: undefined }));
+                                    }
+                                }}
+                                className={errors.police_number ? 'border-red-500' : ''}
+                            />
+                            {errors.police_number && <p className="text-sm text-red-500">{errors.police_number}</p>}
+                        </div>
+                    </div>
+                    <SheetFooter>
+                        <Button type="button" onClick={() => onCreateService()}>
+                            New Service Order
+                        </Button>
+                        <SheetClose asChild>
+                            <Button variant="outline">Close</Button>
+                        </SheetClose>
+                    </SheetFooter>
+                </SheetContent>
+            </Sheet>
         </AppLayout>
     );
 }

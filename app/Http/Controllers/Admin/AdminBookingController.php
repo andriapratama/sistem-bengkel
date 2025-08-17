@@ -63,7 +63,7 @@ class AdminBookingController extends Controller
             'status' => ['required', 'string', Rule::in(['pending', 'accepted', 'processing', 'completed', 'canceled'])],
         ]);
 
-        $booking = BookingService::with(['bookingServiceDetail.service'])->findOrFail($id);
+        $booking = BookingService::with(['bookingServiceDetail.service', 'vehicle.vehicleVariant'])->findOrFail($id);
         $booking->update([
             'status' => $validated['status'],
         ]);
@@ -122,8 +122,11 @@ class AdminBookingController extends Controller
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
                 'note' => $booking->note ?? null,
+                'vehicle_year' => $booking->vehicle->vehicle_year,
+                'police_number' => $booking->vehicle->police_number,
                 'user_id' => $booking->user_id,
                 'vehicle_id' => $booking->vehicle_id,
+                'vehicle_variant_id' => $booking->vehicle->vehicleVariant->id,
                 'booking_service_id' => $booking->id,
             ]);
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { LoaderCircle, Minus, Plus, Trash } from 'lucide-react';
+import { CircleCheckBig, LoaderCircle, Minus, Plus, Trash } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import {
@@ -13,12 +13,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination';
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Product, Service, ServiceOrder, ServiceOrderDetail, ServiceOrderDetailProduct } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 
 type PageProps = {
     id: number;
@@ -26,8 +27,8 @@ type PageProps = {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Mechanic Job Detail',
-        href: '/admin/mechanic-jobs',
+        title: 'Cashier Detail',
+        href: '/admin/cashier',
     },
 ];
 
@@ -52,11 +53,18 @@ export default function Detail() {
     const [productId, setProductId] = useState<number | null>(null);
     const [isShowRemoveProductAlert, setIsShowRemoveProductAlert] = useState<boolean>(false);
 
+    const [total, setTotal] = useState<number>(0);
+    const [discountPercentage, setDiscountPercentage] = useState<number>(0);
+    const [discountAmount, setDiscountAmount] = useState<number>(0);
     const [grandTotal, setGrandTotal] = useState<number>(0);
+    const [paymentAmount, setPaymentAmount] = useState<number>(0);
+    const [change, setChange] = useState<number>(0);
 
-    const [isShowProcess, setIsShowProcess] = useState<boolean>(false);
-    const [isShowComplete, setIsShowComplete] = useState<boolean>(false);
-    const [isShowCancel, setIsShowCancel] = useState<boolean>(false);
+    const [isShowPay, setIsShowPay] = useState<boolean>(false);
+    const [isShowPayAlert, setIsShowPayAlert] = useState<boolean>(false);
+    const [isShowSuccessAlert, setIsShowSuccessAlert] = useState<boolean>(false);
+
+    const [errors, setErrors] = useState<{ payment: string }>({ payment: '' });
 
     const [processing, setProcessing] = useState<boolean>(false);
 
@@ -84,6 +92,7 @@ export default function Detail() {
                             total += parseFloat(item.sub_total?.toString() ?? '0');
                         });
                     }
+                    setTotal(total);
                     setGrandTotal(total);
                 }
             } catch (error) {
@@ -245,15 +254,52 @@ export default function Detail() {
         }
     };
 
-    const onUpdateStatus = async (status: 'pending' | 'processing' | 'completed' | 'canceled') => {
+    useEffect(() => {
+        if (discountAmount) {
+            setGrandTotal(total - discountAmount);
+        } else {
+            setGrandTotal(total);
+        }
+    }, [discountAmount, total]);
+
+    useEffect(() => {
+        if (paymentAmount) {
+            const change = paymentAmount - grandTotal;
+            setChange(change);
+        } else {
+            setChange(grandTotal);
+        }
+    }, [grandTotal, paymentAmount]);
+
+    const onPay = () => {
+        if (!paymentAmount || paymentAmount <= 0) {
+            setErrors({ payment: 'Payment amount is required' });
+        } else if (paymentAmount < grandTotal) {
+            setErrors({ payment: 'Payment amount cannot be less than the grand total.' });
+        } else {
+            setErrors({});
+            setIsShowPayAlert(true);
+        }
+    };
+
+    const updatePay = async () => {
         try {
             setProcessing(true);
-            await axios.put(`/admin/mechanic-jobs/update-status/${id}`, { status });
-            await getOrder(true);
-            setIsShowProcess(false);
-            setIsShowComplete(false);
-            setIsShowCancel(false);
-            setProductId(null);
+
+            const data = {
+                payment_amount: paymentAmount,
+                discount_percentage: discountPercentage ?? 0,
+                discount_amount: discountAmount ?? 0,
+            };
+
+            const rs = await axios.put(`/admin/cashiers/${id}`, data);
+
+            if (rs) {
+                await getOrder();
+                setIsShowPayAlert(false);
+                setIsShowPay(false);
+                setIsShowSuccessAlert(true);
+            }
         } catch (error) {
             console.log(error);
         } finally {
@@ -271,7 +317,7 @@ export default function Detail() {
                             <div className="flex-1">
                                 <div className="text mb-10 flex w-full items-center justify-between rounded bg-neutral-100 p-10 text-3xl font-bold text-black dark:bg-neutral-900 dark:text-white">
                                     <h1>Total</h1>
-                                    <h1>{formatPrice(grandTotal ?? 0)}</h1>
+                                    <h1>{formatPrice(total ?? 0)}</h1>
                                 </div>
                                 <div className="mb-10 flex flex-1 flex-col">
                                     <Table>
@@ -306,7 +352,7 @@ export default function Detail() {
                                                                         });
                                                                     }}
                                                                     onBlur={() => onUpdateService(item)}
-                                                                    disabled={data.status !== 'processing'}
+                                                                    disabled={data.payment_status === 'paid'}
                                                                 />
                                                                 <div className="pointer-events-none absolute left-3 text-sm">Rp</div>
                                                             </div>
@@ -318,7 +364,7 @@ export default function Detail() {
                                                                     size="icon"
                                                                     variant="destructive"
                                                                     className="size-8"
-                                                                    disabled={data.status !== 'processing'}
+                                                                    disabled={data.payment_status === 'paid'}
                                                                     onClick={() => {
                                                                         setServiceDetailId(item.id);
                                                                         setIsShowRemoveServiceAlert(true);
@@ -334,7 +380,7 @@ export default function Detail() {
                                         </TableBody>
                                     </Table>
                                     <div className="mt-5 flex w-full justify-end">
-                                        <Button type="button" disabled={data.status !== 'processing'} onClick={() => setIsShowService(true)}>
+                                        <Button type="button" disabled={data.payment_status === 'paid'} onClick={() => setIsShowService(true)}>
                                             Add Service
                                         </Button>
                                     </div>
@@ -363,7 +409,7 @@ export default function Detail() {
                                                                     type="button"
                                                                     className="rounded border-black dark:border-white"
                                                                     variant="outline"
-                                                                    disabled={data.status !== 'processing'}
+                                                                    disabled={data.payment_status === 'paid'}
                                                                     onClick={() => {
                                                                         if (item.quantity && item.quantity > 1) {
                                                                             onUpdateProduct(item, 'decrease');
@@ -379,7 +425,7 @@ export default function Detail() {
                                                                     type="button"
                                                                     className="rounded border-black dark:border-white"
                                                                     variant="outline"
-                                                                    disabled={data.status !== 'processing'}
+                                                                    disabled={data.payment_status === 'paid'}
                                                                     onClick={() => onUpdateProduct(item, 'increase')}
                                                                 >
                                                                     <Plus />
@@ -394,7 +440,7 @@ export default function Detail() {
                                                                     size="icon"
                                                                     variant="destructive"
                                                                     className="size-8"
-                                                                    disabled={data.status !== 'processing'}
+                                                                    disabled={data.payment_status === 'paid'}
                                                                     onClick={() => {
                                                                         setProductId(item.id);
                                                                         setIsShowRemoveProductAlert(true);
@@ -412,7 +458,7 @@ export default function Detail() {
                                     <div className="mt-5 flex w-full justify-end">
                                         <Button
                                             type="button"
-                                            disabled={data.status !== 'processing'}
+                                            disabled={data.payment_status === 'paid'}
                                             onClick={() => {
                                                 setIsShowProduct(true);
                                                 setProductSearch('');
@@ -475,36 +521,14 @@ export default function Detail() {
                                         </div>
                                     </div>
 
-                                    {data.status === 'pending' ? (
+                                    {data.status === 'completed' && data.payment_status === 'unpaid' ? (
                                         <Button
                                             type="button"
                                             onClick={() => {
-                                                setIsShowProcess(true);
+                                                setIsShowPay(true);
                                             }}
                                         >
-                                            Process Service
-                                        </Button>
-                                    ) : null}
-                                    {data.status === 'processing' ? (
-                                        <Button
-                                            type="button"
-                                            onClick={() => {
-                                                setIsShowComplete(true);
-                                            }}
-                                        >
-                                            Service Complete
-                                        </Button>
-                                    ) : null}
-
-                                    {data.status === 'processing' || data.status === 'pending' ? (
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            onClick={() => {
-                                                setIsShowCancel(true);
-                                            }}
-                                        >
-                                            Cancel Service
+                                            Payment
                                         </Button>
                                     ) : null}
                                 </div>
@@ -670,6 +694,106 @@ export default function Detail() {
                     </SheetContent>
                 </Sheet>
 
+                <Sheet open={isShowPay} onOpenChange={setIsShowPay}>
+                    <SheetContent className="min-w-[500px]">
+                        <SheetHeader>
+                            <SheetTitle>Payment Detail</SheetTitle>
+                        </SheetHeader>
+                        <div className="grid flex-1 auto-rows-min gap-6 overflow-y-auto px-4">
+                            <div className="w-full">
+                                <Label htmlFor="total">Total</Label>
+                                <Input type="text" id="total" value={formatPrice(total)} disabled className="disabled:opacity-90" />
+                            </div>
+                            <div className="w-full">
+                                <Label htmlFor="discount_percentage">Discount Percentage</Label>
+                                <div className="relative flex items-center">
+                                    <Input
+                                        type="text"
+                                        id="discount_percentage"
+                                        value={discountPercentage}
+                                        onChange={(e) => {
+                                            if (e.target.value > '100') {
+                                                const percentage = 100;
+                                                const amount = (total / 100) * percentage;
+                                                setDiscountPercentage(percentage);
+                                                setDiscountAmount(amount);
+                                            } else if (e.target.value < 1) {
+                                                const percentage = 0;
+                                                const amount = (total / 100) * percentage;
+                                                setDiscountPercentage(percentage);
+                                                setDiscountAmount(amount);
+                                            } else {
+                                                const percentage = parseInt(e.target.value);
+                                                const amount = (total / 100) * percentage;
+                                                setDiscountPercentage(percentage);
+                                                setDiscountAmount(amount);
+                                            }
+                                        }}
+                                    />
+                                    <div className="pointer-events-none absolute right-5 text-black dark:text-white">%</div>
+                                </div>
+                            </div>
+                            <div className="w-full">
+                                <Label htmlFor="discount_amount">Discount Amount</Label>
+                                <div className="relative flex items-center">
+                                    <Input
+                                        type="text"
+                                        id="discount_amount"
+                                        className="pl-10"
+                                        value={discountAmount}
+                                        onChange={(e) => {
+                                            setDiscountPercentage(0);
+                                            if (parseFloat(e.target.value) > total) {
+                                                setDiscountAmount(total);
+                                            } else {
+                                                setDiscountAmount(e.target.value ? parseFloat(e.target.value ?? '0') : 0);
+                                            }
+                                        }}
+                                    />
+                                    <div className="pointer-events-none absolute left-3 text-black dark:text-white">Rp</div>
+                                </div>
+                            </div>
+                            <div className="w-full">
+                                <Label htmlFor="grand_total">Grand Total</Label>
+                                <Input type="text" id="grand_total" value={formatPrice(grandTotal)} disabled className="disabled:opacity-90" />
+                            </div>
+                            <div className="w-full">
+                                <Label htmlFor="payment_amount">Payment Amount</Label>
+                                <div className="relative flex w-full items-center">
+                                    <Input
+                                        type="text"
+                                        id="payment_amount"
+                                        className="pl-10"
+                                        value={paymentAmount}
+                                        onChange={(e) => {
+                                            setErrors({});
+                                            if (e.target.value) {
+                                                setPaymentAmount(parseFloat(e.target.value));
+                                            } else {
+                                                setPaymentAmount(0);
+                                            }
+                                        }}
+                                    />
+                                    <div className="pointer-events-none absolute left-3">Rp</div>
+                                </div>
+                                {errors.payment && <p className="text-sm text-red-500">{errors.payment}</p>}
+                            </div>
+                            <div className="w-full">
+                                <Label htmlFor="change">Change</Label>
+                                <Input type="text" id="change" value={formatPrice(change)} disabled className="disabled:opacity-90" />
+                            </div>
+                        </div>
+                        <SheetFooter>
+                            <Button type="button" onClick={() => onPay()}>
+                                Pay
+                            </Button>
+                            <SheetClose asChild>
+                                <Button variant="outline">Close</Button>
+                            </SheetClose>
+                        </SheetFooter>
+                    </SheetContent>
+                </Sheet>
+
                 <AlertDialog open={isShowRemoveServiceAlert} onOpenChange={setIsShowRemoveServiceAlert}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
@@ -704,56 +828,59 @@ export default function Detail() {
                     </AlertDialogContent>
                 </AlertDialog>
 
-                <AlertDialog open={isShowProcess} onOpenChange={setIsShowProcess}>
+                <AlertDialog open={isShowPayAlert} onOpenChange={setIsShowPayAlert}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Process Service?</AlertDialogTitle>
+                            <AlertDialogTitle>Pay Confirmation.</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Are you sure you want to process this service? This action cannot be undone.
+                                Has this service job been paying? Please confirm before updating the job status to "Pay".
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button type="button" onClick={() => onUpdateStatus('processing')}>
-                                Continue
+                            <Button type="button" onClick={() => updatePay()}>
+                                Yes, Pay
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
 
-                <AlertDialog open={isShowComplete} onOpenChange={setIsShowComplete}>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Service Completion Confirmation</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Has this service job been completed? Please confirm before updating the job status to "Completed".
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button type="button" onClick={() => onUpdateStatus('completed')}>
-                                Yes, Completed
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <div
+                    className={`fixed inset-0 flex h-screen w-full items-center justify-center bg-white/50 dark:bg-black/50 ${
+                        isShowSuccessAlert ? 'z-[99] opacity-100' : '-z-10 opacity-0 delay-300'
+                    }`}
+                >
+                    <div
+                        className={`w-[300px] rounded bg-black transition-all duration-300 ease-in-out dark:bg-white ${
+                            isShowSuccessAlert ? 'scale-100' : 'scale-75'
+                        }`}
+                    >
+                        <div className="flex w-full items-center justify-center p-5">
+                            <CircleCheckBig className="size-[80px] text-white dark:text-black" />
+                        </div>
+                        <div className="w-full px-5 text-center text-xl font-semibold text-white dark:text-black">Payment Successfully!</div>
+                        <div className="flex w-full items-center justify-between p-5 font-medium text-white dark:text-black">
+                            <div>Change</div>
+                            <div>{formatPrice(data.change ?? 0)}</div>
+                        </div>
 
-                <AlertDialog open={isShowCancel} onOpenChange={setIsShowCancel}>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Cancel Service?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Are you sure you want to cancel this service? This action cannot be undone.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button type="button" variant="destructive" onClick={() => onUpdateStatus('canceled')}>
-                                Continue
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                        <div className="flex w-full justify-center px-5 pb-5">
+                            <Link href="/admin/cashiers">
+                                <Button
+                                    type="button"
+                                    className="bg-white text-black hover:opacity-90 dark:bg-black dark:text-white"
+                                    onClick={() => {
+                                        setTimeout(() => {
+                                            setIsShowSuccessAlert(false);
+                                        }, 500);
+                                    }}
+                                >
+                                    Close
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
 
                 {processing ? (
                     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 dark:bg-white/40">

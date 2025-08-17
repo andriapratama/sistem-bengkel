@@ -10,6 +10,7 @@ use App\Models\ServiceOrderDetail;
 use App\Models\ServiceOrderDetailProduct;
 use App\Models\BookingService;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
@@ -30,7 +31,7 @@ class AdminMechanicJobController extends Controller
         $page = $request->query('page', 1);
         $limit = $request->query('limit', 10);
 
-        $serviceOrders = ServiceOrder::with(['user', 'vehicle.vehicleVariant'])
+        $serviceOrders = ServiceOrder::with(['user', 'vehicle', 'vehicleVariant'])
             ->when($date, function ($query) use ($date) {
                 $query->where('service_date', $date);
             })
@@ -62,7 +63,7 @@ class AdminMechanicJobController extends Controller
 
     public function getOneById($id)
     {
-        $serviceOrder = ServiceOrder::with(['user', 'vehicle.vehicleVariant.vehicleBrand', 'serviceOrderDetails.service', 'serviceOrderDetailProducts'])
+        $serviceOrder = ServiceOrder::with(['user', 'vehicle', 'vehicleVariant.vehicleBrand', 'serviceOrderDetails.service', 'serviceOrderDetailProducts'])
             ->where('id', $id)->firstOrFail();
 
         return response()->json([
@@ -239,7 +240,7 @@ class AdminMechanicJobController extends Controller
             ]);
         }
 
-        if ($validated['status'] === 'canceled') {
+        if ($booking && $validated['status'] === 'canceled') {
             $vehicle = Vehicle::findOrFail($booking->vehicle_id);
             $vehicle->update([
                 'status_booking' => false,
@@ -272,28 +273,31 @@ class AdminMechanicJobController extends Controller
         }
 
         if ($validated['status'] === 'completed') {
-            $vehicle = Vehicle::findOrFail($booking->vehicle_id);
-            $vehicle->update([
-                'status_booking' => false,
-                'last_service_date' => now()
-            ]);
+            if ($booking) {
+                $vehicle = Vehicle::findOrFail($booking->vehicle_id);
+                $vehicle->update([
+                    'status_booking' => false,
+                    'last_service_date' => now()
+                ]);
+            }
 
-            $grandTotal = 0;
+            $total = 0;
 
             if ($serviceOrder->serviceOrderDetails->isNotEmpty()) {
                 foreach ($serviceOrder->serviceOrderDetails as $service) {
-                    $grandTotal += $service->price;
+                    $total += $service->price;
                 }
             }
 
             if ($serviceOrder->serviceOrderDetailProducts->isNotEmpty()) {
                 foreach ($serviceOrder->serviceOrderDetailProducts as $product) {
-                    $grandTotal += $product->sub_total;
+                    $total += $product->sub_total;
                 }
             }
 
             $serviceOrder->update([
-                'grand_total' => $grandTotal,
+                'total' => $total,
+                'grand_total' => $total,
             ]);
         }
 
@@ -301,5 +305,51 @@ class AdminMechanicJobController extends Controller
             'status' => true,
             'message' => 'Service order updated.',
         ], 200);
+    }
+
+    public function storeNewService(Request $request)
+    {
+        $validated = $request->validate([
+            'vehicle_year' => 'required|string',
+            'police_number' => 'required|string|unique:vehicles,police_number',
+            'vehicle_variant_id' => ['nullable', 'exists:vehicle_variants,id'],
+        ]);
+
+        Vehicle::create($validated);
+
+        $serviceDate = Carbon::now()->format('y-m-d');
+        $formattedDate = Carbon::now()->format('ymd');
+    
+        $latest = ServiceOrder::where('service_date', $serviceDate)
+            ->latest('id')
+            ->first();
+            
+        $nextSequence = $latest
+            ? (int)substr($latest->service_number, -3) + 1
+            : 1;
+
+        $serviceNumber = 'SVC' . $formattedDate . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
+
+        $serviceOrder = ServiceOrder::create([
+            'service_number' => $serviceNumber,
+            'service_date' => $serviceDate,
+            'queue_number' => null,
+            'service_type' => 'walk_in',
+            'status' => 'processing',
+            'payment_status' => 'unpaid',
+            'note' => null,
+            'vehicle_year' => $validated['vehicle_year'],
+            'police_number' => $validated['police_number'],
+            'user_id' => null,
+            'vehicle_id' => null,
+            'vehicle_variant_id' => $validated['vehicle_variant_id'],
+            'booking_service_id' => null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Service order created.',
+            'data' => $serviceOrder,
+        ]);
     }
 }

@@ -13,14 +13,20 @@ class ServiceOrder extends Model
         'service_type',
         'status',
         'payment_status',
+        'total',
         'grand_total',
         'discount_percentage',
-        'discounta_amount',
+        'discount_amount',
+        'payment_amount',
+        'change',
         'note',
         'mechanic_name',
         'cashier_name',
+        'vehicle_year',
+        'police_number',
         'user_id',
         'vehicle_id',
+        'vehicle_variant_id',
         'booking_service_id',
     ];
 
@@ -32,6 +38,11 @@ class ServiceOrder extends Model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    public function vehicleVariant()
+    {
+        return $this->belongsTo(VehicleVariant::class);
     }
 
     public function bookingService()

@@ -19,17 +19,24 @@ return new class extends Migration
             $table->enum('service_type', ['booking', 'walk_in'])->default('walk_in');
             $table->enum('status', ['pending', 'processing', 'completed', 'canceled'])->default('pending');
             $table->enum('payment_status', ['unpaid', 'paid',])->default('unpaid');
+            $table->decimal('total', 15, 2)->nullable();
             $table->decimal('grand_total', 15, 2)->nullable();
             $table->integer('discount_percentage')->nullable();
             $table->decimal('discount_amount', 15, 2)->nullable();
+            $table->decimal('payment_amount', 15, 2)->nullable();
+            $table->decimal('change', 15, 2)->nullable();
             $table->text('note')->nullable();
             $table->string('mechanic_name')->nullable();
             $table->string('cashier_name')->nullable();
+            $table->string('vehicle_year')->nullable();
+            $table->string('police_number')->nullable();
 
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('set null');
+            $table->unsignedBigInteger('vehicle_variant_id')->nullable();
+            $table->foreign('vehicle_variant_id')->references('id')->on('vehicle_variants')->onDelete('set null');
             $table->unsignedBigInteger('booking_service_id')->nullable();
             $table->foreign('booking_service_id')->references('id')->on('booking_services')->onDelete('set null');
 

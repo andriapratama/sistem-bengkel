@@ -17,4 +17,9 @@ class VehicleVariant extends Model
     {
         return $this->hasMany(Vehicle::class);
     }
+
+    public function serviceOrder()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
 }
