@@ -277,7 +277,7 @@ export default function Detail() {
         } else if (paymentAmount < grandTotal) {
             setErrors({ payment: 'Payment amount cannot be less than the grand total.' });
         } else {
-            setErrors({});
+            setErrors({ payment: '' });
             setIsShowPayAlert(true);
         }
     };
@@ -717,7 +717,7 @@ export default function Detail() {
                                                 const amount = (total / 100) * percentage;
                                                 setDiscountPercentage(percentage);
                                                 setDiscountAmount(amount);
-                                            } else if (e.target.value < 1) {
+                                            } else if (parseInt(e.target.value) < 1) {
                                                 const percentage = 0;
                                                 const amount = (total / 100) * percentage;
                                                 setDiscountPercentage(percentage);
@@ -766,7 +766,7 @@ export default function Detail() {
                                         className="pl-10"
                                         value={paymentAmount}
                                         onChange={(e) => {
-                                            setErrors({});
+                                            setErrors({ payment: '' });
                                             if (e.target.value) {
                                                 setPaymentAmount(parseFloat(e.target.value));
                                             } else {

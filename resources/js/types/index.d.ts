@@ -204,7 +204,9 @@ export interface ServiceOrder {
     cashier_name: string | null;
     discount_percentage: number | null;
     discounta_amount: number | null;
+    total: number | null;
     grand_total: number | null;
+    change: number | null;
     mechanic_name: string | null;
     note: string;
     payment_status: string;
@@ -213,10 +215,14 @@ export interface ServiceOrder {
     service_number: string;
     service_type: string;
     status: string;
+    vehicle_year?: string;
+    police_number?: string;
     user?: User;
     user_id: number;
     vehicle?: Vehicle;
     vehicle_id: number;
+    vehicle_variant_id: number;
+    vehicle_variant?: VehicleVariant;
     booking_service_id: number;
     created_at: Date;
     updated_at: Date;
@@ -242,6 +248,24 @@ export interface ServiceOrderDetailProduct {
     product?: Product;
     product_id: number;
     service_order_id: number;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface Ewallet {
+    id: number;
+    name: string;
+    number: string;
+    status: boolean;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface Bank {
+    id: number;
+    name: string;
+    number: string;
+    status: boolean;
     created_at: Date;
     updated_at: Date;
 }

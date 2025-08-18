@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Admin\AdminMechanicJobController;
 use App\Http\Controllers\Admin\AdminCashierController;
 use App\Http\Controllers\Admin\AdminEwalletController;
+use App\Http\Controllers\Admin\AdminBankController;
+use App\Http\Controllers\Admin\AdminHomePageController;
 use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
 use App\Http\Controllers\Admin\AdminServiceController;
@@ -111,6 +113,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/ewallets', [AdminEwalletController::class, 'index'])->name('ewallets.index');
         Route::post('/ewallets', [AdminEwalletController::class, 'store'])->name('ewallets.store');
         Route::get('/ewallets/get-all', [AdminEwalletController::class, 'getAll'])->name('ewallets.getAll');
+        Route::put('/ewallets/{id}', [AdminEwalletController::class, 'update'])->name('ewallets.update');
+        Route::delete('/ewallets/{id}', [AdminEwalletController::class, 'destroy'])->name('ewallets.destroy');
+
+        Route::get('/banks', [AdminBankController::class, 'index'])->name('banks.index');
+        Route::post('/banks', [AdminBankController::class, 'store'])->name('banks.store');
+        Route::get('/banks/get-all', [AdminBankController::class, 'getAll'])->name('banks.getAll');
+        Route::put('/banks/{id}', [AdminBankController::class, 'update'])->name('banks.update');
+        Route::delete('/banks/{id}', [AdminBankController::class, 'destroy'])->name('banks.destroy');
+
+        Route::get('/home-page', [AdminHomePageController::class, 'index'])->name('home-page.index');
 
         Route::redirect('settings', '/settings/profile');
 

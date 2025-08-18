@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Ewallet;
+use App\Models\Bank;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class AdminEwalletController extends Controller
+class AdminBankController extends Controller
 {
     public function index()
     {
-        return Inertia::render('admin/ewallets/index');
+        return Inertia::render('admin/banks/index');
     }
 
     public function store(Request $request)
@@ -22,11 +22,11 @@ class AdminEwalletController extends Controller
             'status' => ['required', 'boolean'],
         ]);
 
-        Ewallet::create($validated);
+        Bank::create($validated);
 
         return response()->json([
             'status' => true,
-            'message' => 'e-Wallet created successfully',
+            'message' => 'Bank created successfully',
         ], 200);
     }
 
@@ -35,13 +35,13 @@ class AdminEwalletController extends Controller
         $page = $request->query('page', 1);
         $limit = $request->query('limit', 10);
 
-        $ewallets = Ewallet::orderBy('name', 'asc')
+        $banks = Bank::orderBy('name', 'asc')
             ->paginate($limit, ['*'], 'page', $page);
 
         return response()->json([
             'success' => true,
-            'message' => 'Get all e-wallets.',
-            'data' => $ewallets,
+            'message' => 'Get all Banks.',
+            'data' => $banks,
         ], 200);
     }
 
@@ -53,39 +53,39 @@ class AdminEwalletController extends Controller
             'status' => ['required', 'boolean'],
         ]);
 
-        $ewallet = Ewallet::find($id);
+        $bank = Bank::find($id);
 
-        if (!$ewallet) {
+        if (!$bank) {
             return response()->json([
                 'status' => false,
-                'message' => 'e-Wallet not found.',
+                'message' => 'Bank not found.',
             ], 400);
         }
 
-        $ewallet->update($validated);
+        $bank->update($validated);
 
         return response()->json([
             'status' => true,
-            'message' => 'e-Wallet updated successfully',
+            'message' => 'Bank updated successfully',
         ], 200);
     }
 
     public function destroy($id)
     {
-        $ewallet = Ewallet::find($id);
+        $bank = Bank::find($id);
 
-        if (!$ewallet) {
+        if (!$bank) {
             return response()->json([
                 'status' => false,
-                'message' => 'e-Wallet not found.',
+                'message' => 'Bank not found.',
             ], 400);
         }
 
-        $ewallet->delete();
+        $bank->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'e-Wallet deleted successfully',
+            'message' => 'Bank deleted successfully',
         ], 200);
     }
 }

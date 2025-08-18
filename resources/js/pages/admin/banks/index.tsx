@@ -21,46 +21,46 @@ import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle }
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Ewallet } from '@/types';
+import { Bank, BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
 import { showToast } from '../../../lib/utils/toast';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'e-Wallets',
-        href: '/admin/ewallets',
+        title: 'Banks',
+        href: '/admin/banks',
     },
 ];
 
-const walletSchema = z.object({
-    name: z.string().min(1, 'Name wallet is required'),
-    number: z.string().min(1, 'Number wallet is required'),
+const bankSchema = z.object({
+    name: z.string().min(1, 'Name bank is required'),
+    number: z.string().min(1, 'Number bank is required'),
     status: z.boolean(),
 });
 
-type WalletFormValues = z.infer<typeof walletSchema>;
+type BankFormValues = z.infer<typeof bankSchema>;
 
 export default function Index() {
-    const [ewalletId, setEwalletId] = useState<number | null>(null);
-    const [data, setData] = useState<Ewallet[]>([]);
+    const [bankId, setBankId] = useState<number | null>(null);
+    const [data, setData] = useState<Bank[]>([]);
     const [page, setPage] = useState<number>(1);
     const [pageActive, setPageActive] = useState<number>(1);
     const [totalPage, setTotalPage] = useState<number>(1);
     const [paginations, setPaginations] = useState<number[]>([]);
-    const [form, setForm] = useState<WalletFormValues>({ name: '', number: '', status: false });
+    const [form, setForm] = useState<BankFormValues>({ name: '', number: '', status: false });
     const [isShowCreate, setIsShowCreate] = useState<boolean>(false);
     const [isShowEdit, setIsShowEdit] = useState<boolean>(false);
     const [isShowDelete, setIsShowDelete] = useState<boolean>(false);
     const [processing, setProcessing] = useState<boolean>(false);
-    const [errors, setErrors] = useState<Partial<Record<keyof WalletFormValues, string>>>({});
+    const [errors, setErrors] = useState<Partial<Record<keyof BankFormValues, string>>>({});
 
     const getAll = useCallback(async () => {
         try {
             const queryParams: string[] = [];
 
             if (page) queryParams.push(`page=${page}`);
-            const rs = await axios.get(`/admin/ewallets/get-all?${queryParams.join('&')}`);
+            const rs = await axios.get(`/admin/banks/get-all?${queryParams.join('&')}`);
             if (rs.data.success) {
                 const data = rs.data.data;
                 setData(data.data);
@@ -84,7 +84,7 @@ export default function Index() {
 
     const onCreate = async () => {
         try {
-            const result = walletSchema.safeParse(form);
+            const result = bankSchema.safeParse(form);
             if (!result.success) {
                 const flatErrors = result.error.flatten().fieldErrors;
                 setErrors({
@@ -96,8 +96,8 @@ export default function Index() {
 
             setProcessing(true);
 
-            await axios.post('/admin/ewallets', form);
-            showToast('e-Wallet created successfully.');
+            await axios.post('/admin/banks', form);
+            showToast('Bank created successfully.');
             setIsShowCreate(false);
             setPage(1);
             await getAll();
@@ -110,7 +110,7 @@ export default function Index() {
 
     const onUpdate = async () => {
         try {
-            const result = walletSchema.safeParse(form);
+            const result = bankSchema.safeParse(form);
             if (!result.success) {
                 const flatErrors = result.error.flatten().fieldErrors;
                 setErrors({
@@ -122,10 +122,10 @@ export default function Index() {
 
             setProcessing(true);
 
-            await axios.put(`/admin/ewallets/${ewalletId}`, form);
-            showToast('e-Wallet updated successfully.');
+            await axios.put(`/admin/banks/${bankId}`, form);
+            showToast('Bank updated successfully.');
             setIsShowEdit(false);
-            setEwalletId(null);
+            setBankId(null);
             setPage(1);
             await getAll();
         } catch (error) {
@@ -139,10 +139,10 @@ export default function Index() {
         try {
             setProcessing(true);
 
-            await axios.delete(`/admin/ewallets/${ewalletId}`);
-            showToast('e-Wallet deleted successfully.');
+            await axios.delete(`/admin/banks/${bankId}`);
+            showToast('Bank deleted successfully.');
             setIsShowDelete(false);
-            setEwalletId(null);
+            setBankId(null);
             setPage(1);
             await getAll();
         } catch (error) {
@@ -154,7 +154,7 @@ export default function Index() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="e-Wallets" />
+            <Head title="Banks" />
             <div className="mx-auto flex h-full w-full max-w-[1000px] flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-end gap-4 px-5">
                     <Button
@@ -164,7 +164,7 @@ export default function Index() {
                             setForm({ name: '', number: '', status: false });
                         }}
                     >
-                        Add e-Wallet
+                        Add Bank
                     </Button>
                 </div>
                 <div className="m-4">
@@ -197,7 +197,7 @@ export default function Index() {
                                                         <DropdownMenuItem
                                                             className="cursor-pointer"
                                                             onClick={() => {
-                                                                setEwalletId(item.id);
+                                                                setBankId(item.id);
                                                                 setForm({ name: item.name, number: item.number, status: Boolean(item.status) });
                                                                 setTimeout(() => {
                                                                     setIsShowEdit(true);
@@ -209,7 +209,7 @@ export default function Index() {
                                                         <DropdownMenuItem
                                                             className="cursor-pointer"
                                                             onClick={() => {
-                                                                setEwalletId(item.id);
+                                                                setBankId(item.id);
                                                                 setTimeout(() => {
                                                                     setIsShowDelete(true);
                                                                 }, 200);
@@ -264,14 +264,14 @@ export default function Index() {
             <Sheet open={isShowCreate} onOpenChange={setIsShowCreate}>
                 <SheetContent>
                     <SheetHeader>
-                        <SheetTitle>Add e-Wallet</SheetTitle>
+                        <SheetTitle>Add Bank</SheetTitle>
                     </SheetHeader>
                     <div className="grid flex-1 auto-rows-min gap-6 overflow-y-auto px-4">
                         <div className="w-full">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
-                                placeholder="ex. Dana, Ovo, Gopay"
+                                placeholder="ex. Mandiri, BRI, BCA"
                                 value={form.name}
                                 onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
                                 disabled={processing}
@@ -317,7 +317,7 @@ export default function Index() {
             <Sheet open={isShowEdit} onOpenChange={setIsShowEdit}>
                 <SheetContent>
                     <SheetHeader>
-                        <SheetTitle>Edit e-Wallet</SheetTitle>
+                        <SheetTitle>Edit Bank</SheetTitle>
                     </SheetHeader>
                     <div className="grid flex-1 auto-rows-min gap-6 overflow-y-auto px-4">
                         <div className="w-full">
@@ -369,8 +369,8 @@ export default function Index() {
             <AlertDialog open={isShowDelete} onOpenChange={setIsShowDelete}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Remove e-Wallet?</AlertDialogTitle>
-                        <AlertDialogDescription>Are you sure you want to remove this e-wallet? This action cannot be undone.</AlertDialogDescription>
+                        <AlertDialogTitle>Remove Bank?</AlertDialogTitle>
+                        <AlertDialogDescription>Are you sure you want to remove this Bank? This action cannot be undone.</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={processing}>Cancel</AlertDialogCancel>

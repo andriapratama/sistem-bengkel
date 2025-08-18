@@ -148,7 +148,7 @@ export default function Index() {
                 router.visit(`/admin/mechanic-jobs/${serviceOrder.id}`);
                 setIsShowNewService(false);
             }
-        } catch (error) {
+        } catch (error: any) {
             const errors = error.response.data.errors;
             setErrors({
                 vehicle_year: errors.vehicle_year?.[0],

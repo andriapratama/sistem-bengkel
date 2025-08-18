@@ -144,7 +144,6 @@ export default function Index() {
                             setPaymentStatus('');
                             setStatus('');
                             setServiceType('');
-                            setDate(dayjs(new Date()).format('YYYY-MM-DD'));
                             setPage(1);
                         }}
                     >
