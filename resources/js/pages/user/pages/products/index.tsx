@@ -15,9 +15,10 @@ import UserLayout from '../../layouts/user-layout';
 export default function Index() {
     const page = usePage<SharedData>();
     const { auth } = page.props;
+    const initialCategory = new URLSearchParams(window.location.search).get('category') || '';
 
     const [search, setSearch] = useState<string>('');
-    const [category, setCategory] = useState<string>('');
+    const [category, setCategory] = useState<string>(initialCategory);
     const [home, setHome] = useState<HomePage>();
     const [isHeroError, setIsHeroError] = useState<boolean>(false);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -83,6 +84,17 @@ export default function Index() {
     useEffect(() => {
         getAllProducts();
     }, [getAllProducts]);
+
+    useEffect(() => {
+        if (category) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('category', category);
+
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            window.history.replaceState({}, '', newUrl);
+        }
+    }, [category]);
+
     return (
         <UserLayout>
             <div className="mt-10 flex min-h-[44.5vh] w-full flex-col gap-10">
@@ -138,6 +150,16 @@ export default function Index() {
                             </SelectContent>
                         </Select>
                     </div>
+
+                    <Button
+                        type="button"
+                        onClick={() => {
+                            setSearch('');
+                            setCategory('');
+                        }}
+                    >
+                        Clear
+                    </Button>
                 </div>
 
                 <div className="flex w-full flex-col">

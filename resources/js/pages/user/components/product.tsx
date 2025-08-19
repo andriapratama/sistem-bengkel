@@ -62,7 +62,7 @@ export function ProductComponent({ product, user }: ProductComponentProps) {
                 className="flex aspect-square w-full items-center justify-center overflow-hidden bg-neutral-200 dark:bg-neutral-800"
             >
                 <img
-                    src={product.image}
+                    src={`/storage/${product.image}`}
                     alt={product.name}
                     onLoad={() => {
                         setIsError(false);

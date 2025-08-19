@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminCashierController;
 use App\Http\Controllers\Admin\AdminEwalletController;
 use App\Http\Controllers\Admin\AdminBankController;
 use App\Http\Controllers\Admin\AdminHomePageController;
+use App\Http\Controllers\Admin\AdminMessageController;
 use App\Http\Controllers\Admin\AdminRegisterController;
 use App\Http\Controllers\Admin\AdminUnitController;
 use App\Http\Controllers\Admin\AdminServiceController;
@@ -125,6 +126,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/home-page', [AdminHomePageController::class, 'index'])->name('home-page.index');
         Route::post('/home-page', [AdminHomePageController::class, 'update'])->name('home-page.update');
         Route::get('/home-page/get-one', [AdminHomePageController::class, 'getOne'])->name('home-page.getOne');
+        
+        Route::get('/messages', [AdminMessageController::class, 'index'])->name('messages.index');
+        Route::get('/messages/get-all', [AdminMessageController::class, 'getAll'])->name('messages.getAll');
 
         Route::redirect('settings', '/settings/profile');
 

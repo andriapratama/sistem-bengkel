@@ -29,6 +29,7 @@ Route::get('/register', [UserRegisterController::class, 'create'])->name('regist
 Route::post('/register', [UserRegisterController::class, 'store'])->name('register.store');
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 Route::get('/products', [UserProductController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}', [UserProductController::class, 'detail'])->name('product.detail');

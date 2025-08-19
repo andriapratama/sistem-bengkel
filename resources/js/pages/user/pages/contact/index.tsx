@@ -3,8 +3,8 @@ import { LoaderCircle, Mail, PhoneCall } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { showToast } from '@/lib/utils/toast';
 import { HomePage } from '@/types';
-import { useForm } from '@inertiajs/react';
 
 import UserLayout from '../../layouts/user-layout';
 
@@ -16,17 +16,13 @@ type MessageForm = {
 };
 
 export default function Index() {
-    const { data, setData, post, processing } = useForm<Required<MessageForm>>({
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
-    });
     const [home, setHome] = useState<HomePage>();
+    const [data, setData] = useState<MessageForm>({ name: '', email: '', phone: '', message: '' });
+    const [processing, setProcessing] = useState<boolean>(false);
 
     const onChangeNumber = (value: string) => {
         const number = value.replaceAll(/[^0-9]/g, '');
-        setData('phone', number);
+        setData((prev) => ({ ...prev, phone: number }));
     };
 
     const getHomePage = async () => {
@@ -42,6 +38,22 @@ export default function Index() {
     useEffect(() => {
         getHomePage();
     }, []);
+
+    const submit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            setProcessing(false);
+
+            await axios.post('/contact', data);
+            showToast('Message has been sent.');
+            setData({ name: '', email: '', phone: '', message: '' });
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setProcessing(false);
+        }
+    };
 
     return (
         <UserLayout>
@@ -71,7 +83,7 @@ export default function Index() {
                     </div>
                 </div>
 
-                <form className="flex h-fit flex-1 flex-col gap-5 rounded border border-solid border-black p-7 dark:border-white">
+                <form className="flex h-fit flex-1 flex-col gap-5 rounded border border-solid border-black p-7 dark:border-white" onSubmit={submit}>
                     <div className="flex w-full items-center gap-3">
                         <input
                             id="name"
@@ -81,7 +93,7 @@ export default function Index() {
                             value={data.name}
                             required
                             disabled={processing}
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData((prev) => ({ ...prev, name: e.target.value }))}
                         />
 
                         <input
@@ -92,7 +104,7 @@ export default function Index() {
                             value={data.email}
                             required
                             disabled={processing}
-                            onChange={(e) => setData('email', e.target.value)}
+                            onChange={(e) => setData((prev) => ({ ...prev, email: e.target.value }))}
                         />
 
                         <input
@@ -116,13 +128,13 @@ export default function Index() {
                             value={data.message}
                             required
                             disabled={processing}
-                            onChange={(e) => setData('message', e.target.value)}
+                            onChange={(e) => setData((prev) => ({ ...prev, message: e.target.value }))}
                         ></textarea>
                     </div>
 
                     <div className="flex w-full justify-end">
                         <Button
-                            type="button"
+                            type="submit"
                             className="flex h-[50px] w-[250px] cursor-pointer items-center justify-center rounded bg-black text-white dark:bg-white dark:text-black"
                             disabled={processing}
                         >

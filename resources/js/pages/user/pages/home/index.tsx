@@ -99,7 +99,7 @@ export default function Index() {
                         return (
                             <TextLink
                                 key={category.id}
-                                href="/products"
+                                href={`/products?category=${category.slug}`}
                                 className="cursor-pointer border-none px-2 py-1 text-start text-sm font-normal text-black dark:text-white"
                             >
                                 {category.name}
