@@ -15,6 +15,10 @@ use App\Http\Controllers\User\UserVehicleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/get-home-page', [HomeController::class, 'getHomePage'])->name('home.getHomePage');
+Route::get('/get-categories', [HomeController::class, 'getCategories'])->name('home.getCategories');
+Route::get('/get-all-categories', [HomeController::class, 'getAllCategories'])->name('home.getAllCategories');
+Route::get('/get-all-products', [HomeController::class, 'getAllProducts'])->name('home.getAllProducts');
 
 Route::get('/login', [UserLoginController::class, 'index'])->name('login');
 Route::post('/login', [UserLoginController::class, 'login'])->name('login');

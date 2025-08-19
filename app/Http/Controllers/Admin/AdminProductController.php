@@ -52,21 +52,26 @@ class AdminProductController extends Controller
             'price' => (float) $request->input('price'),
         ]);
 
-       $variants = json_decode($request->input('variants'), true);
-        if ($variants && is_array($variants)) {
-            $normalizedVariants = array_map(function ($variant) {
-                return [
-                    'name' => $variant['name'] ?? '',
-                    'stock' => isset($variant['stock']) ? (int) $variant['stock'] : 0,
-                    'cost' => isset($variant['cost']) ? (float) $variant['cost'] : 0,
-                    'price' => isset($variant['price']) ? (float) $variant['price'] : 0,
-                ];
-            }, $variants);
+        $variants = json_decode($request->input('variants'), true);
 
-            $request->merge([
-                'variants' => $normalizedVariants,
-            ]);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $variants = []; // Jika JSON invalid, set sebagai array kosong
         }
+
+        if (empty($variants)) {
+            $variants = []; // Pastikan selalu array
+        }
+
+        $normalizedVariants = array_map(function ($variant) {
+            return [
+                'name' => $variant['name'] ?? '',
+                'stock' => isset($variant['stock']) ? (int) $variant['stock'] : 0,
+                'cost' => isset($variant['cost']) ? (float) $variant['cost'] : 0,
+                'price' => isset($variant['price']) ? (float) $variant['price'] : 0,
+            ];
+        }, $variants);
+
+        $request->merge(['variants' => $normalizedVariants]);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -80,11 +85,17 @@ class AdminProductController extends Controller
             'has_variant' => ['required', 'boolean'],
             'category_id' => ['required', 'exists:categories,id'],
             'unit_id' => ['required', 'exists:units,id'],
-            'variants' => ['nullable', 'array'],
-            'variants.*.name' => ['nullable', 'string'],
-            'variants.*.stock' => ['nullable', 'numeric'],
-            'variants.*.cost' => ['nullable', 'numeric'],
-            'variants.*.price' => ['nullable', 'numeric'],
+            'variants' => [
+                'nullable',
+                'array',
+                Rule::requiredIf(function () use ($request) {
+                    return $request->has_variant === true;
+                }),
+            ],
+            'variants.*.name' => ['required_with:variants', 'string'],
+            'variants.*.stock' => ['required_with:variants', 'numeric', 'min:0'],
+            'variants.*.cost' => ['required_with:variants', 'numeric', 'min:0'],
+            'variants.*.price' => ['required_with:variants', 'numeric', 'min:0'],
         ]);
 
         if ($request->hasFile('image')) {

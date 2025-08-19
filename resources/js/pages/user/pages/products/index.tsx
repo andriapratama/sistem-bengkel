@@ -1,41 +1,104 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import axios from 'axios';
+import { ChevronLeft, ChevronRight, Image } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from '@/components/ui/select';
-import { Product, SharedData } from '@/types';
+import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Category, HomePage, Product, SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 
 import { ProductComponent } from '../../components/product';
 import UserLayout from '../../layouts/user-layout';
 
-type PageProps = {
-    products: {
-        data: Array<Product>;
-        current_page: number;
-        last_page: number;
-        next_page_url: string | null;
-        prev_page_url: string | null;
-        links: Array<{ url: string | null; label: string; active: boolean }>;
-    };
-};
-
 export default function Index() {
     const page = usePage<SharedData>();
     const { auth } = page.props;
 
-    const { products } = usePage<PageProps>().props;
-
     const [search, setSearch] = useState<string>('');
     const [category, setCategory] = useState<string>('');
+    const [home, setHome] = useState<HomePage>();
+    const [isHeroError, setIsHeroError] = useState<boolean>(false);
+    const [categories, setCategories] = useState<Category[]>([]);
 
+    const [productPage, setProductPage] = useState<number>(1);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [productTotalPage, setProductTotalPage] = useState<number>(1);
+    const [productPageActive, setProductPageActive] = useState<number>(1);
+    const [productPaginations, setProductPaginations] = useState<number[]>([]);
+
+    const getHomePage = async () => {
+        try {
+            const rs = await axios.get('/get-home-page');
+            const data = rs.data.data;
+            setHome(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getCategories = async () => {
+        try {
+            const rs = await axios.get('/get-all-categories');
+            const data = rs.data.data;
+            setCategories(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getHomePage();
+        getCategories();
+    }, []);
+
+    const getAllProducts = useCallback(async () => {
+        try {
+            const queryParams: string[] = [];
+
+            if (productPage) queryParams.push(`page=${productPage}`);
+            if (search) queryParams.push(`search=${search}`);
+            if (category) queryParams.push(`category=${category}`);
+            queryParams.push(`limit=${12}`);
+            const rs = await axios.get(`/get-all-products?${queryParams.join('&')}`);
+
+            if (rs.data.success) {
+                const data = rs.data.products;
+                setProducts(data.data);
+                setProductTotalPage(data.last_page);
+                setProductPageActive(data.current_page);
+
+                const newPaginations: number[] = [];
+                for (let i = 1; i <= data.last_page; i++) {
+                    newPaginations.push(i);
+                }
+                setProductPaginations(newPaginations);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }, [productPage, search, category]);
+
+    useEffect(() => {
+        getAllProducts();
+    }, [getAllProducts]);
     return (
         <UserLayout>
             <div className="mt-10 flex min-h-[44.5vh] w-full flex-col gap-10">
-                <div className="flex aspect-[22/6] w-full items-center justify-center overflow-hidden">
-                    <img src="images/hero.webp" alt="Banner Hero" className="h-full w-full object-cover object-center" loading="lazy" />
+                <div className="flex aspect-[22/6] w-full items-center justify-center overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+                    <img
+                        src={`/storage/${home?.hero}`}
+                        alt="Hero"
+                        onLoad={() => {
+                            setIsHeroError(false);
+                        }}
+                        onError={() => {
+                            setIsHeroError(true);
+                        }}
+                        className={`h-full w-full object-cover object-center ${isHeroError ? 'opacity-0' : 'opacity-100'}`}
+                    />
+                    <Image className={`absolute size-[70px] text-black dark:text-white ${isHeroError ? 'opacity-100' : 'opacity-0'}`} />
                 </div>
 
                 <div className="flex w-full items-center justify-start gap-5">
@@ -44,31 +107,32 @@ export default function Index() {
                             id="search"
                             type="text"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setProductPage(1);
+                                setCategory('');
+                            }}
                             placeholder="Search product"
                             className="!border-black dark:!border-white"
                         />
                     </div>
 
                     <div className="w-[300px]">
-                        <Select onValueChange={(e) => setCategory(e)} value={String(category)}>
+                        <Select
+                            onValueChange={(e) => {
+                                setCategory(e);
+                                setProductPage(1);
+                                setSearch('');
+                            }}
+                            value={String(category)}
+                        >
                             <SelectTrigger className="w-full !border-black dark:!border-white">
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                             <SelectContent>
-                                {[
-                                    'Engine Parts',
-                                    'Oil & Lubricants',
-                                    'Brake Components',
-                                    'Suspension Parts',
-                                    'Electrical Parts',
-                                    'Air Conditioning',
-                                    'Transmission Parts',
-                                    'Filters',
-                                    'Tires & Wheels',
-                                ].map((category) => (
-                                    <SelectItem key={category} value={String(category)}>
-                                        {category}
+                                {categories.map((category) => (
+                                    <SelectItem key={category.id} value={String(category.slug)}>
+                                        {category.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -78,30 +142,55 @@ export default function Index() {
 
                 <div className="flex w-full flex-col">
                     <div className="grid w-full grid-cols-4 gap-9">
-                        {products.data.map((product) => {
+                        {products.map((product) => {
                             return <ProductComponent key={product.id} product={product} user={auth.user}></ProductComponent>;
                         })}
                     </div>
                 </div>
 
-                <div className="flex w-full items-center justify-center gap-3">
-                    <div className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-black dark:border-white">
-                        <ChevronLeft />
-                    </div>
-                    {[1, 2, 3, 4].map((item) => {
-                        return (
-                            <div
-                                key={item}
-                                className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-black dark:border-white"
-                            >
-                                {item}
-                            </div>
-                        );
-                    })}
-                    <div className="flex aspect-square w-[30px] cursor-pointer items-center justify-center rounded border border-solid border-black dark:border-white">
-                        <ChevronRight />
-                    </div>
-                </div>
+                {productTotalPage > 1 ? (
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <Button
+                                    type="button"
+                                    onClick={() => setProductPage((prev) => prev - 1)}
+                                    disabled={productPage <= 1}
+                                    className="border-black dark:border-white"
+                                    variant="outline"
+                                >
+                                    <ChevronLeft />
+                                </Button>
+                            </PaginationItem>
+                            {productPaginations.map((item) => {
+                                const isActive = item === productPageActive ? true : false;
+                                return (
+                                    <PaginationItem key={item}>
+                                        <Button
+                                            type="button"
+                                            onClick={() => setProductPage(item)}
+                                            variant={isActive ? 'outline' : 'ghost'}
+                                            className="border-black dark:border-white"
+                                        >
+                                            {item}
+                                        </Button>
+                                    </PaginationItem>
+                                );
+                            })}
+                            <PaginationItem>
+                                <Button
+                                    type="button"
+                                    onClick={() => setProductPage((prev) => prev + 1)}
+                                    disabled={productPage >= productTotalPage}
+                                    className="border-black dark:border-white"
+                                    variant="outline"
+                                >
+                                    <ChevronRight />
+                                </Button>
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                ) : null}
             </div>
         </UserLayout>
     );

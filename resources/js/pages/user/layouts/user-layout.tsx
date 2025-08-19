@@ -1,9 +1,10 @@
+import axios from 'axios';
 import { Bike, CircleUser, LogOut, ShoppingBag, ShoppingCart, User } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Toaster } from '@/components/ui/sonner';
-import { SharedData } from '@/types';
+import { HomePage, SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
 interface Menu {
@@ -20,6 +21,7 @@ export default ({ children }: UserLayoutProps) => {
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const [menus, setMenus] = useState<Menu[]>([]);
+    const [home, setHome] = useState<HomePage>();
 
     useEffect(() => {
         setMenus([
@@ -56,13 +58,27 @@ export default ({ children }: UserLayoutProps) => {
         }
     }, [auth]);
 
+    const getHomePage = async () => {
+        try {
+            const rs = await axios.get('/get-home-page');
+            const data = rs.data.data;
+            setHome(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getHomePage();
+    }, []);
+
     return (
         <main className="min-screen font-poppins flex w-full flex-col">
             <Toaster position="top-right" />
             <header className="flex h-20 w-full flex-row justify-center border-b border-solid border-neutral-600">
                 <div className="mx-10 flex w-full max-w-[1200px] flex-row items-center justify-between">
                     <Link href="/" className="text-2xl font-bold text-black dark:text-white">
-                        Bengkel
+                        {home?.company_name}
                     </Link>
 
                     <div className="flex items-center gap-10">
@@ -131,14 +147,14 @@ export default ({ children }: UserLayoutProps) => {
             <footer className="mt-32 flex w-full justify-center bg-black dark:bg-white">
                 <div className="grid w-full max-w-[1200px] grid-cols-4 py-14">
                     <div className="flex w-full flex-col text-white dark:text-black">
-                        <p className="text-base font-bold">Bengkel</p>
+                        <p className="text-base font-bold">{home?.company_name}</p>
                     </div>
                     <div className="flex w-full flex-col text-white dark:text-black">
                         <p className="text-base font-bold">Support</p>
                         <div className="mt-5 flex flex-col gap-2">
-                            <p className="line-clamp-2 text-base font-medium">Badung, Denpasar, Bali, Indonesia</p>
-                            <p className="text-base font-medium">test@gmail.com</p>
-                            <p className="text-base font-medium">+6283 239 123 230</p>
+                            <p className="line-clamp-2 text-base font-medium">{home?.address}</p>
+                            <p className="text-base font-medium">{home?.email}</p>
+                            <p className="text-base font-medium">{home?.phone}</p>
                         </div>
                     </div>
                     <div className="flex w-full flex-col text-white dark:text-black">

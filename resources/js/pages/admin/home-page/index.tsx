@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { LoaderCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -12,22 +12,17 @@ import { showToast } from '@/lib/utils/toast';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
-const homePageSchema = z
-    .object({
-        company_name: z.string().min(1, 'Company name is required'),
-        address: z.string().min(1, 'Address is required'),
-        email: z.string().min(1, 'Email is required'),
-        phone: z.string().min(1, 'Phone number is required'),
-        hero: z
-            .instanceof(File)
-            .refine((file) => file.size < 5_000_000, 'File must be < 5MB')
-            .refine((file) => ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(file.type), 'Only JPG, JPEG, PNG, and WEBP allowed')
-            .optional(),
-    })
-    .refine((data) => !!data.hero, {
-        message: 'Hero image is required',
-        path: ['hero'],
-    });
+const homePageSchema = z.object({
+    company_name: z.string().min(1, 'Company name is required'),
+    address: z.string().min(1, 'Address is required'),
+    email: z.string().min(1, 'Email is required'),
+    phone: z.string().min(1, 'Phone number is required'),
+    hero: z
+        .instanceof(File)
+        .refine((file) => file.size < 5_000_000, 'File must be < 5MB')
+        .refine((file) => ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(file.type), 'Only JPG, JPEG, PNG, and WEBP allowed')
+        .optional(),
+});
 
 type HomePageFormValues = z.infer<typeof homePageSchema>;
 
@@ -43,6 +38,32 @@ export default function Create() {
     const [form, setForm] = useState<HomePageFormValues>({ company_name: '', address: '', email: '', phone: '', hero: undefined });
     const [processing, setProcessing] = useState<boolean>(false);
     const [preview, setPreview] = useState<string | null>(null);
+
+    const getData = async () => {
+        try {
+            setProcessing(true);
+
+            const rs = await axios.get('/admin/home-page/get-one');
+
+            if (rs.data.status) {
+                const data = rs.data.data;
+
+                setForm({ company_name: data.company_name, address: data.address, email: data.email, phone: data.phone, hero: undefined });
+
+                if (data.hero) {
+                    setPreview(`/storage/${data.hero}`);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    useEffect(() => {
+        getData();
+    }, []);
 
     const onChangeHero = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -84,7 +105,7 @@ export default function Create() {
             formData.append('address', form.address);
             formData.append('hero', form.hero as Blob);
 
-            await axios.post('/admin', formData, {
+            await axios.post('/admin/home-page', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

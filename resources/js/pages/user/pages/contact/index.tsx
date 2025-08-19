@@ -1,6 +1,9 @@
+import axios from 'axios';
 import { LoaderCircle, Mail, PhoneCall } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { HomePage } from '@/types';
 import { useForm } from '@inertiajs/react';
 
 import UserLayout from '../../layouts/user-layout';
@@ -19,11 +22,26 @@ export default function Index() {
         phone: '',
         message: '',
     });
+    const [home, setHome] = useState<HomePage>();
 
     const onChangeNumber = (value: string) => {
         const number = value.replaceAll(/[^0-9]/g, '');
         setData('phone', number);
     };
+
+    const getHomePage = async () => {
+        try {
+            const rs = await axios.get('/get-home-page');
+            const data = rs.data.data;
+            setHome(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getHomePage();
+    }, []);
 
     return (
         <UserLayout>
@@ -38,7 +56,7 @@ export default function Index() {
                         </div>
 
                         <p className="mb-3 text-sm text-black dark:text-white">We are available 24/7, 7 days a week.</p>
-                        <p className="text-sm text-black dark:text-white">Phone: 0893234923</p>
+                        <p className="text-sm text-black dark:text-white">Phone: {home?.phone}</p>
                     </div>
                     <div className="flex w-full flex-col text-black dark:text-white">
                         <div className="mb-5 flex w-full items-center gap-5">
@@ -49,7 +67,7 @@ export default function Index() {
                         </div>
 
                         <p className="mb-3 text-sm">Fill out our form and we will contact you within 24 hours.</p>
-                        <p className="text-sm">Email: test@mail.com</p>
+                        <p className="text-sm">Email: {home?.email}</p>
                     </div>
                 </div>
 

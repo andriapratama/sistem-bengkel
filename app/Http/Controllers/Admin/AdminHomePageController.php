@@ -16,17 +16,17 @@ class AdminHomePageController extends Controller
         return Inertia::render('admin/home-page/index');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $validated = $request->validate([
             'company_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255'],
             'address' => ['required', 'string'],
-            'hero' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'hero' => ['nullable'],
         ]);
 
-        $homePage = HomePage::find($id);
+        $homePage = HomePage::first();
 
         if (!$homePage) {
             return response()->json([
@@ -36,7 +36,14 @@ class AdminHomePageController extends Controller
         }
 
         if ($request->hasFile('hero')) {
+            // Hapus file lama jika ada
+            if ($homePage->hero) {
+                Storage::disk('public')->delete($homePage->hero);
+            }
+
             $validated['hero'] = $request->file('hero')->store('heros', 'public');
+        } else {
+            $validated['hero'] = $homePage->hero;
         }
 
         $homePage->update($validated);
@@ -44,6 +51,24 @@ class AdminHomePageController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Home page updated successfully',
+        ], 200);
+    }
+
+    public function getOne()
+    {
+        $homePage = HomePage::first();
+
+        if (!$homePage) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Home page not found.',
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get one home page data',
+            'data' => $homePage
         ], 200);
     }
 }

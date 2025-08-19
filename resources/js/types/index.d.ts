@@ -269,3 +269,14 @@ export interface Bank {
     created_at: Date;
     updated_at: Date;
 }
+
+export interface HomePage {
+    id: number;
+    address: string;
+    company_name: string;
+    email: string;
+    phone: string;
+    hero: string;
+    created_at: string;
+    updated_at: string;
+}

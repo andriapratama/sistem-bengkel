@@ -123,6 +123,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/banks/{id}', [AdminBankController::class, 'destroy'])->name('banks.destroy');
 
         Route::get('/home-page', [AdminHomePageController::class, 'index'])->name('home-page.index');
+        Route::post('/home-page', [AdminHomePageController::class, 'update'])->name('home-page.update');
+        Route::get('/home-page/get-one', [AdminHomePageController::class, 'getOne'])->name('home-page.getOne');
 
         Route::redirect('settings', '/settings/profile');
 

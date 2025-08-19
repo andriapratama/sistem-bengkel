@@ -1,33 +1,96 @@
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useEffect } from 'react';
+import axios from 'axios';
+import { ArrowLeft, ArrowRight, Image } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { showToast } from '@/lib/utils/toast';
-import { Category, Product, SharedData } from '@/types';
+import { Category, HomePage, Product, SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
 import { ProductComponent } from '../../components/product';
 import UserLayout from '../../layouts/user-layout';
 
 type PageProps = {
-    products: Product[];
     bestSeller: Product[];
-    categories: Category[];
     success?: string;
 };
 
 export default function Index() {
-    const { products, bestSeller, categories, success } = usePage<PageProps>().props;
+    const { bestSeller, success } = usePage<PageProps>().props;
 
     const page = usePage<SharedData>();
     const { auth } = page.props;
+    const [home, setHome] = useState<HomePage>();
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [isHeroError, setIsHeroError] = useState<boolean>(false);
+    const [productPage, setProductPage] = useState<number>(1);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [productTotalPage, setProductTotalPage] = useState<number>(1);
 
     useEffect(() => {
         if (success) {
             showToast(success);
         }
     }, [success]);
+
+    const getHomePage = async () => {
+        try {
+            const rs = await axios.get('/get-home-page');
+            const data = rs.data.data;
+            setHome(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getCategories = async () => {
+        try {
+            const rs = await axios.get('/get-categories');
+            const data = rs.data.data;
+            setCategories(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getHomePage();
+        getCategories();
+    }, []);
+
+    const getAllProducts = useCallback(async () => {
+        try {
+            const queryParams: string[] = [];
+
+            if (productPage) queryParams.push(`page=${productPage}`);
+            queryParams.push(`limit=${8}`);
+            const rs = await axios.get(`/get-all-products?${queryParams.join('&')}`);
+
+            if (rs.data.success) {
+                const data = rs.data.products;
+                setProducts(data.data);
+                setProductTotalPage(data.last_page);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }, [productPage]);
+
+    useEffect(() => {
+        getAllProducts();
+    }, [getAllProducts]);
+
+    const onChangeProductPage = async (type: 'increase' | 'decrease') => {
+        if (type === 'increase') {
+            setProductPage((prev) => (prev < productTotalPage ? prev + 1 : prev));
+        } else {
+            setProductPage((prev) => (prev > 1 ? prev - 1 : prev));
+        }
+
+        await getAllProducts();
+    };
+
     return (
         <UserLayout>
             <div className="flex w-full gap-10">
@@ -46,8 +109,19 @@ export default function Index() {
                 </div>
 
                 <div className="flex flex-1 justify-center pt-10">
-                    <div className="flex aspect-[22/6] w-[95%] items-center justify-center overflow-hidden">
-                        <img src="images/hero.webp" alt="Banner Hero" className="h-full w-full object-cover object-center" loading="lazy" />
+                    <div className="flex aspect-[22/6] w-[95%] items-center justify-center overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+                        <img
+                            src={`/storage/${home?.hero}`}
+                            alt="Hero"
+                            onLoad={() => {
+                                setIsHeroError(false);
+                            }}
+                            onError={() => {
+                                setIsHeroError(true);
+                            }}
+                            className={`h-full w-full object-cover object-center ${isHeroError ? 'opacity-0' : 'opacity-100'}`}
+                        />
+                        <Image className={`absolute size-[70px] text-black dark:text-white ${isHeroError ? 'opacity-100' : 'opacity-0'}`} />
                     </div>
                 </div>
             </div>
@@ -94,12 +168,16 @@ export default function Index() {
                         <Button
                             type="button"
                             className="flex aspect-square w-[40px] cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-black dark:bg-neutral-800 dark:text-white"
+                            onClick={() => onChangeProductPage('decrease')}
+                            disabled={productPage <= 1}
                         >
                             <ArrowLeft />
                         </Button>
                         <Button
                             type="button"
                             className="flex aspect-square w-[40px] cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-black dark:bg-neutral-800 dark:text-white"
+                            onClick={() => onChangeProductPage('increase')}
+                            disabled={productPage >= productTotalPage}
                         >
                             <ArrowRight />
                         </Button>
