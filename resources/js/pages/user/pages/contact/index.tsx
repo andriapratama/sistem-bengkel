@@ -43,7 +43,7 @@ export default function Index() {
         e.preventDefault();
 
         try {
-            setProcessing(false);
+            setProcessing(true);
 
             await axios.post('/contact', data);
             showToast('Message has been sent.');

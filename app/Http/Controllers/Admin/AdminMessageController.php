@@ -14,7 +14,7 @@ class AdminMessageController extends Controller
         return Inertia::render('admin/messages/index');
     }
 
-   public function getAll(Request $request)
+    public function getAll(Request $request)
     {
         $page = $request->query('page', 1);
         $limit = $request->query('limit', 10);
@@ -25,6 +25,27 @@ class AdminMessageController extends Controller
             'success' => true,
             'message' => 'Get all messages',
             'messages' => $messages,
+        ], 200);
+    }
+
+    public function update($id)
+    {
+        $message = Message::find('id', $id);
+
+        if (!$message) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Message not found.'
+            ], 400);
+        }
+
+        $message->update([
+            'status' => 1,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Message status updated'
         ], 200);
     }
 }
