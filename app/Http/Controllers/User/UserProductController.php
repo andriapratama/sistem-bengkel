@@ -29,7 +29,7 @@ class UserProductController extends Controller
         $product = Product::where('slug', $slug)->firstOrFail();
         $product->image_url = $product->image ? Storage::url($product->image) : null;
 
-        $reccomendations = Product::limit(5)->orderBy('name', 'desc')->get();
+        $reccomendations = Product::limit(5)->orderBy('name', 'desc')->where('category_id', $product->category_id)->whereNot('slug', $slug)->get();
         $reccomendations->transform(function ($item) {
             $item->image_url = $item->image ? Storage::url($item->image) : null;
             return $item;

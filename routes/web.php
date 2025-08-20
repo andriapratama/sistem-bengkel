@@ -129,6 +129,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         Route::get('/messages', [AdminMessageController::class, 'index'])->name('messages.index');
         Route::get('/messages/get-all', [AdminMessageController::class, 'getAll'])->name('messages.getAll');
+        Route::put('/messages/{id}', [AdminMessageController::class, 'update'])->name('messages.update');
 
         Route::redirect('settings', '/settings/profile');
 

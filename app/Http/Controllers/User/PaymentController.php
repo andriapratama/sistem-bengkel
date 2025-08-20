@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bank;
+use App\Models\Ewallet;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -51,5 +53,27 @@ class PaymentController extends Controller
         return response()->json([
             'success' => 'Product created successfully.',
         ]);
+    }
+
+    public function getBanks()
+    {
+        $banks = Bank::get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get all bank data.',
+            'banks' => $banks
+        ], 200);
+    }
+
+    public function getEwallets()
+    {
+        $ewallets = Ewallet::get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get all e-wallet data.',
+            'ewallets' => $ewallets
+        ], 200);
     }
 }

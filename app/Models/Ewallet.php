@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ewallet extends Model
 {
-    protected $fillable = ['name', 'number', 'status'];
+    protected $fillable = ['user_name', 'name', 'number', 'status'];
 }

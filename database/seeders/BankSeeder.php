@@ -14,10 +14,10 @@ class BankSeeder extends Seeder
     public function run(): void
     {
         $banks = [
-            ['name' => 'Mandiri', 'number' => '1234567890', 'status' => true],
-            ['name' => 'BRI', 'number' => '1234567890', 'status' => true],
-            ['name' => 'BNI', 'number' => '1234567890', 'status' => true],
-            ['name' => 'BCA', 'number' => '1234567890', 'status' => true],
+            ['user_name' => 'Owner Bengkel', 'name' => 'Mandiri', 'number' => '1234567890', 'status' => true],
+            ['user_name' => 'Owner Bengkel', 'name' => 'BRI', 'number' => '1234567890', 'status' => true],
+            ['user_name' => 'Owner Bengkel', 'name' => 'BNI', 'number' => '1234567890', 'status' => true],
+            ['user_name' => 'Owner Bengkel', 'name' => 'BCA', 'number' => '1234567890', 'status' => true],
         ];
 
         foreach ($banks as $bank) {

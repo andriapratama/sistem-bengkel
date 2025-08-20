@@ -61,7 +61,7 @@ export default function Index() {
                                     <div>Last Service: {item.last_service_date ? formatDate(item.last_service_date) : '-'}</div>
                                 </div>
 
-                                <Button>Detail</Button>
+                                {/* <Button>Detail</Button> */}
                             </div>
                         );
                     })}

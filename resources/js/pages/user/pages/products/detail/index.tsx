@@ -151,9 +151,9 @@ export default function Index() {
                             >
                                 {processing ? 'Loading ...' : 'Add Cart'}
                             </Button>
-                            <Button type="button" className="w-full">
+                            {/* <Button type="button" className="w-full">
                                 Buy Now
-                            </Button>
+                            </Button> */}
                         </div>
                     </div>
                 </div>

@@ -21,7 +21,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Index() {
-    const [messageId, setMessageId] = useState<number | null>(null);
     const [data, setData] = useState<Message[]>([]);
     const [page, setPage] = useState<number>(1);
     const [pageActive, setPageActive] = useState<number>(1);
@@ -58,10 +57,9 @@ export default function Index() {
         getAll();
     }, [getAll]);
 
-    const onUpdate = async () => {
+    const onUpdate = async (id: number) => {
         try {
-            await axios.put(`/admin/banks/${bankId}`, form);
-            setPage(page);
+            await axios.put(`/admin/messages/${id}`);
             await getAll();
         } catch (error) {
             console.log(error);
@@ -106,7 +104,6 @@ export default function Index() {
                                                         <DropdownMenuItem
                                                             className="cursor-pointer"
                                                             onClick={() => {
-                                                                setMessageId(item.id);
                                                                 setDetail({
                                                                     name: item.name,
                                                                     email: item.email,
@@ -116,6 +113,9 @@ export default function Index() {
                                                                 });
                                                                 setTimeout(() => {
                                                                     setIsShowDetail(true);
+                                                                    if (!item.status) {
+                                                                        onUpdate(item.id);
+                                                                    }
                                                                 }, 200);
                                                             }}
                                                         >

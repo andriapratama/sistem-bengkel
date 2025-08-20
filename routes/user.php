@@ -42,6 +42,8 @@ Route::get('/billing-detail', [BillingDetailController::class, 'index'])->name('
 Route::post('/billing-detail', [BillingDetailController::class, 'store'])->name('billing-detail.store');
 
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/banks', [PaymentController::class, 'getBanks'])->name('payment.getBanks');
+Route::get('/payment/ewallets', [PaymentController::class, 'getEwallets'])->name('payment.getEwallets');
 Route::get('/payment/{invoice}', [PaymentController::class, 'index'])->name('payment.index');
 Route::post('/payment/{invoice}', [PaymentController::class, 'store'])->name('payment.store');
 

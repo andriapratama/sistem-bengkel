@@ -14,9 +14,9 @@ class EwalletSeeder extends Seeder
     public function run(): void
     {
         $wallets = [
-            ['name' => 'Dana', 'number' => '1234567890', 'status' => true],
-            ['name' => 'Ovo', 'number' => '1234567890', 'status' => true],
-            ['name' => 'Gopay', 'number' => '1234567890', 'status' => true],
+            ['user_name' => 'Owner Bengkel', 'name' => 'Dana', 'number' => '1234567890', 'status' => true],
+            ['user_name' => 'Owner Bengkel', 'name' => 'Ovo', 'number' => '1234567890', 'status' => true],
+            ['user_name' => 'Owner Bengkel', 'name' => 'Gopay', 'number' => '1234567890', 'status' => true],
         ];
 
         foreach ($wallets as $wallet) {

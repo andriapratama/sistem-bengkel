@@ -30,7 +30,7 @@ class AdminMessageController extends Controller
 
     public function update($id)
     {
-        $message = Message::find('id', $id);
+        $message = Message::find($id);
 
         if (!$message) {
             return response()->json([

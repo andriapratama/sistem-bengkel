@@ -34,6 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const walletSchema = z.object({
+    user_name: z.string().min(1, 'Name user is required'),
     name: z.string().min(1, 'Name wallet is required'),
     number: z.string().min(1, 'Number wallet is required'),
     status: z.boolean(),
@@ -88,6 +89,7 @@ export default function Index() {
             if (!result.success) {
                 const flatErrors = result.error.flatten().fieldErrors;
                 setErrors({
+                    user_name: flatErrors.user_name?.[0],
                     name: flatErrors.name?.[0],
                     number: flatErrors.number?.[0],
                 });
@@ -114,6 +116,7 @@ export default function Index() {
             if (!result.success) {
                 const flatErrors = result.error.flatten().fieldErrors;
                 setErrors({
+                    user_name: flatErrors.name?.[0],
                     name: flatErrors.name?.[0],
                     number: flatErrors.number?.[0],
                 });
@@ -172,6 +175,7 @@ export default function Index() {
                         <TableHeader>
                             <TableRow className="border-black dark:border-white">
                                 <TableHead>Name</TableHead>
+                                <TableHead>Wallet Name</TableHead>
                                 <TableHead>Account Number</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-center">Action</TableHead>
@@ -181,6 +185,7 @@ export default function Index() {
                             {data.map((item) => {
                                 return (
                                     <TableRow key={item.id}>
+                                        <TableCell>{item.user_name}</TableCell>
                                         <TableCell>{item.name}</TableCell>
                                         <TableCell>{item.number}</TableCell>
                                         <TableCell>{item.status ? 'Active' : 'Inactive'}</TableCell>
@@ -198,7 +203,12 @@ export default function Index() {
                                                             className="cursor-pointer"
                                                             onClick={() => {
                                                                 setEwalletId(item.id);
-                                                                setForm({ name: item.name, number: item.number, status: Boolean(item.status) });
+                                                                setForm({
+                                                                    user_name: item.user_name,
+                                                                    name: item.name,
+                                                                    number: item.number,
+                                                                    status: Boolean(item.status),
+                                                                });
                                                                 setTimeout(() => {
                                                                     setIsShowEdit(true);
                                                                 }, 200);
@@ -268,6 +278,18 @@ export default function Index() {
                     </SheetHeader>
                     <div className="grid flex-1 auto-rows-min gap-6 overflow-y-auto px-4">
                         <div className="w-full">
+                            <Label htmlFor="user_name">Name User</Label>
+                            <Input
+                                id="user_name"
+                                placeholder="ex. John Doe"
+                                value={form.user_name}
+                                onChange={(e) => setForm((prev) => ({ ...prev, user_name: e.target.value }))}
+                                disabled={processing}
+                            />
+                            {errors.user_name && <p className="text-sm text-red-500">{errors.user_name}</p>}
+                        </div>
+
+                        <div className="w-full">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
@@ -320,6 +342,18 @@ export default function Index() {
                         <SheetTitle>Edit e-Wallet</SheetTitle>
                     </SheetHeader>
                     <div className="grid flex-1 auto-rows-min gap-6 overflow-y-auto px-4">
+                        <div className="w-full">
+                            <Label htmlFor="user_name">Name User</Label>
+                            <Input
+                                id="user_name"
+                                placeholder="ex. John Doe"
+                                value={form.user_name}
+                                onChange={(e) => setForm((prev) => ({ ...prev, user_name: e.target.value }))}
+                                disabled={processing}
+                            />
+                            {errors.user_name && <p className="text-sm text-red-500">{errors.user_name}</p>}
+                        </div>
+
                         <div className="w-full">
                             <Label htmlFor="name">Name</Label>
                             <Input

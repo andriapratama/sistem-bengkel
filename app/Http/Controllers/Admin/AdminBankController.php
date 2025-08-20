@@ -17,6 +17,7 @@ class AdminBankController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'user_name' => ['required', 'string'],
             'name' => ['required', 'string'],
             'number' => ['required', 'string'],
             'status' => ['required', 'boolean'],
@@ -48,6 +49,7 @@ class AdminBankController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
+            'user_name' => ['required', 'string'],
             'name' => ['required', 'string'],
             'number' => ['required', 'string'],
             'status' => ['required', 'boolean'],

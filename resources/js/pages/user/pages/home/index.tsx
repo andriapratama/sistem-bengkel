@@ -129,12 +129,14 @@ export default function Index() {
             <div className="mt-20 flex w-full flex-col gap-10">
                 <div className="flex w-full items-center justify-between">
                     <h2 className="text-3xl font-bold text-black dark:text-white">Best Selling Product</h2>
-                    <Button
-                        type="button"
-                        className="flex h-[50px] w-[150px] cursor-pointer items-center justify-center rounded-[8px] bg-black text-sm font-semibold text-white dark:bg-white dark:text-black"
-                    >
-                        View All
-                    </Button>
+                    <Link href="/products">
+                        <Button
+                            type="button"
+                            className="flex h-[50px] w-[150px] cursor-pointer items-center justify-center rounded-[8px] bg-black text-sm font-semibold text-white dark:bg-white dark:text-black"
+                        >
+                            View All
+                        </Button>
+                    </Link>
                 </div>
 
                 <div className="grid w-full grid-cols-4 gap-9">
@@ -150,9 +152,11 @@ export default function Index() {
                 <div className="relative z-10 flex h-full w-full items-center bg-black/80 pr-10 pb-5 pl-28">
                     <div className="flex w-[50%] flex-col">
                         <p className="text-[50px] leading-[70px] font-semibold text-white">Trust Your Vehicle Service to the Experts</p>
-                        <Button type="button" className="mt-5 w-fit rounded bg-green-500 px-7 py-3 text-lg font-semibold text-white">
-                            Book Now
-                        </Button>
+                        <Link href="/booking">
+                            <Button type="button" className="mt-5 w-fit rounded bg-green-500 px-7 py-3 text-lg font-semibold text-white">
+                                Book Now
+                            </Button>
+                        </Link>
                     </div>
 
                     <div className="flex-1">

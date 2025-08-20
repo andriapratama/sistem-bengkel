@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
 
@@ -8,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Category, Unit } from '@/types';
@@ -320,13 +318,13 @@ export default function Create() {
                         <Switch checked={data.status} onCheckedChange={(e) => setData('status', e)} />
                     </div>
 
-                    <div className="flex items-center gap-5">
+                    {/* <div className="flex items-center gap-5">
                         <Label htmlFor="has_variant">Variant</Label>
                         <Switch checked={data.has_variant} onCheckedChange={(e) => setData('has_variant', e)} />
-                    </div>
+                    </div> */}
                 </div>
 
-                {data.has_variant ? (
+                {/* {data.has_variant ? (
                     <div className="mx-auto mb-10 flex w-[80%] flex-col gap-4 p-4">
                         <Label htmlFor="variants">Variants</Label>
                         <Table>
@@ -388,7 +386,7 @@ export default function Create() {
                             </Button>
                         </div>
                     </div>
-                ) : null}
+                ) : null} */}
             </form>
         </AppLayout>
     );

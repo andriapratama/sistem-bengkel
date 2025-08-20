@@ -160,16 +160,26 @@ export default ({ children }: UserLayoutProps) => {
                     <div className="flex w-full flex-col text-white dark:text-black">
                         <p className="text-base font-bold">Account</p>
                         <div className="mt-5 flex flex-col gap-2">
-                            <p className="line-clamp-2 text-base font-medium">My Account</p>
-                            <p className="text-base font-medium">Login / Register</p>
-                            <p className="text-base font-medium">Cart</p>
-                            <p className="text-base font-medium">Book</p>
+                            <Link href="/profile" className="line-clamp-2 text-base font-medium">
+                                My Account
+                            </Link>
+                            <Link href="/login" className="text-base font-medium">
+                                Login / Register
+                            </Link>
+                            <Link href="/carts" className="text-base font-medium">
+                                Cart
+                            </Link>
+                            <Link href="/booking" className="text-base font-medium">
+                                Book
+                            </Link>
                         </div>
                     </div>
                     <div className="flex w-full flex-col text-white dark:text-black">
                         <p className="text-base font-bold">Quick Link</p>
                         <div className="mt-5 flex flex-col gap-2">
-                            <p className="line-clamp-2 text-base font-medium">Contact</p>
+                            <Link href="/contact" className="line-clamp-2 text-base font-medium">
+                                Contact
+                            </Link>
                         </div>
                     </div>
                 </div>

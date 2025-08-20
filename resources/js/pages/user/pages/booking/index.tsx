@@ -685,7 +685,6 @@ export default function Index() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <Link href="/vehicles">
                             <Button type="button">To Vehicle</Button>
                         </Link>

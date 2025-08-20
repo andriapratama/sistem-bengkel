@@ -13,7 +13,7 @@ class HomePageSeeder extends Seeder
      */
     public function run(): void
     {
-        $home = ['hero' => '', 'company_name' => 'Bengkel', 'address' => 'Renon, Kota Denpasar, Provinsi Bali, Indonesia' , 'email' => 'bengkel@mail.com', 'phone' => '08926735178'];
+        $home = ['hero' => 'heros/DNlsJVEQMAGNnLZibHkIszJfs2lPhrJFlUejvnAX.webp', 'company_name' => 'Bengkel', 'address' => 'Renon, Kota Denpasar, Provinsi Bali, Indonesia' , 'email' => 'bengkel@mail.com', 'phone' => '08926735178'];
 
         HomePage::create($home);
     }

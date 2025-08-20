@@ -1,3 +1,4 @@
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +27,9 @@ export default function Index() {
     const [image, setImage] = useState<File | null>(null);
     const [processing, setProcessing] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
+
+    const [banks, setBanks] = useState<Bank[]>([]);
+    const [ewallets, setEwallets] = useState<Ewallet[]>([]);
 
     const formatPrice = (number: number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -89,29 +93,100 @@ export default function Index() {
         }
     };
 
+    const getBanks = async () => {
+        try {
+            const rs = await axios.get('/payment/banks');
+
+            if (rs) {
+                setBanks(rs.data.banks);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getEwallets = async () => {
+        try {
+            const rs = await axios.get('/payment/ewallets');
+
+            if (rs) {
+                setEwallets(rs.data.ewallets);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getBanks();
+        getEwallets();
+    }, []);
+
     return (
         <UserLayout>
             <div className="mt-10 flex min-h-[44.5vh] w-full gap-10">
                 <div className="flex h-fit flex-1 flex-col rounded border border-solid border-black p-5 dark:border-white">
                     <h1 className="mb-4 text-xl font-semibold text-black dark:text-white">Cara Transfer</h1>
 
-                    <ul className="flex list-decimal flex-col gap-1 pl-4 text-sm font-light text-black dark:text-white">
-                        <li>Buka aplikasi mobile banking Anda</li>
-                        <li>
-                            Pilih menu transfer ke <span className="font-bold">BCA</span>
-                        </li>
-                        <li>
-                            Masukkan nomor rekening: <span className="font-bold">1234567890</span>
-                        </li>
-                        <li>
-                            Nama penerima: <span className="font-bold">Owner Bengkel</span>
-                        </li>
-                        <li>
-                            Masukkan nominal: <span className="font-bold">{formatPrice(transaction.grand_total)}</span>
-                        </li>
-                        <li>Mohon masukkan nominal sesuai dengan diatas, digit terakhir merupakan code transaksi.</li>
-                        <li>Lakukan transfer, lalu upload bukti di bawah in</li>
-                    </ul>
+                    {transaction.payment_method === 'bank_transfer' ? (
+                        <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
+                            {banks?.map((item, i) => {
+                                return (
+                                    <AccordionItem key={item.id} value={`item-${i}`} className="border-black dark:border-white">
+                                        <AccordionTrigger>{item.name}</AccordionTrigger>
+                                        <AccordionContent className="flex flex-col gap-4 text-balance">
+                                            <ul className="flex list-decimal flex-col gap-1 pl-4 text-sm font-light text-black dark:text-white">
+                                                <li>Buka aplikasi mobile banking Anda</li>
+                                                <li>
+                                                    Pilih menu transfer ke <span className="font-bold">{item.name}</span>
+                                                </li>
+                                                <li>
+                                                    Masukkan nomor rekening: <span className="font-bold">{item.number}</span>
+                                                </li>
+                                                <li>
+                                                    Nama penerima: <span className="font-bold">{item.user_name}</span>
+                                                </li>
+                                                <li>
+                                                    Masukkan nominal: <span className="font-bold">{formatPrice(transaction.grand_total)}</span>
+                                                </li>
+                                                <li>Mohon masukkan nominal sesuai dengan diatas, digit terakhir merupakan code transaksi.</li>
+                                                <li>Lakukan transfer, lalu upload bukti di bawah ini.</li>
+                                            </ul>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                );
+                            })}
+                        </Accordion>
+                    ) : (
+                        <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
+                            {ewallets?.map((item, i) => {
+                                return (
+                                    <AccordionItem key={item.id} value={`item-${i}`} className="border-black dark:border-white">
+                                        <AccordionTrigger>{item.name}</AccordionTrigger>
+                                        <AccordionContent className="flex flex-col gap-4 text-balance">
+                                            <ul className="flex list-decimal flex-col gap-1 pl-4 text-sm font-light text-black dark:text-white">
+                                                <li>Buka aplikasi e-wallet Anda</li>
+                                                <li>
+                                                    Pilih menu transfer ke <span className="font-bold">{item.name}</span>
+                                                </li>
+                                                <li>
+                                                    Masukkan nomor wallet: <span className="font-bold">{item.number}</span>
+                                                </li>
+                                                <li>
+                                                    Nama penerima: <span className="font-bold">{item.user_name}</span>
+                                                </li>
+                                                <li>
+                                                    Masukkan nominal: <span className="font-bold">{formatPrice(transaction.grand_total)}</span>
+                                                </li>
+                                                <li>Mohon masukkan nominal sesuai dengan diatas, digit terakhir merupakan code transaksi.</li>
+                                                <li>Lakukan transfer, lalu upload bukti di bawah ini.</li>
+                                            </ul>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                );
+                            })}
+                        </Accordion>
+                    )}
 
                     <div className="mt-10 flex flex-col gap-2">
                         <Label htmlFor="image">Upload Image</Label>

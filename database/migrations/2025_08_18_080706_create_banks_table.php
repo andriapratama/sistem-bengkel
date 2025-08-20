@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('banks', function (Blueprint $table) {
             $table->id()->autoIncrement();
+            $table->string('user_name');
             $table->string('name');
             $table->string('number');
             $table->boolean('status');

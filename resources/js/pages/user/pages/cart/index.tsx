@@ -104,7 +104,7 @@ export default function Index() {
         const newCarts = cartList.find((item) => item.checked);
 
         if (!newCarts) {
-            showToast('Please select at least 1 product to continue.');
+            showToast('Please select at least 1 product to continue.', 'error');
         } else {
             router.visit('/billing-detail');
         }
