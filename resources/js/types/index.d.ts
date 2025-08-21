@@ -254,6 +254,7 @@ export interface ServiceOrderDetailProduct {
 
 export interface Ewallet {
     id: number;
+    user_name: string;
     name: string;
     number: string;
     status: boolean;
@@ -263,6 +264,7 @@ export interface Ewallet {
 
 export interface Bank {
     id: number;
+    user_name: string;
     name: string;
     number: string;
     status: boolean;
@@ -282,12 +284,12 @@ export interface HomePage {
 }
 
 export interface Message {
-    id: number;
+    id?: number;
     name: string;
     email: string;
     phone: string;
     message: string;
-    status: string;
-    created_at: string;
-    updated_at: string;
+    status: boolean;
+    created_at?: string;
+    updated_at?: string;
 }

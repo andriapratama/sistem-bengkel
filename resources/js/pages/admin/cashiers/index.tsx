@@ -167,7 +167,7 @@ export default function Index() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {data.map((order, i) => (
+                            {data.map((order) => (
                                 <TableRow key={order.id} className="border-black dark:border-white">
                                     <TableCell>{dayjs(order.service_date).format('DD/MM/YYYY')}</TableCell>
                                     <TableCell>{order.service_number}</TableCell>

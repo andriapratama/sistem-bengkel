@@ -86,7 +86,7 @@ export default function Detail() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {data.booking_service_detail?.map((item, i) => {
+                                    {data.booking_service_detail?.map((item) => {
                                         return (
                                             <TableRow key={item.id} className="border-black dark:border-white">
                                                 <TableCell>{item.service?.name}</TableCell>

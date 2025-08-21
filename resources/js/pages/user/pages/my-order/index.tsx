@@ -1,10 +1,12 @@
-import { Button } from '@/components/ui/button';
-import { Transaction } from '@/types';
-import { router } from '@inertiajs/react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { Image } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Transaction } from '@/types';
+import { router } from '@inertiajs/react';
+
 import UserLayout from '../../layouts/user-layout';
 
 export default function Index() {
@@ -25,7 +27,7 @@ export default function Index() {
 
             if (rs.data.success) {
                 const newData: Transaction[] = [];
-                rs.data.transaction.map((transaction) => {
+                rs.data.transaction.map((transaction: Transaction) => {
                     const dataTmp = { ...transaction, isImageError: false };
                     newData.push(dataTmp);
                 });

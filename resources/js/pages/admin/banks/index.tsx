@@ -49,7 +49,7 @@ export default function Index() {
     const [pageActive, setPageActive] = useState<number>(1);
     const [totalPage, setTotalPage] = useState<number>(1);
     const [paginations, setPaginations] = useState<number[]>([]);
-    const [form, setForm] = useState<BankFormValues>({ name: '', number: '', status: false });
+    const [form, setForm] = useState<BankFormValues>({ user_name: '', name: '', number: '', status: false });
     const [isShowCreate, setIsShowCreate] = useState<boolean>(false);
     const [isShowEdit, setIsShowEdit] = useState<boolean>(false);
     const [isShowDelete, setIsShowDelete] = useState<boolean>(false);
@@ -164,7 +164,7 @@ export default function Index() {
                         type="button"
                         onClick={() => {
                             setIsShowCreate(true);
-                            setForm({ name: '', number: '', status: false });
+                            setForm({ user_name: '', name: '', number: '', status: false });
                         }}
                     >
                         Add Bank

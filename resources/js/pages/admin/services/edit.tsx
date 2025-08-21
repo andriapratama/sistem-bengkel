@@ -42,7 +42,7 @@ export default function Edit({ service }: Props) {
         name: service.name,
         description: service.description,
         estimated_duration: service.estimated_duration,
-        estimated_price: parseFloat(service.estimated_price),
+        estimated_price: parseFloat(service.estimated_price?.toString() ?? '0'),
     });
 
     const onChangeNumber = (field: 'estimated_duration' | 'estimated_price', value: string) => {
