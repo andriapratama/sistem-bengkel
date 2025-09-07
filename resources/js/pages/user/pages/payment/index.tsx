@@ -1,13 +1,15 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Transaction } from '@/types';
-import { router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { Clock, LoaderCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
+
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Bank, Ewallet, Transaction } from '@/types';
+import { router, usePage } from '@inertiajs/react';
+
 import { showToast } from '../../../../lib/utils/toast';
 import UserLayout from '../../layouts/user-layout';
 
@@ -85,8 +87,8 @@ export default function Index() {
             });
 
             router.visit('/payment/success');
-        } catch (error) {
-            // showToast(error.response.data.message, 'error');
+        } catch (error: any) {
+            showToast(error.response.data.message, 'error');
             console.log(error);
         } finally {
             setProcessing(false);

@@ -28,7 +28,13 @@ export default function Index() {
     const [paginations, setPaginations] = useState<number[]>([]);
     const [isShowDetail, setIsShowDetail] = useState<boolean>(false);
     const [processing, setProcessing] = useState<boolean>(false);
-    const [detail, setDetail] = useState<Message>({});
+    const [detail, setDetail] = useState<Message>({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+        status: false,
+    });
 
     const getAll = useCallback(async () => {
         try {
@@ -114,7 +120,7 @@ export default function Index() {
                                                                 setTimeout(() => {
                                                                     setIsShowDetail(true);
                                                                     if (!item.status) {
-                                                                        onUpdate(item.id);
+                                                                        onUpdate(Number(item.id));
                                                                     }
                                                                 }, 200);
                                                             }}

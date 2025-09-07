@@ -116,7 +116,7 @@ export default function Index() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {data.map((booking, i) => (
+                            {data.map((booking) => (
                                 <TableRow key={booking.id} className="border-black dark:border-white">
                                     <TableCell>{formatDate(booking.date_booking)}</TableCell>
                                     <TableCell>{booking.user?.name}</TableCell>

@@ -1,4 +1,7 @@
+import axios from 'axios';
+import dayjs from 'dayjs';
 import { MoreHorizontal } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -9,9 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Transaction } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import axios from 'axios';
-import dayjs from 'dayjs';
-import { useCallback, useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -175,7 +175,7 @@ export default function Index() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {data.map((order, i) => (
+                            {data.map((order) => (
                                 <TableRow key={order.id} className="border-black dark:border-white">
                                     <TableCell>{formatDate(order.created_at)}</TableCell>
                                     <TableCell>{order.invoice_number}</TableCell>

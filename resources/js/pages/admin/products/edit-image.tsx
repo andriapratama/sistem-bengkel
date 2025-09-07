@@ -1,12 +1,14 @@
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, Product } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
+
 import { showToast } from '../../../lib/utils/toast';
 
 type PageProps = {
@@ -80,7 +82,7 @@ export default function EditImage() {
                 });
                 router.visit('/admin/products');
                 setProcessing(false);
-            } catch (error) {
+            } catch (error: any) {
                 showToast(error.response.data.message, 'error');
                 console.log(error);
             }
