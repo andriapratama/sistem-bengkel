@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminMechanicJobController;
 use App\Http\Controllers\Admin\AdminCashierController;
 use App\Http\Controllers\Admin\AdminEwalletController;
 use App\Http\Controllers\Admin\AdminBankController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminHomePageController;
 use App\Http\Controllers\Admin\AdminMessageController;
 use App\Http\Controllers\Admin\AdminRegisterController;
@@ -34,7 +35,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', function () {
             return Inertia::render('admin/dashboard');
         })->name('dashboard');
-
+        Route::get('/dashboard/get-all', [AdminDashboardController::class, 'getAll'])->name('dashboard.getAll');
+        
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/get-all', [AdminOrderController::class, 'getAll'])->name('orders.getAll');
         Route::get('/orders/{id}', [AdminOrderController::class, 'detail'])->name('orders.detail');
